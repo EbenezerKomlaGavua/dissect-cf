@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_73" class="java.beans.XMLDecoder">
+ <object class="com.ljmu.andre.FitbitSim.DataStores.PhysicalMachineData">
+  <void property="cores">
+   <double>1.0</double>
+  </void>
+  <void property="memory">
+   <long>3</long>
+  </void>
+  <void property="offDelay">
+   <int>5</int>
+  </void>
+  <void property="onDelay">
+   <int>4</int>
+  </void>
+  <void property="perCoreProcessing">
+   <double>2.0</double>
+  </void>
+  <void property="repositoryData">
+   <object class="com.ljmu.andre.FitbitSim.DataStores.RepositoryData">
+    <void property="capacity">
+     <long>2048</long>
+    </void>
+    <void property="diskBW">
+     <long>50</long>
+    </void>
+    <void property="id">
+     <string>Repo1</string>
+    </void>
+    <void property="latencyMap">
+     <object class="java.util.HashMap">
+      <void method="put">
+       <string>Test</string>
+       <int>100</int>
+      </void>
+	  <void method="put">
+	   <string>Test2</string>
+	   <int>9001</int>
+	   </void>
+     </object>
+    </void>
+    <void property="maxInBW">
+     <long>100</long>
+    </void>
+    <void property="maxOutBW">
+     <long>100</long>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>
