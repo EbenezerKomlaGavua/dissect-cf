@@ -3,6 +3,8 @@ package com.ljmu.andre.FitbitSim.DataStores;
 import java.io.Serializable;
 import java.util.Map;
 
+import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
+
 /**
  * Created by Andre on 26/01/2017.
  */
@@ -25,6 +27,17 @@ public class RepositoryData implements Serializable {
         this.maxOutBW = maxOutBW;
         this.diskBW = diskBW;
         this.latencyMap = latencyMap;
+    }
+
+    public Repository getRepositoryFromData() {
+        return new Repository(
+                this.getCapacity(),
+                this.getId(),
+                this.getMaxInBW(),
+                this.getMaxOutBW(),
+                this.getDiskBW(),
+                this.getLatencyMap()
+        );
     }
 
     public String getId() {

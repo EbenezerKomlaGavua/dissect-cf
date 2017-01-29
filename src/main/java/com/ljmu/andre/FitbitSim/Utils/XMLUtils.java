@@ -1,4 +1,4 @@
-package com.ljmu.andre.FitbitSim;
+package com.ljmu.andre.FitbitSim.Utils;
 
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;

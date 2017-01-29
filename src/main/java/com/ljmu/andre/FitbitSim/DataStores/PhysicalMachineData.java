@@ -1,11 +1,16 @@
 package com.ljmu.andre.FitbitSim.DataStores;
 
 import java.io.Serializable;
+import java.util.EnumMap;
 
 import javax.xml.bind.annotation.XmlID;
 
+import hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.PowerState;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.PowerStateKind;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.State;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.constraints.ConstantConstraints;
+import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 /**
  * Created by Andre on 26/01/2017.
@@ -17,18 +22,33 @@ public class PhysicalMachineData implements Serializable {
     private int onDelay;
     private int offDelay;
     private RepositoryData repositoryData;
+    private PowerStateTransitionData powerTransitions;
 
     public PhysicalMachineData() {
     }
 
     public PhysicalMachineData(double cores, double perCoreProcessing, long memory, int onDelay,
-                               int offDelay, RepositoryData repositoryData) {
+                               int offDelay, RepositoryData repositoryData,
+                               PowerStateTransitionData powerTransitions) {
         this.cores = cores;
         this.perCoreProcessing = perCoreProcessing;
         this.memory = memory;
         this.onDelay = onDelay;
         this.offDelay = offDelay;
         this.repositoryData = repositoryData;
+        this.powerTransitions = powerTransitions;
+    }
+
+    public PhysicalMachine getPhysicalMachineFromData() {
+        return new PhysicalMachine(
+                this.getCores(),
+                this.getPerCoreProcessing(),
+                this.getMemory(),
+                this.getRepositoryData().getRepositoryFromData(),
+                this.getOnDelay(),
+                this.getOffDelay(),
+                this.getPowerTransitions().getPowerTransitionFromData()
+        );
     }
 
     public double getCores() {
@@ -79,6 +99,13 @@ public class PhysicalMachineData implements Serializable {
         this.repositoryData = repositoryData;
     }
 
+    public PowerStateTransitionData getPowerTransitions() {
+        return powerTransitions;
+    }
+
+    public void setPowerTransitions(PowerStateTransitionData powerTransitions) {
+        this.powerTransitions = powerTransitions;
+    }
 
     @Override public String toString() {
         return "PhysicalMachineData{" +
