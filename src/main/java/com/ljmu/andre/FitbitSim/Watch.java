@@ -20,7 +20,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
 /**
  * Created by Andre on 26/01/2017.
  */
-public class Watch extends Timed implements Serializable {
+public class Watch extends Timed implements Serializable, ConsumptionEvent {
     private transient Repository targetRepo;
     private transient PhysicalMachine watchMachine;
 
@@ -32,7 +32,7 @@ public class Watch extends Timed implements Serializable {
     private long lastSentTime = 0;
 
 
-    public Watch(PhysicalMachineData watchMachineData, WatchData watchData, Repository targetRepo) {
+    public Watch(PhysicalMachineData watchMachineData, WatchData watchData, Repository targetRepo) throws IllegalAccessException, NoSuchFieldException, InstantiationException, ClassNotFoundException {
         this.watchMachine = watchMachineData.getPhysicalMachineFromData();
         this.watchData = watchData;
         this.targetRepo = targetRepo;
@@ -119,6 +119,26 @@ public class Watch extends Timed implements Serializable {
 
     public GenericModel getWatchModel() {
         return watchModel;
+    }
+
+    @Override public void conComplete() {
+
+    }
+
+    @Override public void conCancelled(ResourceConsumption problematic) {
+
+    }
+
+    @Override public String toString() {
+        return "Watch{" +
+                "targetRepo=" + targetRepo +
+                ", watchMachine=" + watchMachine +
+                ", watchModel=" + watchModel +
+                ", watchData=" + watchData +
+                ", totalDataCollection=" + totalDataCollection +
+                ", dataCollection=" + dataCollection +
+                ", lastSentTime=" + lastSentTime +
+                '}';
     }
 
     private static class FailedStorageObject {

@@ -1,8 +1,12 @@
 package com.ljmu.andre.FitbitSim.DataStores;
 
+import javax.xml.bind.annotation.XmlAccessOrder;
+import javax.xml.bind.annotation.XmlAccessorOrder;
+
 /**
  * Created by Andre on 29/01/2017.
  */
+@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 public class SimulationData {
     private int frequency;
     private long startTime;

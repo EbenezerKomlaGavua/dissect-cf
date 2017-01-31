@@ -3,11 +3,15 @@ package com.ljmu.andre.FitbitSim.DataStores;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAccessOrder;
+import javax.xml.bind.annotation.XmlAccessorOrder;
+
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 /**
  * Created by Andre on 26/01/2017.
  */
+@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 public class RepositoryData implements Serializable {
     private String id;
     private long capacity;

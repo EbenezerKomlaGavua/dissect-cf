@@ -1,20 +1,19 @@
 package com.ljmu.andre.FitbitSim.DataStores;
 
 import java.io.Serializable;
-import java.util.EnumMap;
 
+import javax.xml.bind.annotation.XmlAccessOrder;
+import javax.xml.bind.annotation.XmlAccessorOrder;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 
-import hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.PowerState;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.PowerStateKind;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.State;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.constraints.ConstantConstraints;
-import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 /**
  * Created by Andre on 26/01/2017.
  */
+@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 public class PhysicalMachineData implements Serializable {
     private double cores;
     private double perCoreProcessing;
@@ -39,7 +38,7 @@ public class PhysicalMachineData implements Serializable {
         this.powerTransitions = powerTransitions;
     }
 
-    public PhysicalMachine getPhysicalMachineFromData() {
+    public PhysicalMachine getPhysicalMachineFromData() throws IllegalAccessException, NoSuchFieldException, InstantiationException, ClassNotFoundException {
         return new PhysicalMachine(
                 this.getCores(),
                 this.getPerCoreProcessing(),
@@ -51,10 +50,12 @@ public class PhysicalMachineData implements Serializable {
         );
     }
 
+    @XmlID
     public double getCores() {
         return cores;
     }
 
+    @XmlID
     public void setCores(double cores) {
         this.cores = cores;
     }

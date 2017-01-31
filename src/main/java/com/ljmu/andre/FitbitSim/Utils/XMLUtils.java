@@ -1,5 +1,8 @@
 package com.ljmu.andre.FitbitSim.Utils;
 
+import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
+
 import java.beans.XMLDecoder;
 import java.beans.XMLEncoder;
 import java.io.BufferedInputStream;
@@ -15,25 +18,47 @@ import java.io.IOException;
 public class XMLUtils {
 
     public static void encode(Object objToWrite, String filepath) throws FileNotFoundException {
-        XMLEncoder encoder =
-                new XMLEncoder(
-                        new BufferedOutputStream(
-                                new FileOutputStream(filepath)));
+        XMLEncoder encoder = null;
 
-        encoder.writeObject(objToWrite);
-        encoder.flush();
-        encoder.close();
+        try {
+            encoder =
+                    new XMLEncoder(
+                            new BufferedOutputStream(
+                                    new FileOutputStream(filepath)));
+
+            encoder.writeObject(objToWrite);
+        } finally {
+            if(encoder != null) {
+                encoder.flush();
+                encoder.close();
+            }
+        }
     }
 
-    public static Object decode(String filepath) throws IOException {
+    @Nullable public static Object decode(@NotNull String filepath) {
         BufferedInputStream fis =
-                new BufferedInputStream(
-                        new FileInputStream(filepath));
+                null;
+        try {
+            fis = new BufferedInputStream(
+                    new FileInputStream(filepath));
 
-        XMLDecoder decoder = new XMLDecoder(fis);
-        Object decodedObject = decoder.readObject();
-        decoder.close();
-        fis.close();
-        return decodedObject;
+            XMLDecoder decoder = new XMLDecoder(fis);
+            Object decodedObject = decoder.readObject();
+            decoder.close();
+            fis.close();
+
+            return decodedObject;
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+
+        return null;
     }
 }
