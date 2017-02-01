@@ -2,17 +2,13 @@ package com.ljmu.andre.FitbitSim;
 
 import com.ljmu.andre.FitbitSim.DataStores.PhysicalMachineData;
 import com.ljmu.andre.FitbitSim.DataStores.WatchData;
-import com.ljmu.andre.FitbitSim.Models.GenericModel;
-import com.ljmu.andre.FitbitSim.Models.WatchModel;
 
 import java.io.Serializable;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ConsumptionEventAdapter;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
-import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode;
 import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode.NetworkException;
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
@@ -20,11 +16,10 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
 /**
  * Created by Andre on 26/01/2017.
  */
-public class Watch extends Timed implements Serializable, ConsumptionEvent {
-    private transient Repository targetRepo;
-    private transient PhysicalMachine watchMachine;
+public class Watch extends Timed implements ConsumptionEvent {
+    private Repository targetRepo;
+    private PhysicalMachine watchMachine;
 
-    private WatchModel watchModel;
     private WatchData watchData;
 
     private int totalDataCollection = 0;
@@ -51,21 +46,27 @@ public class Watch extends Timed implements Serializable, ConsumptionEvent {
 
         if(fires >= watchData.getStartTime()) {
             System.out.println("Fires: " + fires);
-            dataCollection += watchData.getRandomDataPerTick();
+            int dataSize = watchData.getRandomDataPerTick();
+            dataCollection += dataSize;
+            totalDataCollection += dataSize;
+            System.out.println("Value: " + (fires - lastSentTime));
 
             if (fires - lastSentTime >= watchData.getSendDelay()) {
                 System.out.println("SEND DATA");
 
+                // If there have been previous failed send attempts;
                 StorageObject prevFailedObject = watchMachine.localDisk.lookup("FailedObject");
                 if(prevFailedObject != null) {
+                    // Add the previous data to the current data
                     dataCollection += prevFailedObject.size;
                     watchMachine.localDisk.deregisterObject("FailedObject");
+                    System.out.println("Prev Failed");
                 }
 
                 final StorageObject storageObject = new StorageObject("WatchData", dataCollection, false);
 
                 watchMachine.localDisk.registerObject(storageObject);
-
+                System.out.println("Registered Object: " + storageObject.toString());
                 try {
                     watchMachine.localDisk.requestContentDelivery("WatchData", targetRepo, new ConsumptionEvent() {
                         @Override public void conComplete() {
@@ -75,9 +76,11 @@ public class Watch extends Timed implements Serializable, ConsumptionEvent {
 
                         @Override public void conCancelled(ResourceConsumption problematic) {
                             storeFailedObject(storageObject);
+                            System.out.println("Cancelled: " + problematic.toString());
                         }
                     });
                 } catch (NetworkException e) {
+                    e.printStackTrace();
                     storeFailedObject(storageObject);
                 }
 
@@ -117,10 +120,6 @@ public class Watch extends Timed implements Serializable, ConsumptionEvent {
         this.watchMachine = watchMachine;
     }
 
-    public GenericModel getWatchModel() {
-        return watchModel;
-    }
-
     @Override public void conComplete() {
 
     }
@@ -133,7 +132,6 @@ public class Watch extends Timed implements Serializable, ConsumptionEvent {
         return "Watch{" +
                 "targetRepo=" + targetRepo +
                 ", watchMachine=" + watchMachine +
-                ", watchModel=" + watchModel +
                 ", watchData=" + watchData +
                 ", totalDataCollection=" + totalDataCollection +
                 ", dataCollection=" + dataCollection +

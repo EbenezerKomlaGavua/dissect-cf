@@ -59,8 +59,6 @@ public class Scenario extends Timed {
         Repository targetRepo =
                 new Repository(2048, "TargetRepo", 100, 100, 50, latMap);
 
-        RepositoryData repoData = new RepositoryData("WatchRepo", 2048, 100, 100, 100, latMap);
-
 
         /*Power powerDefault = new Power(LinearConsumptionModel.class.getName(), 400, 600, "Default");
         Power powerOff = new Power(ConstantConsumptionModel.class.getName(), 20, 20, "Off");
@@ -106,8 +104,8 @@ public class Scenario extends Timed {
             e.printStackTrace();
         }
 
-        //subscribe(simData.getFrequency());
-        //simulateUntil(simData.getStopTime());
+        subscribe(simData.getFrequency());
+        simulateUntil(simData.getStopTime());
     }
 
     @Override public void tick(long fires) {
@@ -116,6 +114,9 @@ public class Scenario extends Timed {
             return;
         }
 
-        System.out.println("SimTick:" + fires);
+        //System.out.println("SimTick:" + fires);
+
+        if(!watch.isSubscribed())
+            unsubscribe();
     }
 }

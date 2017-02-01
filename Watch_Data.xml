@@ -14,13 +14,13 @@
             <long>1000</long>
         </void>
         <void property="minDataPerTick">
-            <int>100</int>
+            <int>50</int>
         </void>
         <void property="maxDataPerTick">
             <int>100</int>
         </void>
         <void property="sendDelay">
-            <long>2000</long>
+            <long>1800</long>
         </void>
     </object>
 </java>

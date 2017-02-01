@@ -184,7 +184,7 @@
                 <void property="latencyMap">
                     <object class="java.util.HashMap">
                         <void method="put">
-                            <string>WatchRepo</string>
+                            <string>TargetRepo</string>
                             <int>100</int>
                         </void>
                     </object>
