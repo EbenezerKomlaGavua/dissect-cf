@@ -20,7 +20,7 @@
             <int>100</int>
         </void>
         <void property="sendDelay">
-            <long>1800</long>
+            <long>2000</long>
         </void>
     </object>
 </java>

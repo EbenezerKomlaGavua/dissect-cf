@@ -5,7 +5,7 @@
             <double>4.0</double>
         </void>
         <void property="memory">
-            <long>1024</long>
+            <long>102400</long>
         </void>
         <void property="offDelay">
             <int>4</int>

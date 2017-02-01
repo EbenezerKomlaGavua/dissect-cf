@@ -57,7 +57,7 @@ public class Scenario extends Timed {
         latMap.put("WatchRepo", 100);
 
         Repository targetRepo =
-                new Repository(2048, "TargetRepo", 100, 100, 50, latMap);
+                new Repository(2048000, "TargetRepo", 100, 100, 50, latMap);
 
 
         /*Power powerDefault = new Power(LinearConsumptionModel.class.getName(), 400, 600, "Default");
