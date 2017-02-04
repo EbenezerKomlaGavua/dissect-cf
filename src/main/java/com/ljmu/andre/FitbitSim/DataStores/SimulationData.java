@@ -1,15 +1,21 @@
 package com.ljmu.andre.FitbitSim.DataStores;
 
+import com.google.gson.annotations.SerializedName;
+
 import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessorOrder;
 
 /**
  * Created by Andre on 29/01/2017.
  */
-@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
 public class SimulationData {
+    @SerializedName("Frequency")
     private int frequency;
+
+    @SerializedName("Start Time")
     private long startTime;
+
+    @SerializedName("Stop Time")
     private long stopTime;
 
     public SimulationData() {}

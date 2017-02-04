@@ -1,0 +1,8 @@
+{
+  "Simulation Duration": 100000,
+  "Start Time": 1000,
+  "Frequency": 100,
+  "Min Data/Tick": 50,
+  "Max Data/Tick": 1000,
+  "Send Delay": 1000
+}

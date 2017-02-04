@@ -1,5 +1,7 @@
 package com.ljmu.andre.FitbitSim.DataStores;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.io.Serializable;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -9,18 +11,28 @@ import javax.xml.bind.annotation.XmlAccessorOrder;
 /**
  * Created by Andre on 26/01/2017.
  */
-@XmlAccessorOrder(XmlAccessOrder.ALPHABETICAL)
-public class WatchData implements Serializable {
-    private String id;
-    private long simDuration;
-    private long startTime;
-    private long frequency;
-    private int minDataPerTick;
-    private int maxDataPerTick;
-    private long sendDelay;
 
-    public WatchData() {
-    }
+public class WatchData implements Serializable {
+    @SerializedName("Id")
+    private String id;
+
+    @SerializedName("Simulation Duration")
+    private long simDuration;
+
+    @SerializedName("Start Time")
+    private long startTime;
+
+    @SerializedName("Frequency")
+    private long frequency;
+
+    @SerializedName("Min Data/Tick")
+    private int minDataPerTick;
+
+    @SerializedName("Max Data/Tick")
+    private int maxDataPerTick;
+
+    @SerializedName("Send Delay")
+    private long sendDelay;
 
     public WatchData(
             String id,
