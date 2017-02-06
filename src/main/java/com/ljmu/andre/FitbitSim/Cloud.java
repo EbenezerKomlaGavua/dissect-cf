@@ -32,17 +32,16 @@ public class Cloud {
 
     /**
      *
-     * @param pmName - The name of the machine, will append "_Repo"
-     *               as repositories names are the only available identifiers
+     * @param pmName - The name of the machine - Case Insensitive
      * @return PhysicalMachine if found / Null if not found
      */
     @Nullable public static PhysicalMachine findPM(String pmName) {
         initCheck();
-        String appendedName = pmName + "_Repo";
+        pmName = pmName.toLowerCase();
 
         for(PhysicalMachine physicalMachine : iaaSService.machines) {
             System.out.println("PhysicalMachine: "+ physicalMachine.localDisk.getName());
-            if(physicalMachine.localDisk.getName().equals(appendedName))
+            if(physicalMachine.localDisk.getName().toLowerCase().equals(pmName))
                 return physicalMachine;
         }
 

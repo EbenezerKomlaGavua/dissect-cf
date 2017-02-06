@@ -1,0 +1,9 @@
+{
+  "Id": "Smartphone",
+  "Simulation Duration": -1,
+  "Start Time": 0,
+  "Frequency": 100,
+  "Linked Watch IDs": [
+    "Watch"
+  ]
+}

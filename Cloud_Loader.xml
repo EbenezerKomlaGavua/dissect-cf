@@ -19,7 +19,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="89000" shutdown="29000" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="smartphone_Repo" capacity="5000000000000" inBW="250000"
+        <repository id="Smartphone" capacity="5000000000000" inBW="250000"
                     outBW="250000" diskBW="50000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -43,7 +43,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="watch_Repo" value="5" />
+            <latency towards="Watch" value="5" />
         </repository>
     </machine>
 
@@ -60,7 +60,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="89000" shutdown="29000" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="watch_Repo" capacity="5000000000000" inBW="250000"
+        <repository id="Watch" capacity="5000000000000" inBW="250000"
                     outBW="250000" diskBW="50000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -84,7 +84,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="smartphone_Repo" value="5" />
+            <latency towards="Smartphone" value="5" />
         </repository>
     </machine>
 

@@ -3,6 +3,7 @@ package com.ljmu.andre.FitbitSim;
 import com.ljmu.andre.FitbitSim.DataStores.WatchData;
 import com.ljmu.andre.FitbitSim.Interfaces.ConnectionEvent;
 import com.ljmu.andre.FitbitSim.Packets.BasicPacket;
+import com.ljmu.andre.FitbitSim.Packets.MessagePacket;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
@@ -32,8 +33,28 @@ public class Watch extends Timed implements ConnectionEvent {
         this.watchMachine = watchMachine;
         this.smartphone = smartphone;
         this.watchData = watchData;
+    }
 
-        this.subscribe(watchData.getFrequency());
+    public Watch(
+            PhysicalMachine watchMachine,
+            WatchData watchData) {
+        this(watchMachine, null, watchData);
+    }
+
+    public String getId() {
+        return watchMachine.localDisk.getName();
+    }
+
+    public void startWatch() {
+        subscribe(watchData.getFrequency());
+    }
+
+    public void stopWatch() {
+        unsubscribe();
+    }
+
+    public void bindSmartphone(Smartphone smartphone) {
+        this.smartphone = smartphone;
     }
 
     @Override
@@ -41,6 +62,9 @@ public class Watch extends Timed implements ConnectionEvent {
         if (fires >= watchData.getStopTime()) {
             System.out.println("Unsubscribing");
             unsubscribe();
+
+            MessagePacket unsubPacket = new MessagePacket("Unsubscribe", getId(), "Unsubscribe", false);
+            sendPacket(unsubPacket);
             return;
         }
 
@@ -64,13 +88,9 @@ public class Watch extends Timed implements ConnectionEvent {
                 }
 
                 BasicPacket basicPacket
-                        = new BasicPacket("WatchData" + packetId, dataCollection, false)
-                        .setPacketNum(packetId);
+                        = new BasicPacket("WatchData" + packetId, getId(), dataCollection, false, packetId);
 
-                watchMachine.localDisk.registerObject(basicPacket);
-                System.out.println("Registered Object: " + basicPacket.toString());
-
-                sendStorageObject(basicPacket);
+                sendPacket(basicPacket);
 
                 dataCollection = 0;
                 lastSentTime = fires;
@@ -78,27 +98,30 @@ public class Watch extends Timed implements ConnectionEvent {
         }
     }
 
-    public void sendStorageObject(final BasicPacket basicPacket) {
+    public void sendPacket(final BasicPacket packet) {
+        watchMachine.localDisk.registerObject(packet);
+        System.out.println("Registered Object: " + packet.toString());
+
         smartphone.connectionStarted();
         try {
-            watchMachine.localDisk.requestContentDelivery(basicPacket.getId(), smartphone.getRepository(), new ConsumptionEvent() {
+            watchMachine.localDisk.requestContentDelivery(packet.getId(), smartphone.getRepository(), new ConsumptionEvent() {
                 @Override public void conComplete() {
-                    watchMachine.localDisk.deregisterObject(basicPacket.id);
-                    smartphone.connectionFinished(State.SUCCESS);
+                    watchMachine.localDisk.deregisterObject(packet.getId());
+                    smartphone.connectionFinished(State.SUCCESS, packet);
                     System.out.println("Completed");
                     packetId++;
                 }
 
                 @Override public void conCancelled(ResourceConsumption problematic) {
-                    storeFailedObject(basicPacket);
-                    smartphone.connectionFinished(State.FAILED);
+                    storeFailedObject(packet);
+                    smartphone.connectionFinished(State.FAILED, packet);
                     System.out.println("Cancelled: " + problematic.toString());
                 }
             });
         } catch (NetworkException e) {
             e.printStackTrace();
-            storeFailedObject(basicPacket);
-            smartphone.connectionFinished(State.FAILED);
+            storeFailedObject(packet);
+            smartphone.connectionFinished(State.FAILED, packet);
         }
     }
 
@@ -128,7 +151,7 @@ public class Watch extends Timed implements ConnectionEvent {
 
     }
 
-    @Override public void connectionFinished(State connectionState) {
+    @Override public void connectionFinished(State connectionState, BasicPacket packet) {
 
     }
 }

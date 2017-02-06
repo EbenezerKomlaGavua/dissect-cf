@@ -8,28 +8,22 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
  * Created by Andre on 02/02/2017.
  */
 public class BasicPacket extends StorageObject {
-    private String name;
+    private String senderId;
     private int packetNumber;
 
     public BasicPacket(String myid) {
         super(myid);
     }
 
-    public BasicPacket(String myid, long mysize, boolean vary, @Nullable String name, int packetNumber) {
-        super(myid, mysize, vary);
-        this.name = name;
+    public BasicPacket(String myid, String senderId, long mysize, boolean vary, int packetNumber) {
+        super(myid + packetNumber, mysize, vary);
+        this.senderId = senderId;
         this.packetNumber = packetNumber;
     }
-    public BasicPacket(String myid, long mysize, boolean vary, @Nullable String name) {
-        this(myid, mysize, vary, name, 0);
-    }
 
-    public BasicPacket(String myid, long mysize, boolean vary, int packetNumber) {
-        this(myid, mysize, vary, null, packetNumber);
-    }
-
-    public BasicPacket(String myid, long mysize, boolean vary) {
+    public BasicPacket(String myid, String senderId, long mysize, boolean vary) {
         super(myid, mysize, vary);
+        this.senderId = senderId;
     }
 
     public BasicPacket setPacketNum(int packetNum) {
@@ -46,10 +40,14 @@ public class BasicPacket extends StorageObject {
     }
 
     public BasicPacket buildFailedCopy() {
-        return new BasicPacket(buildFailedName(), this.size, false, name, packetNumber);
+        return new BasicPacket(buildFailedName(), senderId, size, false, packetNumber);
     }
 
     public String getId() {
         return this.id;
+    }
+
+    public String getSenderId() {
+        return this.senderId;
     }
 }
