@@ -1,53 +1,45 @@
 package com.ljmu.andre.FitbitSim.Packets;
 
-import com.sun.istack.internal.Nullable;
-
 import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
 
 /**
  * Created by Andre on 02/02/2017.
  */
 public class BasicPacket extends StorageObject {
+    private static long totalPackets = 0;
     private String senderId;
-    private int packetNumber;
+    private long currPacketNum = totalPackets;
+    private boolean shouldDeregister = false;
 
     public BasicPacket(String myid) {
-        super(myid);
+        super(myid + totalPackets);
+        totalPackets++;
     }
 
-    public BasicPacket(String myid, String senderId, long mysize, boolean vary, int packetNumber) {
-        super(myid + packetNumber, mysize, vary);
-        this.senderId = senderId;
-        this.packetNumber = packetNumber;
+    public BasicPacket(String myid, long mysize, boolean vary) {
+        super(myid + totalPackets, mysize, vary);
+        totalPackets++;
     }
 
-    public BasicPacket(String myid, String senderId, long mysize, boolean vary) {
-        super(myid, mysize, vary);
-        this.senderId = senderId;
+    public boolean getShouldDeregister() {
+        return shouldDeregister;
     }
 
-    public BasicPacket setPacketNum(int packetNum) {
-        this.packetNumber = packetNum;
+    public BasicPacket setShouldDeregister(boolean shouldDeregister) {
+        this.shouldDeregister = shouldDeregister;
         return this;
     }
 
-    public int getPacketNum() {
-        return packetNumber;
-    }
-
-    public String buildFailedName() {
-        return getId() + "-FAIL";
-    }
-
-    public BasicPacket buildFailedCopy() {
-        return new BasicPacket(buildFailedName(), senderId, size, false, packetNumber);
-    }
-
-    public String getId() {
-        return this.id;
+    public long getCurrPacketNum() {
+        return currPacketNum;
     }
 
     public String getSenderId() {
         return this.senderId;
+    }
+
+    public BasicPacket setSenderId(String senderid) {
+        this.senderId = senderid;
+        return this;
     }
 }

@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.ljmu.andre.FitbitSim.DataStores.SimulationData;
 import com.ljmu.andre.FitbitSim.DataStores.SmartphoneData;
 import com.ljmu.andre.FitbitSim.DataStores.WatchData;
-import com.sun.istack.internal.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,16 +20,6 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
  */
 public class LoaderUtils {
     private static Gson gson;
-
-    private static Gson getGson() {
-        if (gson == null) {
-            gson = new GsonBuilder()
-                    .setPrettyPrinting()
-                    .create();
-        }
-
-        return gson;
-    }
 
     public static SimulationData getSimDataFromJson(String jsonPath) throws FileNotFoundException {
         File simJsonFile = new File(jsonPath);
@@ -51,7 +40,17 @@ public class LoaderUtils {
         }
     }
 
-    public static List<Watch> getWatchListFromJson(String jsonPath, @Nullable Smartphone bindableSmartphone) throws FileNotFoundException {
+    private static Gson getGson() {
+        if (gson == null) {
+            gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .create();
+        }
+
+        return gson;
+    }
+
+    public static List<Watch> getWatchListFromJson(String jsonPath) throws FileNotFoundException {
         File watchJsonFile = new File(jsonPath);
 
         if (!watchJsonFile.exists())
@@ -79,12 +78,8 @@ public class LoaderUtils {
                 continue;
             }
 
+            Cloud.deregisterHost(watchMachine);
             Watch watch = new Watch(watchMachine, watchData);
-
-            if (bindableSmartphone != null) {
-                bindableSmartphone.addWatch(watch);
-                watch.bindSmartphone(bindableSmartphone);
-            }
 
             watchList.add(watch);
         }
@@ -111,6 +106,7 @@ public class LoaderUtils {
         if (phoneMachine == null)
             throw new NullPointerException("SmartphoneMachine not assigned to data: " + smartphoneData.getId());
 
+        Cloud.deregisterHost(phoneMachine);
         return new Smartphone(phoneMachine, smartphoneData);
     }
 }

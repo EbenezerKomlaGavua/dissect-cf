@@ -6,10 +6,11 @@ import com.ljmu.andre.FitbitSim.Packets.BasicPacket;
  * Created by Andre on 02/02/2017.
  */
 public interface ConnectionEvent {
-    public void connectionStarted();
-    public void connectionFinished(State connectionState, BasicPacket packet);
+    void connectionStarted();
 
-    public enum State {
+    void connectionFinished(State connectionState, BasicPacket packet);
+
+    enum State {
         SUCCESS, FAILED, IN_PROGRESS
     }
 }

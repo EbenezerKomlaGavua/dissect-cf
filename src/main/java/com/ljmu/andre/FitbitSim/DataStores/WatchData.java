@@ -5,9 +5,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
-import javax.xml.bind.annotation.XmlAccessorOrder;
-
 /**
  * Created by Andre on 26/01/2017.
  */
@@ -34,6 +31,9 @@ public class WatchData implements Serializable {
     @SerializedName("Send Delay")
     private long sendDelay;
 
+    @SerializedName("Max Connection Attempts")
+    private int connectionCap;
+
     public WatchData(
             String id,
             long simDuration,
@@ -41,7 +41,8 @@ public class WatchData implements Serializable {
             long frequency,
             int minDataPerTick,
             int maxDataPerTick,
-            long sendDelay) {
+            long sendDelay,
+            int connectionCap) {
         this.id = id;
         this.simDuration = simDuration;
         this.startTime = startTime;
@@ -49,6 +50,7 @@ public class WatchData implements Serializable {
         this.minDataPerTick = minDataPerTick;
         this.maxDataPerTick = maxDataPerTick;
         this.sendDelay = sendDelay;
+        this.connectionCap = connectionCap;
     }
 
     public String getId() {
@@ -59,6 +61,14 @@ public class WatchData implements Serializable {
         this.id = id;
     }
 
+    public long getStopTime() {
+        return getStartTime() + getSimDuration();
+    }
+
+    public long getStartTime() {
+        return startTime;
+    }
+
     public long getSimDuration() {
         return simDuration;
     }
@@ -67,16 +77,8 @@ public class WatchData implements Serializable {
         this.simDuration = simDuration;
     }
 
-    public long getStartTime() {
-        return startTime;
-    }
-
     public void setStartTime(long startTime) {
         this.startTime = startTime;
-    }
-
-    public long getStopTime() {
-        return getStartTime() + getSimDuration();
     }
 
     public void setStopTime(long stopTime) {
@@ -107,9 +109,9 @@ public class WatchData implements Serializable {
     }
 
     public int getRandomDataPerTick() {
-        if(minDataPerTick == maxDataPerTick)
+        if (minDataPerTick == maxDataPerTick)
             return minDataPerTick;
-        else if(minDataPerTick == -1 || maxDataPerTick == -1)
+        else if (minDataPerTick == -1 || maxDataPerTick == -1)
             return Math.max(minDataPerTick, maxDataPerTick);
 
         return ThreadLocalRandom.current().nextInt(minDataPerTick, maxDataPerTick);
@@ -123,6 +125,14 @@ public class WatchData implements Serializable {
         this.sendDelay = sendDelay;
     }
 
+    public int getConnectionCap() {
+        return connectionCap;
+    }
+
+    public void setConnectionCap(int connectionCap) {
+        this.connectionCap = connectionCap;
+    }
+
     @Override public String toString() {
         return "WatchData{" +
                 "id='" + id + '\'' +
@@ -132,6 +142,7 @@ public class WatchData implements Serializable {
                 ", minDataPerTick=" + minDataPerTick +
                 ", maxDataPerTick=" + maxDataPerTick +
                 ", sendDelay=" + sendDelay +
+                ", connectionCap=" + connectionCap +
                 '}';
     }
 }

@@ -21,7 +21,8 @@ public class SmartphoneData {
     @SerializedName("Linked Watch IDs")
     private String[] watchIds;
 
-    public SmartphoneData() {}
+    public SmartphoneData() {
+    }
 
     public String getId() {
         return id;

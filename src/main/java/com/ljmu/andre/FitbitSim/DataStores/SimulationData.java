@@ -2,9 +2,6 @@ package com.ljmu.andre.FitbitSim.DataStores;
 
 import com.google.gson.annotations.SerializedName;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
-import javax.xml.bind.annotation.XmlAccessorOrder;
-
 /**
  * Created by Andre on 29/01/2017.
  */
@@ -18,7 +15,8 @@ public class SimulationData {
     @SerializedName("Stop Time")
     private long stopTime;
 
-    public SimulationData() {}
+    public SimulationData() {
+    }
 
     public SimulationData(int frequency, long startTime, long stopTime) {
         this.frequency = frequency;
