@@ -31,13 +31,8 @@ public class Scenario extends Timed {
         smartphone = LoaderUtils.getPhoneFromJson(SMARTPHONE_JSON_PATH);
         watchList = LoaderUtils.getWatchListFromJson(WATCH_JSON_PATH);
         Cloud.clearNonCloudMachines(buildNonCloudMachineList());
-
-        VirtualMachine vm = Cloud.getVM();
-
-        if (vm == null)
-            throw new NullPointerException("Null VM");
-
-        System.out.println("VMState: " + vm.getState());
+        Cloud.initVMs();
+        //VirtualMachine vm = Cloud.getVM();
 
         subscribe(simData.getFrequency());
 
@@ -46,10 +41,10 @@ public class Scenario extends Timed {
             watch.start();
         }
 
-        //if (simData.getStopTime() == -1)
-        //simulateUntilLastEvent();
-        //else
-        //simulateUntil(simData.getStopTime());
+        if (simData.getStopTime() == -1)
+            simulateUntilLastEvent();
+        else
+            simulateUntil(simData.getStopTime());
     }
 
     public ArrayList<PhysicalMachine> buildNonCloudMachineList() {
@@ -82,5 +77,11 @@ public class Scenario extends Timed {
 
         if (!subscribers)
             unsubscribe();
+
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }

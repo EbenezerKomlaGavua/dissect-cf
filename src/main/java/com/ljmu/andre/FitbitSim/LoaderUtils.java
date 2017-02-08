@@ -78,7 +78,6 @@ public class LoaderUtils {
                 continue;
             }
 
-            Cloud.deregisterHost(watchMachine);
             Watch watch = new Watch(watchMachine, watchData);
 
             watchList.add(watch);
@@ -106,7 +105,6 @@ public class LoaderUtils {
         if (phoneMachine == null)
             throw new NullPointerException("SmartphoneMachine not assigned to data: " + smartphoneData.getId());
 
-        Cloud.deregisterHost(phoneMachine);
         return new Smartphone(phoneMachine, smartphoneData);
     }
 }

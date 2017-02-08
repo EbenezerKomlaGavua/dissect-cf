@@ -17,7 +17,7 @@
                 idle="20" max="20" inState="OFF" />
         </powerstates>
         <!-- statedelays are unknown -->
-        <statedelays startup="89000" shutdown="29000" />
+        <statedelays startup="10000" shutdown="10000" />
         <!-- disk capacities, bandwidthes are unknown -->
         <repository id="luna" capacity="500000000" inBW="250000"
                     outBW="250000" diskBW="50000">
@@ -172,7 +172,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Watch" value="5" />
+            <latency towards="Watch2" value="5" />
         </repository>
     </machine>
 
@@ -213,7 +213,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Smartphone" value="5" />
+            <latency towards="Smartphone2" value="5" />
         </repository>
     </machine>
 

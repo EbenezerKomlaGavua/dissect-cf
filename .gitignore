@@ -10,3 +10,6 @@ bin
 .idea/dissect-cf.iml
 .idea/misc.xml
 .idea/workspace.xml
+.idea/workspace.xml
+.idea/dissect-cf.iml
+lib/gson-2\.8\.0\.jar

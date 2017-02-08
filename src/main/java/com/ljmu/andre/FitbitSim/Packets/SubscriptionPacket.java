@@ -8,7 +8,7 @@ public class SubscriptionPacket extends BasicPacket {
     private boolean subState;
 
     public SubscriptionPacket(boolean subState) {
-        super("Unsubscribe", 1, false);
+        super(subState ? "Subscribe" : "Unsubscribe", 1, false);
         this.setShouldDeregister(true);
         this.subState = subState;
     }

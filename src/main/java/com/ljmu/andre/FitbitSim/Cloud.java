@@ -13,6 +13,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.IaaSService;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.IaaSService.IaaSHandlingException;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.State;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.StateChangeListener;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.VMManager.VMManagementException;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.VirtualMachine;
 import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode.NetworkException;
@@ -68,12 +70,25 @@ class Cloud {
     }
 
     static void initVMs() {
+        PhysicalMachine pm = iaaSService.machines.get(0);
+        System.out.println("PM: " + pm.localDisk.getName() + " State: " + pm.getState());
+
+        pm.subscribeStateChangeEvents(new StateChangeListener() {
+            @Override public void stateChanged(PhysicalMachine pm, State oldState, State newState) {
+                System.out.println("State Change: " + oldState + " to " + newState);
+            }
+        });
     }
 
-    @Nullable public static VirtualMachine getVM() {
-        PhysicalMachine pm = iaaSService.machines.get(0);
+    /*@Nullable public static VirtualMachine getVM() {
+        VirtualAppliance virtualAppliance = new VirtualAppliance("VA", 1000, 0, false, pm.localDisk.getFreeStorageCapacity() / 2);
+        pm.localDisk.registerObject(virtualAppliance);
         try {
-            return iaaSService.requestVM(virtualAppliance, pm.getCapacities(), pm.localDisk, 1, null)[0];
+            VirtualMachine vm = iaaSService.requestVM(virtualAppliance, pm.getCapacities(), pm.localDisk, 1, null)[0];
+            System.out.println("VM: " + vm.toString());
+            System.out.println("RA: " + vm.getResourceAllocation());
+            vm.switchOn(null, pm.localDisk);
+            return vm;
         } catch (VMManagementException e) {
             e.printStackTrace();
         } catch (NetworkException e) {
@@ -81,7 +96,7 @@ class Cloud {
         }
 
         return null;
-    }
+    }*/
 
     /**
      * @param pmName - The name of the machine - Case Insensitive

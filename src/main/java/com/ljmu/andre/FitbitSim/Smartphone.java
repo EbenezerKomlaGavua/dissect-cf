@@ -37,11 +37,11 @@ public class Smartphone extends Timed implements ConnectionEvent {
         System.out.println("PhoneTick: " + fires);
     }
 
-    @Override public void connectionStarted() {
-        System.out.println("Smartphone received connection init");
+    @Override public void connectionStarted(ConnectionEvent source) {
+        System.out.println("Smartphone received connection init: " + source.getRepository().getName());
     }
 
-    @Override public void connectionFinished(State connectionState, BasicPacket packet) {
+    @Override public void connectionFinished(ConnectionEvent source, State connectionState, BasicPacket packet) {
         if (connectionState == State.FAILED)
             getRepository().deregisterObject(packet.id);
 
