@@ -3,10 +3,12 @@ package com.ljmu.andre.FitbitSim;
 
 import com.ljmu.andre.FitbitSim.DataStores.SimulationData;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.VirtualMachine;
 
 /**
  * Created by Andre on 25/01/2017.
@@ -23,16 +25,19 @@ public class Scenario extends Timed {
     private List<Watch> watchList;
     private Smartphone smartphone;
 
-    public Scenario() throws IOException {
-        try {
-            Cloud.init(CLOUD_LOADER_XML);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+    Scenario() throws Exception {
+        Cloud.init(CLOUD_LOADER_XML);
         simData = LoaderUtils.getSimDataFromJson(SIMULATION_JSON_PATH);
         smartphone = LoaderUtils.getPhoneFromJson(SMARTPHONE_JSON_PATH);
         watchList = LoaderUtils.getWatchListFromJson(WATCH_JSON_PATH);
+        Cloud.clearNonCloudMachines(buildNonCloudMachineList());
+
+        VirtualMachine vm = Cloud.getVM();
+
+        if (vm == null)
+            throw new NullPointerException("Null VM");
+
+        System.out.println("VMState: " + vm.getState());
 
         subscribe(simData.getFrequency());
 
@@ -41,10 +46,19 @@ public class Scenario extends Timed {
             watch.start();
         }
 
-        if (simData.getStopTime() == -1)
-            simulateUntilLastEvent();
-        else
-            simulateUntil(simData.getStopTime());
+        //if (simData.getStopTime() == -1)
+        //simulateUntilLastEvent();
+        //else
+        //simulateUntil(simData.getStopTime());
+    }
+
+    public ArrayList<PhysicalMachine> buildNonCloudMachineList() {
+        ArrayList<PhysicalMachine> nonCloudMachines = new ArrayList<PhysicalMachine>();
+        nonCloudMachines.add(smartphone.getPhysicalMachine());
+        for (Watch watch : watchList)
+            nonCloudMachines.add(watch.getPhysicalMachine());
+
+        return nonCloudMachines;
     }
 
     @Override public void tick(long fires) {

@@ -170,4 +170,8 @@ public class Watch extends Timed implements ConnectionEvent {
     @Override public void connectionFinished(State connectionState, BasicPacket packet) {
 
     }
+
+    public PhysicalMachine getPhysicalMachine() {
+        return watchMachine;
+    }
 }
