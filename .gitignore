@@ -13,3 +13,5 @@ bin
 .idea/workspace.xml
 .idea/dissect-cf.iml
 lib/gson-2\.8\.0\.jar
+
+lib/gson-2\.8\.0-sources\.jar

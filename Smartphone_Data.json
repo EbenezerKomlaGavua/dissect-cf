@@ -2,7 +2,7 @@
   "Id": "Smartphone",
   "Simulation Duration": -1,
   "Start Time": 0,
-  "Frequency": 100,
+  "Frequency": 1000,
   "Linked Watch IDs": [
     "Watch"
   ]

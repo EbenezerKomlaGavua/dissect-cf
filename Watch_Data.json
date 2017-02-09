@@ -2,10 +2,10 @@
   {
     "Id": "Watch",
     "Simulation Duration": 200000.0,
-    "Start Time": 1000.0,
-    "Frequency": 1000.0,
-    "Min Data/Tick": 256.0,
-    "Max Data/Tick": 1024.0,
+    "Start Time": 0.0,
+    "Frequency": 100.0,
+    "Min Data/Sec": 5,
+    "Max Data/Sec": 5,
     "Send Delay": 10000.0,
     "Max Connection Attempts": 10
   }

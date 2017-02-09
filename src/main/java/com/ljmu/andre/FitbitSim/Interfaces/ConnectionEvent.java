@@ -1,6 +1,6 @@
 package com.ljmu.andre.FitbitSim.Interfaces;
 
-import com.ljmu.andre.FitbitSim.Packets.BasicPacket;
+import com.ljmu.andre.FitbitSim.Packets.BasePacket;
 
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
@@ -10,7 +10,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public interface ConnectionEvent {
     void connectionStarted(ConnectionEvent source);
 
-    void connectionFinished(ConnectionEvent source, State connectionState, BasicPacket packet);
+    void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet);
 
     Repository getRepository();
 

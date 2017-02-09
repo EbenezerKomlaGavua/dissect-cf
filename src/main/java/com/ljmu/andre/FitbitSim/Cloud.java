@@ -1,5 +1,6 @@
 package com.ljmu.andre.FitbitSim;
 
+import com.ljmu.andre.FitbitSim.Utils.Logger;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 
@@ -15,9 +16,6 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.IaaSService.IaaSHandlingException
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.State;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine.StateChangeListener;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.VMManager.VMManagementException;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.VirtualMachine;
-import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode.NetworkException;
 import hu.mta.sztaki.lpds.cloud.simulator.io.VirtualAppliance;
 import hu.mta.sztaki.lpds.cloud.simulator.util.CloudLoader;
 
@@ -25,6 +23,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.util.CloudLoader;
  * Created by Andre on 02/02/2017.
  */
 class Cloud {
+    private static final Logger logger = new Logger(Cloud.class);
     private static IaaSService iaaSService;
     private static boolean isInitialized = false;
     private static boolean hasClearedNonCloudPMs = false;
@@ -48,14 +47,14 @@ class Cloud {
             deregisterHost(machine);
     }
 
-    static boolean deregisterHost(PhysicalMachine pMachine) {
+    private static boolean deregisterHost(PhysicalMachine pMachine) {
         initCheck();
 
         try {
             iaaSService.deregisterHost(pMachine);
             iaaSService.deregisterRepository(pMachine.localDisk);
 
-            System.out.println("Cloud Machines: " + iaaSService.machines.size());
+            logger.log("Cloud Machines: " + iaaSService.machines.size());
             return true;
         } catch (IaaSHandlingException e) {
             e.printStackTrace();
@@ -71,11 +70,11 @@ class Cloud {
 
     static void initVMs() {
         PhysicalMachine pm = iaaSService.machines.get(0);
-        System.out.println("PM: " + pm.localDisk.getName() + " State: " + pm.getState());
+        logger.log("PM: " + pm.localDisk.getName() + " State: " + pm.getState());
 
         pm.subscribeStateChangeEvents(new StateChangeListener() {
             @Override public void stateChanged(PhysicalMachine pm, State oldState, State newState) {
-                System.out.println("State Change: " + oldState + " to " + newState);
+                logger.log("State Change: " + oldState + " to " + newState);
             }
         });
     }
@@ -107,7 +106,7 @@ class Cloud {
         pmName = pmName.toLowerCase();
 
         for (PhysicalMachine physicalMachine : iaaSService.machines) {
-            System.out.println("Checking PM: " + physicalMachine.localDisk.getName());
+            logger.log("Checking PM: " + physicalMachine.localDisk.getName());
             if (physicalMachine.localDisk.getName().toLowerCase().equals(pmName))
                 return physicalMachine;
         }

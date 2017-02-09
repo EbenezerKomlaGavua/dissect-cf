@@ -3,9 +3,10 @@ package com.ljmu.andre.FitbitSim;
 import com.ljmu.andre.FitbitSim.DataStores.WatchData;
 import com.ljmu.andre.FitbitSim.Interfaces.ConnectionEvent;
 import com.ljmu.andre.FitbitSim.Packets.ActivityPacket;
-import com.ljmu.andre.FitbitSim.Packets.BasicPacket;
+import com.ljmu.andre.FitbitSim.Packets.BasePacket;
 import com.ljmu.andre.FitbitSim.Packets.PacketHandler;
 import com.ljmu.andre.FitbitSim.Packets.SubscriptionPacket;
+import com.ljmu.andre.FitbitSim.Utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,9 +19,9 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
  * Created by Andre on 26/01/2017.
  */
 public class Watch extends Timed implements ConnectionEvent {
+    private static final Logger logger = new Logger(Watch.class);
+
     private final int connectionCap;
-    private int connectionAttempts = 0;
-    private boolean isOnCooldown = false;
 
     private Smartphone smartphone;
     private PhysicalMachine watchMachine;
@@ -28,7 +29,7 @@ public class Watch extends Timed implements ConnectionEvent {
     private WatchData watchData;
     private List<String> failedPacketIds = new ArrayList<String>();
 
-    private int dataCollection = 0;
+    private double dataCollection = 0;
     private long lastSentTime = 0;
 
     public Watch(
@@ -51,13 +52,9 @@ public class Watch extends Timed implements ConnectionEvent {
         subscribe(watchData.getFrequency());
     }
 
-    public void bindSmartphone(Smartphone smartphone) {
+    void bindSmartphone(Smartphone smartphone) {
         this.smartphone = smartphone;
-        BasicPacket subPacket = new SubscriptionPacket(true)
-                .setSubscriber(this)
-                .setSenderId(this.getId());
-
-        PacketHandler.sendPacket(this, smartphone, subPacket);
+        PacketHandler.sendPacket(this, smartphone, new SubscriptionPacket(true));
     }
 
     public String getId() {
@@ -66,53 +63,45 @@ public class Watch extends Timed implements ConnectionEvent {
 
     @Override
     public void tick(long fires) {
-        if(failedPacketIds.size() >= connectionCap)
+        if (failedPacketIds.size() >= connectionCap)
             stop();
 
         if (fires >= watchData.getStopTime()) {
-            System.out.println("Unsubscribing");
+            logger.log("Unsubscribing");
+            PacketHandler.sendPacket(this, smartphone, new SubscriptionPacket(false));
             stop();
-
-            BasicPacket unsubPacket = new SubscriptionPacket(false)
-                    .setSenderId(this.getId());
-
-            if (unsubPacket instanceof SubscriptionPacket)
-                System.out.println("isUnsub");
-
-            PacketHandler.sendPacket(this, smartphone, unsubPacket);
-
             return;
         }
 
         if (fires >= watchData.getStartTime()) {
-            System.out.println("Fires: " + fires);
-            long dataSize = watchData.getRandomDataPerTick();
+            logger.log("Tick: " + fires);
+            double dataSize = watchData.getRandomDataPerTick();
             dataCollection += dataSize;
             //System.out.println("Value: " + (fires - lastSentTime));
 
             if (fires - lastSentTime >= watchData.getSendDelay()) {
 
-                System.out.println("SEND DATA");
+                logger.log("SEND DATA");
 
                 // If there have been previous failed send attempts;
 
-                ArrayList<BasicPacket> sendList = new ArrayList<BasicPacket>();
+                ArrayList<BasePacket> sendList = new ArrayList<BasePacket>();
 
                 for (String failedPacketId : failedPacketIds) {
-                    System.out.println("FailedPacketId: " + failedPacketId);
-                    BasicPacket failedObject = (BasicPacket) getRepository().lookup(failedPacketId);
-                    System.out.println("FailedObject: " + failedObject);
+                    logger.log("FailedPacketId: " + failedPacketId);
+                    BasePacket failedObject = (BasePacket) getRepository().lookup(failedPacketId);
+                    logger.log("FailedObject: " + failedObject);
                     sendList.add(failedObject);
                 }
 
                 failedPacketIds.clear();
 
-                BasicPacket basicPacket
-                        = new ActivityPacket("WatchData", dataCollection)
-                        .setSenderId(this.getId());
-                sendList.add(basicPacket);
+                BasePacket basePacket
+                        = new ActivityPacket("WatchData", (int) dataCollection);
 
-                ArrayList<BasicPacket> failedPackets = PacketHandler.sendPackets(this, smartphone, sendList);
+                sendList.add(basePacket);
+
+                PacketHandler.sendPackets(this, smartphone, sendList);
 
                 dataCollection = 0;
                 lastSentTime = fires;
@@ -120,7 +109,7 @@ public class Watch extends Timed implements ConnectionEvent {
         }
     }
 
-    public void stop() {
+    private void stop() {
         unsubscribe();
     }
 
@@ -128,10 +117,10 @@ public class Watch extends Timed implements ConnectionEvent {
 
     }
 
-    @Override public void connectionFinished(ConnectionEvent source, State connectionState, BasicPacket packet) {
+    @Override public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
         if (connectionState == State.FAILED && source == this) {
             failedPacketIds.add(packet.id);
-            System.out.println("Added failed packet");
+            logger.log("Added failed packet");
         }
     }
 
@@ -139,7 +128,7 @@ public class Watch extends Timed implements ConnectionEvent {
         return watchMachine.localDisk;
     }
 
-    public PhysicalMachine getPhysicalMachine() {
+    PhysicalMachine getPhysicalMachine() {
         return watchMachine;
     }
 }

@@ -172,7 +172,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Watch2" value="5" />
+            <latency towards="Watch" value="5" />
         </repository>
     </machine>
 
@@ -213,7 +213,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Smartphone2" value="5" />
+            <latency towards="Smartphone" value="5" />
         </repository>
     </machine>
 

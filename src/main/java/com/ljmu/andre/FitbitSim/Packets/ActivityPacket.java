@@ -3,7 +3,7 @@ package com.ljmu.andre.FitbitSim.Packets;
 /**
  * Created by Andre on 07/02/2017.
  */
-public class ActivityPacket extends BasicPacket {
+public class ActivityPacket extends BasePacket {
     private int stepCount;
     private int caloriesBurnt;
     private int distanceWalked;

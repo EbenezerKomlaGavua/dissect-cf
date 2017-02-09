@@ -22,11 +22,11 @@ public class WatchData implements Serializable {
     @SerializedName("Frequency")
     private long frequency;
 
-    @SerializedName("Min Data/Tick")
-    private int minDataPerTick;
+    @SerializedName("Min Data/Sec")
+    private double minDataPerSec;
 
-    @SerializedName("Max Data/Tick")
-    private int maxDataPerTick;
+    @SerializedName("Max Data/Sec")
+    private double maxDataPerSec;
 
     @SerializedName("Send Delay")
     private long sendDelay;
@@ -39,16 +39,16 @@ public class WatchData implements Serializable {
             long simDuration,
             long startTime,
             long frequency,
-            int minDataPerTick,
-            int maxDataPerTick,
+            double minDataPerSec,
+            double maxDataPerSec,
             long sendDelay,
             int connectionCap) {
         this.id = id;
         this.simDuration = simDuration;
         this.startTime = startTime;
         this.frequency = frequency;
-        this.minDataPerTick = minDataPerTick;
-        this.maxDataPerTick = maxDataPerTick;
+        this.minDataPerSec = minDataPerSec;
+        this.maxDataPerSec = maxDataPerSec;
         this.sendDelay = sendDelay;
         this.connectionCap = connectionCap;
     }
@@ -92,29 +92,33 @@ public class WatchData implements Serializable {
         this.frequency = frequency;
     }
 
-    public int getMinDataPerTick() {
-        return minDataPerTick;
+    public double getMinDataPerSec() {
+        return minDataPerSec;
     }
 
-    public void setMinDataPerTick(int minDataPerTick) {
-        this.minDataPerTick = minDataPerTick;
+    public void setMinDataPerSec(int minDataPerSec) {
+        this.minDataPerSec = minDataPerSec;
     }
 
-    public int getMaxDataPerTick() {
-        return maxDataPerTick;
+    public double getMaxDataPerSec() {
+        return maxDataPerSec;
     }
 
-    public void setMaxDataPerTick(int maxDataPerTick) {
-        this.maxDataPerTick = maxDataPerTick;
+    public void setMaxDataPerSec(int maxDataPerSec) {
+        this.maxDataPerSec = maxDataPerSec;
     }
 
-    public int getRandomDataPerTick() {
-        if (minDataPerTick == maxDataPerTick)
-            return minDataPerTick;
-        else if (minDataPerTick == -1 || maxDataPerTick == -1)
-            return Math.max(minDataPerTick, maxDataPerTick);
+    public double getRandomDataPerTick() {
+        return ( generateData() / 1000 ) * getFrequency();
+    }
 
-        return ThreadLocalRandom.current().nextInt(minDataPerTick, maxDataPerTick);
+    private double generateData() {
+        if (minDataPerSec == maxDataPerSec)
+            return minDataPerSec;
+        else if (minDataPerSec == -1 || maxDataPerSec == -1)
+            return Math.max(minDataPerSec, maxDataPerSec);
+
+        return ThreadLocalRandom.current().nextDouble(minDataPerSec, maxDataPerSec);
     }
 
     public long getSendDelay() {
@@ -139,8 +143,8 @@ public class WatchData implements Serializable {
                 ", simDuration=" + simDuration +
                 ", startTime=" + startTime +
                 ", frequency=" + frequency +
-                ", minDataPerTick=" + minDataPerTick +
-                ", maxDataPerTick=" + maxDataPerTick +
+                ", minDataPerSec=" + minDataPerSec +
+                ", maxDataPerSec=" + maxDataPerSec +
                 ", sendDelay=" + sendDelay +
                 ", connectionCap=" + connectionCap +
                 '}';

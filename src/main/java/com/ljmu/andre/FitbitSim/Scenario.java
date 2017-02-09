@@ -2,18 +2,19 @@ package com.ljmu.andre.FitbitSim;
 
 
 import com.ljmu.andre.FitbitSim.DataStores.SimulationData;
+import com.ljmu.andre.FitbitSim.Utils.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.VirtualMachine;
 
 /**
  * Created by Andre on 25/01/2017.
  */
 public class Scenario extends Timed {
+    private static final Logger logger = new Logger(Scenario.class);
     private static final String USER_DIR = System.getProperty("user.dir");
 
     private static final String CLOUD_LOADER_XML = USER_DIR + "/Cloud_Loader.xml";
@@ -26,6 +27,7 @@ public class Scenario extends Timed {
     private Smartphone smartphone;
 
     Scenario() throws Exception {
+        logger.log("Starting Scenario");
         Cloud.init(CLOUD_LOADER_XML);
         simData = LoaderUtils.getSimDataFromJson(SIMULATION_JSON_PATH);
         smartphone = LoaderUtils.getPhoneFromJson(SMARTPHONE_JSON_PATH);
@@ -47,7 +49,7 @@ public class Scenario extends Timed {
             simulateUntil(simData.getStopTime());
     }
 
-    public ArrayList<PhysicalMachine> buildNonCloudMachineList() {
+    private ArrayList<PhysicalMachine> buildNonCloudMachineList() {
         ArrayList<PhysicalMachine> nonCloudMachines = new ArrayList<PhysicalMachine>();
         nonCloudMachines.add(smartphone.getPhysicalMachine());
         for (Watch watch : watchList)
@@ -75,8 +77,10 @@ public class Scenario extends Timed {
             }
         }
 
-        if (!subscribers)
+        if (!subscribers) {
             unsubscribe();
+            logger.log("No more subscribers... ENDING");
+        }
 
         try {
             Thread.sleep(250);

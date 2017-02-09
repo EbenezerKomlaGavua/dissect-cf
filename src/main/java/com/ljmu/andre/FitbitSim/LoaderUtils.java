@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.ljmu.andre.FitbitSim.DataStores.SimulationData;
 import com.ljmu.andre.FitbitSim.DataStores.SmartphoneData;
 import com.ljmu.andre.FitbitSim.DataStores.WatchData;
+import com.ljmu.andre.FitbitSim.Utils.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,10 +19,11 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 /**
  * Created by Andre on 06/02/2017.
  */
-public class LoaderUtils {
+class LoaderUtils {
+    private static final Logger logger = new Logger(LoaderUtils.class);
     private static Gson gson;
 
-    public static SimulationData getSimDataFromJson(String jsonPath) throws FileNotFoundException {
+    static SimulationData getSimDataFromJson(String jsonPath) throws FileNotFoundException {
         File simJsonFile = new File(jsonPath);
 
         if (!simJsonFile.exists())
@@ -50,7 +52,7 @@ public class LoaderUtils {
         return gson;
     }
 
-    public static List<Watch> getWatchListFromJson(String jsonPath) throws FileNotFoundException {
+    static List<Watch> getWatchListFromJson(String jsonPath) throws FileNotFoundException {
         File watchJsonFile = new File(jsonPath);
 
         if (!watchJsonFile.exists())
@@ -86,9 +88,9 @@ public class LoaderUtils {
         return watchList;
     }
 
-    public static Smartphone getPhoneFromJson(String jsonPath) throws FileNotFoundException {
+    static Smartphone getPhoneFromJson(String jsonPath) throws FileNotFoundException {
         File phoneJsonFile = new File(jsonPath);
-        System.out.println("Smartphone file: " + jsonPath);
+        logger.log("Smartphone file: " + jsonPath);
 
         if (!phoneJsonFile.exists())
             throw new FileNotFoundException("Could not find json file: " + jsonPath);
