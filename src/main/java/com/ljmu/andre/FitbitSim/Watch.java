@@ -1,9 +1,8 @@
 package com.ljmu.andre.FitbitSim;
 
-import com.ljmu.andre.FitbitSim.DataStores.WatchData;
 import com.ljmu.andre.FitbitSim.Interfaces.ConnectionEvent;
-import com.ljmu.andre.FitbitSim.Packets.ActivityPacket;
 import com.ljmu.andre.FitbitSim.Packets.BasePacket;
+import com.ljmu.andre.FitbitSim.Packets.DataPacket;
 import com.ljmu.andre.FitbitSim.Packets.PacketHandler;
 import com.ljmu.andre.FitbitSim.Packets.SubscriptionPacket;
 import com.ljmu.andre.FitbitSim.Utils.Logger;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
+import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
@@ -21,40 +21,31 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public class Watch extends Timed implements ConnectionEvent {
     private static final Logger logger = new Logger(Watch.class);
 
-    private final int connectionCap;
-
     private Smartphone smartphone;
     private PhysicalMachine watchMachine;
 
-    private WatchData watchData;
+    private FitbitTraceFileReader traceFileReader;
+    private List<Job> jobList;
+
     private List<String> failedPacketIds = new ArrayList<String>();
 
-    private double dataCollection = 0;
-    private long lastSentTime = 0;
+    private int jobNumber = 0;
 
     public Watch(
             PhysicalMachine watchMachine,
-            WatchData watchData) {
-        this(watchMachine, null, watchData);
-    }
-
-    public Watch(
-            PhysicalMachine watchMachine,
-            Smartphone smartphone,
-            WatchData watchData) {
+            FitbitTraceFileReader traceFileReader) {
         this.watchMachine = watchMachine;
-        this.smartphone = smartphone;
-        this.watchData = watchData;
-        this.connectionCap = watchData.getConnectionCap();
+        this.traceFileReader = traceFileReader;
+        jobList = traceFileReader.getAllJobs();
     }
 
     public void start() {
-        subscribe(watchData.getFrequency());
+        logger.log("Started [Frequency: %s]", subscribe(0));
     }
 
     void bindSmartphone(Smartphone smartphone) {
         this.smartphone = smartphone;
-        PacketHandler.sendPacket(this, smartphone, new SubscriptionPacket(true));
+        //PacketHandler.sendPacket(this, smartphone, new SubscriptionPacket(true));
     }
 
     public String getId() {
@@ -63,49 +54,18 @@ public class Watch extends Timed implements ConnectionEvent {
 
     @Override
     public void tick(long fires) {
-        if (failedPacketIds.size() >= connectionCap)
-            stop();
+        NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
+        PacketHandler.sendPacket(this, smartphone, new DataPacket("Data", currentJob.getPacketSize(), false));
 
-        if (fires >= watchData.getStopTime()) {
-            logger.log("Unsubscribing");
+        logger.log("Job: " + jobNumber + "/" + jobList.size());
+        if (++jobNumber < jobList.size()) {
+            Job nextJob = jobList.get(jobNumber);
+            long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
+            logger.log("TimeDiff: " + timeDiff);
+            this.updateFrequency(timeDiff);
+        } else {
             PacketHandler.sendPacket(this, smartphone, new SubscriptionPacket(false));
             stop();
-            return;
-        }
-
-        if (fires >= watchData.getStartTime()) {
-            logger.log("Tick: " + fires);
-            double dataSize = watchData.getRandomDataPerTick();
-            dataCollection += dataSize;
-            //System.out.println("Value: " + (fires - lastSentTime));
-
-            if (fires - lastSentTime >= watchData.getSendDelay()) {
-
-                logger.log("SEND DATA");
-
-                // If there have been previous failed send attempts;
-
-                ArrayList<BasePacket> sendList = new ArrayList<BasePacket>();
-
-                for (String failedPacketId : failedPacketIds) {
-                    logger.log("FailedPacketId: " + failedPacketId);
-                    BasePacket failedObject = (BasePacket) getRepository().lookup(failedPacketId);
-                    logger.log("FailedObject: " + failedObject);
-                    sendList.add(failedObject);
-                }
-
-                failedPacketIds.clear();
-
-                BasePacket basePacket
-                        = new ActivityPacket("WatchData", (int) dataCollection);
-
-                sendList.add(basePacket);
-
-                PacketHandler.sendPackets(this, smartphone, sendList);
-
-                dataCollection = 0;
-                lastSentTime = fires;
-            }
         }
     }
 

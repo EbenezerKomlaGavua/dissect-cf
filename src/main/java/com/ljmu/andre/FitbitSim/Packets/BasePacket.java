@@ -16,7 +16,7 @@ public class BasePacket extends StorageObject {
         super(myid + totalPackets++);
     }
 
-    BasePacket(String myid, long mysize, boolean vary) {
+    public BasePacket(String myid, long mysize, boolean vary) {
         super(myid + totalPackets++, mysize, vary);
     }
 

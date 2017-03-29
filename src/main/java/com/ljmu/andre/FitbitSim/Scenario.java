@@ -1,89 +1,54 @@
 package com.ljmu.andre.FitbitSim;
 
 
-import com.ljmu.andre.FitbitSim.DataStores.SimulationData;
 import com.ljmu.andre.FitbitSim.Utils.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
-import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 
 /**
  * Created by Andre on 25/01/2017.
  */
 public class Scenario extends Timed {
     private static final Logger logger = new Logger(Scenario.class);
+
     private static final String USER_DIR = System.getProperty("user.dir");
+    public static final String BLUETOOTH_IN_CSV = USER_DIR + "/bluetooth_in.csv";
+    public static final String NETWORK_OUT_CSV = USER_DIR + "/network_out.csv";
+    public static final String NETWORK_IN_CSV = USER_DIR + "/network_in.csv";
+    private static final String MACHINE_XML_PATH = USER_DIR + "/Machine_Details.xml";
 
-    private static final String CLOUD_LOADER_XML = USER_DIR + "/Cloud_Loader.xml";
-    private static final String SIMULATION_JSON_PATH = USER_DIR + "/Simulation_Data.json";
-    private static final String WATCH_JSON_PATH = USER_DIR + "/Watch_Data.json";
-    private static final String SMARTPHONE_JSON_PATH = USER_DIR + "/Smartphone_Data.json";
-
-    private SimulationData simData;
-    private List<Watch> watchList;
+    private Watch watch;
     private Smartphone smartphone;
+    private Cloud cloud;
 
     Scenario() throws Exception {
         logger.log("Starting Scenario");
-        Cloud.init(CLOUD_LOADER_XML);
-        simData = LoaderUtils.getSimDataFromJson(SIMULATION_JSON_PATH);
-        smartphone = LoaderUtils.getPhoneFromJson(SMARTPHONE_JSON_PATH);
-        watchList = LoaderUtils.getWatchListFromJson(WATCH_JSON_PATH);
-        Cloud.clearNonCloudMachines(buildNonCloudMachineList());
-        Cloud.initVMs();
+        MachineHandler.init(MACHINE_XML_PATH);
+        smartphone = LoaderUtils.getSmartphone();
+        watch = LoaderUtils.getWatch();
+        cloud = LoaderUtils.getCloud();
         //VirtualMachine vm = Cloud.getVM();
 
-        subscribe(simData.getFrequency());
 
-        for (Watch watch : watchList) {
-            watch.bindSmartphone(smartphone);
-            watch.start();
-        }
+        watch.bindSmartphone(smartphone);
+        smartphone.bindWatch(watch);
+        cloud.bindSmartphone(smartphone);
+        watch.start();
+        smartphone.start();
+        cloud.start();
 
-        if (simData.getStopTime() == -1)
-            simulateUntilLastEvent();
-        else
-            simulateUntil(simData.getStopTime());
-    }
-
-    private ArrayList<PhysicalMachine> buildNonCloudMachineList() {
-        ArrayList<PhysicalMachine> nonCloudMachines = new ArrayList<PhysicalMachine>();
-        nonCloudMachines.add(smartphone.getPhysicalMachine());
-        for (Watch watch : watchList)
-            nonCloudMachines.add(watch.getPhysicalMachine());
-
-        return nonCloudMachines;
+        subscribe(1000);
+        simulateUntilLastEvent();
     }
 
     @Override public void tick(long fires) {
-        if (fires < simData.getStartTime()) {
-            jumpTime(simData.getStartTime() - fires);
-            return;
-        }
-
-        boolean subscribers = false;
-
-        if (smartphone.isSubscribed())
-            subscribers = true;
-        else {
-            for (Watch watch : watchList) {
-                if (watch.isSubscribed()) {
-                    subscribers = true;
-                    break;
-                }
-            }
-        }
-
-        if (!subscribers) {
+        if (!smartphone.isSubscribed() && !watch.isSubscribed() && !cloud.isSubscribed()) {
             unsubscribe();
             logger.log("No more subscribers... ENDING");
         }
 
         try {
-            Thread.sleep(250);
+            Thread.sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -1,112 +1,54 @@
 package com.ljmu.andre.FitbitSim;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.ljmu.andre.FitbitSim.DataStores.SimulationData;
-import com.ljmu.andre.FitbitSim.DataStores.SmartphoneData;
-import com.ljmu.andre.FitbitSim.DataStores.WatchData;
 import com.ljmu.andre.FitbitSim.Utils.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
+
+import static com.ljmu.andre.FitbitSim.Scenario.BLUETOOTH_IN_CSV;
+import static com.ljmu.andre.FitbitSim.Scenario.NETWORK_IN_CSV;
+import static com.ljmu.andre.FitbitSim.Scenario.NETWORK_OUT_CSV;
 
 /**
  * Created by Andre on 06/02/2017.
  */
 class LoaderUtils {
     private static final Logger logger = new Logger(LoaderUtils.class);
-    private static Gson gson;
 
-    static SimulationData getSimDataFromJson(String jsonPath) throws FileNotFoundException {
-        File simJsonFile = new File(jsonPath);
+    static Watch getWatch() throws NoSuchMethodException {
+        PhysicalMachine watchMachine = MachineHandler.claimPM("Watch");
 
-        if (!simJsonFile.exists())
-            throw new FileNotFoundException("Could not find json file: " + jsonPath);
+        if (watchMachine == null)
+            throw new NullPointerException("WatchMachine not found");
 
-        FileReader reader = new FileReader(simJsonFile);
+        FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
+                "BluetoothIN",
+                BLUETOOTH_IN_CSV,
+                0, Integer.MAX_VALUE, true,
+                NetworkJob.class);
 
-        try {
-            return getGson().fromJson(reader, SimulationData.class);
-        } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        return new Watch(watchMachine, traceFileReader);
     }
 
-    private static Gson getGson() {
-        if (gson == null) {
-            gson = new GsonBuilder()
-                    .setPrettyPrinting()
-                    .create();
-        }
-
-        return gson;
-    }
-
-    static List<Watch> getWatchListFromJson(String jsonPath) throws FileNotFoundException {
-        File watchJsonFile = new File(jsonPath);
-
-        if (!watchJsonFile.exists())
-            throw new FileNotFoundException("Could not find json file: " + jsonPath);
-
-        FileReader reader = new FileReader(watchJsonFile);
-        WatchData[] watchDataList = getGson().fromJson(reader, WatchData[].class);
-        try {
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        List<Watch> watchList = new ArrayList<Watch>();
-
-        for (WatchData watchData : watchDataList) {
-            if (watchData.getSimDuration() == -1)
-                watchData.setSimDuration(Integer.MAX_VALUE);
-
-            PhysicalMachine watchMachine = Cloud.findPM(watchData.getId());
-
-            if (watchMachine == null) {
-                NullPointerException npe = new NullPointerException("WatchMachine not assigned to data: " + watchData.getId());
-                npe.printStackTrace();
-                continue;
-            }
-
-            Watch watch = new Watch(watchMachine, watchData);
-
-            watchList.add(watch);
-        }
-
-        return watchList;
-    }
-
-    static Smartphone getPhoneFromJson(String jsonPath) throws FileNotFoundException {
-        File phoneJsonFile = new File(jsonPath);
-        logger.log("Smartphone file: " + jsonPath);
-
-        if (!phoneJsonFile.exists())
-            throw new FileNotFoundException("Could not find json file: " + jsonPath);
-
-        FileReader reader = new FileReader(phoneJsonFile);
-        SmartphoneData smartphoneData = getGson().fromJson(reader, SmartphoneData.class);
-        try {
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        PhysicalMachine phoneMachine = Cloud.findPM(smartphoneData.getId());
+    static Smartphone getSmartphone() throws NoSuchMethodException {
+        PhysicalMachine phoneMachine = MachineHandler.claimPM("Smartphone");
         if (phoneMachine == null)
-            throw new NullPointerException("SmartphoneMachine not assigned to data: " + smartphoneData.getId());
+            throw new NullPointerException("SmartphoneMachine not found");
 
-        return new Smartphone(phoneMachine, smartphoneData);
+        FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
+                "NetworkOUT",
+                NETWORK_OUT_CSV,
+                0, Integer.MAX_VALUE, true,
+                NetworkJob.class);
+
+        return new Smartphone(phoneMachine, traceFileReader);
+    }
+
+    static Cloud getCloud() throws NoSuchMethodException {
+        FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
+                "NetworkIN",
+                NETWORK_IN_CSV,
+                0, Integer.MAX_VALUE, true,
+                NetworkJob.class);
+        return new Cloud(MachineHandler.claimPM("Cloud"), traceFileReader);
     }
 }
