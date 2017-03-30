@@ -15,7 +15,7 @@ public class Scenario extends Timed {
     public static final String BLUETOOTH_IN_CSV = USER_DIR + "/bluetooth_in.csv";
     public static final String NETWORK_OUT_CSV = USER_DIR + "/network_out.csv";
     public static final String NETWORK_IN_CSV = USER_DIR + "/network_in.csv";
-    private static final String MACHINE_XML_PATH = USER_DIR + "/Machine_Details.xml";
+    public static final String MACHINE_XML_PATH = USER_DIR + "/Machine_Details.xml";
 
     private Watch watch;
     private Smartphone smartphone;

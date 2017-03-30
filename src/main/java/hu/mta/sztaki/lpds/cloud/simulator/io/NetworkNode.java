@@ -170,6 +170,15 @@ public class NetworkNode {
 	}
 
 	/**
+	 * Adds a latency to a target ID
+	 * @param targetId - The Repository with the defined ID
+	 * @param latency - The latency value
+	 */
+	public void addLatency(String targetId, Integer latency) {
+		latencies.put(targetId, latency);
+	}
+
+	/**
 	 * Determines the total output bandwidth available for the node
 	 * 
 	 * @return the maximum bandwidth with this network node can send data to the

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Simulation>
+    <Devices>
+        <Sensor>
+            <ID>Watch</ID>
+            <MachineID>Watch</MachineID>
+            <SimulationFileName>bluetooth_in.csv</SimulationFileName>
+            <Connection>
+                <TargetMachine>Smartphone</TargetMachine>
+                <Latency>50</Latency>
+            </Connection>
+        </Sensor>
+        <Gateway>
+            <ID>Smartphone</ID>
+            <MachineID>Smartphone</MachineID>
+            <SimulationFileName>network_out.csv</SimulationFileName>
+            <Connection>
+                <TargetMachine>Watch</TargetMachine>
+                <Latency>50</Latency>
+            </Connection>
+            <Connection>
+                <TargetMachine>Cloud</TargetMachine>
+                <Latency>50</Latency>
+            </Connection>
+        </Gateway>
+        <Server>
+            <ID>Cloud</ID>
+            <MachineID>Cloud</MachineID>
+            <SimulationFileName>network_in.csv</SimulationFileName>
+            <Connection>
+                <TargetMachine>Smartphone</TargetMachine>
+                <Latency>50</Latency>
+            </Connection>
+        </Server>
+    </Devices>
+</Simulation>
