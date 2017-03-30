@@ -12,6 +12,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.file.TraceFileReaderFoun
  */
 public class SimulationFileReader extends TraceFileReaderFoundation {
     private static final Logger logger = new Logger(SimulationFileReader.class);
+    private static final boolean bypassBreakdowns = true;
     private String jobName;
     private Job previousJob;
 
@@ -48,6 +49,10 @@ public class SimulationFileReader extends TraceFileReaderFoundation {
     @Override protected Job createJobFromLine(String line) throws IllegalArgumentException, InstantiationException, IllegalAccessException, InvocationTargetException {
         String[] fragments = line.split(",");
         String group = fragments[0];
+
+        if(bypassBreakdowns && group.equalsIgnoreCase("breakdown"))
+            return null;
+        
         String source = fragments[1];
         String target = fragments[2];
         logger.log("Target: " + target);
