@@ -130,7 +130,7 @@
             <latency towards="Smartphone" value="5" />
         </repository>
     </machine>
-    <machine id="Watch" cores="64" processing="0.001" memory="256000000000">
+    <machine id="Watch2" cores="64" processing="0.001" memory="256000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -143,7 +143,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="Watch" capacity="5000000000000" inBW="250000"
+        <repository id="Watch2" capacity="5000000000000" inBW="250000"
                     outBW="250000" diskBW="50000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -170,7 +170,7 @@
             <latency towards="Smartphone" value="5" />
         </repository>
     </machine>
-    <machine id="Watch" cores="64" processing="0.001" memory="256000000000">
+    <machine id="Watch3" cores="64" processing="0.001" memory="256000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -183,7 +183,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="Watch" capacity="5000000000000" inBW="250000"
+        <repository id="Watch3" capacity="5000000000000" inBW="250000"
                     outBW="250000" diskBW="50000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -210,7 +210,7 @@
             <latency towards="Smartphone" value="5" />
         </repository>
     </machine>
-    <machine id="Watch" cores="64" processing="0.001" memory="256000000000">
+    <machine id="Watch4" cores="64" processing="0.001" memory="256000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -223,7 +223,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="Watch" capacity="5000000000000" inBW="250000"
+        <repository id="Watch4" capacity="5000000000000" inBW="250000"
                     outBW="250000" diskBW="50000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->

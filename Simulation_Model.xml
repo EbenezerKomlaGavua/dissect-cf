@@ -6,8 +6,8 @@
             <MachineID>Watch</MachineID>
             <SimulationFileName>bluetooth_in.csv</SimulationFileName>
             <Connection>
-                <TargetMachine>Smartphone</TargetMachine>
-                <Latency>50</Latency>
+                <TargetDevice>Smartphone</TargetDevice>
+                <Latency>5</Latency>
             </Connection>
         </Sensor>
         <Gateway>
@@ -15,12 +15,12 @@
             <MachineID>Smartphone</MachineID>
             <SimulationFileName>network_out.csv</SimulationFileName>
             <Connection>
-                <TargetMachine>Watch</TargetMachine>
-                <Latency>50</Latency>
+                <TargetDevice>Watch</TargetDevice>
+                <Latency>5</Latency>
             </Connection>
             <Connection>
-                <TargetMachine>Cloud</TargetMachine>
-                <Latency>50</Latency>
+                <TargetDevice>Cloud</TargetDevice>
+                <Latency>5</Latency>
             </Connection>
         </Gateway>
         <Server>
@@ -28,8 +28,8 @@
             <MachineID>Cloud</MachineID>
             <SimulationFileName>network_in.csv</SimulationFileName>
             <Connection>
-                <TargetMachine>Smartphone</TargetMachine>
-                <Latency>50</Latency>
+                <TargetDevice>Smartphone</TargetDevice>
+                <Latency>5</Latency>
             </Connection>
         </Server>
     </Devices>

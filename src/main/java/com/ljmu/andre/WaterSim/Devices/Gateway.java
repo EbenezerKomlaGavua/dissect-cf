@@ -7,7 +7,6 @@ import com.ljmu.andre.WaterSim.Packets.BasePacket;
 import com.ljmu.andre.WaterSim.Packets.DataPacket;
 import com.ljmu.andre.WaterSim.SimulationFileReader;
 import com.ljmu.andre.WaterSim.Utils.Logger;
-import com.sun.istack.internal.Nullable;
 
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 
@@ -17,7 +16,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 public class Gateway extends Device {
     private static final Logger logger = new Logger(Gateway.class);
 
-    public Gateway(String id, String machineID, @Nullable SimulationFileReader simulationFileReader) {
+    public Gateway(String id, String machineID, SimulationFileReader simulationFileReader) {
         super(id, machineID, simulationFileReader);
     }
 
@@ -26,17 +25,23 @@ public class Gateway extends Device {
     }
 
     @Override public void tick(long fires) {
-        if (networkJobs == null) {
+        // If there are no jobs for this device, stop further execution
+        if (networkJobs == null || networkJobs.isEmpty()) {
             stop();
             return;
         }
 
+        // Get the Job that should be processed \\
         NetworkJob currentJob = (NetworkJob) networkJobs.get(currentJobNum);
+
+        // Send the Job to the intended Target \\
         sendPacket(currentJob.getTarget(), new DataPacket("GatewayData", currentJob.getPacketSize(), false));
 
         logger.log("Job: " + currentJobNum + "/" + networkJobs.size());
 
+        // Increment the Current Job Number and check if there are more jobs to be processed \\
         if (++currentJobNum < networkJobs.size()) {
+            // Get the next job, calculate the time difference, and update the frequency to wait until it's ready \\
             Job nextJob = networkJobs.get(currentJobNum);
             long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
             logger.log("TimeDiff: " + timeDiff);
@@ -51,6 +56,10 @@ public class Gateway extends Device {
 
     @Override void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
         logger.log("Received Packet [From: %s][State: %s]", source.getId(), connectionState);
+
+        if(connectionState == State.FAILED)
+            System.err.println("Failed Packet [ID: " + source.getId() + "]");
+
         Application.totalPackets++;
     }
 }

@@ -46,6 +46,10 @@ public class MachineHandler {
         return pm;
     }
 
+    /**
+     * Check if the MachineHandler has been initialised
+     * otherwise throws an exception
+     */
     private static void initCheck() {
         if (!isInitialized)
             throw new IllegalStateException("Cloud is not initialized!");

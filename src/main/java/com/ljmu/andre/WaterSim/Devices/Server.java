@@ -25,17 +25,23 @@ public class Server extends Device {
     }
 
     @Override public void tick(long fires) {
-        if (networkJobs == null) {
+        // If there are no jobs for this device, stop further execution
+        if (networkJobs == null || networkJobs.isEmpty()) {
             stop();
             return;
         }
 
+        // Get the Job that should be processed \\
         NetworkJob currentJob = (NetworkJob) networkJobs.get(currentJobNum);
+
+        // Send the Job to the intended Target \\
         sendPacket(currentJob.getTarget(), new DataPacket("ServerData", currentJob.getPacketSize(), false));
 
         logger.log("Job: " + currentJobNum + "/" + networkJobs.size());
 
+        // Increment the Current Job Number and check if there are more jobs to be processed \\
         if (++currentJobNum < networkJobs.size()) {
+            // Get the next job, calculate the time difference, and update the frequency to wait until it's ready \\
             Job nextJob = networkJobs.get(currentJobNum);
             long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
             logger.log("TimeDiff: " + timeDiff);

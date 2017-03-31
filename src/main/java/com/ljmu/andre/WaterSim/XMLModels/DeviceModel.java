@@ -34,8 +34,8 @@ public class DeviceModel {
 
 
     public static class Connection {
-        @XmlElement(name="TargetMachine")
-        public String connectionId;
+        @XmlElement(name="TargetDevice")
+        public String deviceId;
         @XmlElement(name="Latency")
         public Integer latency;
     }

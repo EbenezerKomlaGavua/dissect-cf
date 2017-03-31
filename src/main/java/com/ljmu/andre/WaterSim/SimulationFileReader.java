@@ -52,13 +52,13 @@ public class SimulationFileReader extends TraceFileReaderFoundation {
 
         if(bypassBreakdowns && group.equalsIgnoreCase("breakdown"))
             return null;
-        
+
         String source = fragments[1];
         String target = fragments[2];
-        logger.log("Target: " + target);
 
         long packet = Long.parseLong(fragments[3]);
         long submit = Long.parseLong(fragments[4]);
+        //logger.log("Submit: " + submit);
 
         Job job = new NetworkJob(null, source, target, submit, packet, jobName, group, previousJob);
         previousJob = job;

@@ -3,16 +3,17 @@ package com.ljmu.andre.WaterSim.Packets;
 import com.ljmu.andre.WaterSim.Interfaces.ConnectionEvent;
 
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by Andre on 30/03/2017.
  */
 public class RoutingPacket extends BasePacket {
     private BasePacket payload;
-    private List<ConnectionEvent> route;
+    private Queue<ConnectionEvent> route;
     private ConnectionEvent source;
 
-    public RoutingPacket(String myid, BasePacket payload, ConnectionEvent source, List<ConnectionEvent> route) {
+    RoutingPacket(String myid, BasePacket payload, ConnectionEvent source, Queue<ConnectionEvent> route) {
         super(myid, payload.size, false);
         this.payload = payload;
         this.source = source;
@@ -28,20 +29,7 @@ public class RoutingPacket extends BasePacket {
         return source;
     }
 
-    public List<ConnectionEvent> getRoute() {
+    public Queue<ConnectionEvent> getRoute() {
         return route;
-    }
-
-    public ConnectionEvent getNextTarget() {
-        if(route.isEmpty())
-            return null;
-
-        ConnectionEvent target = route.get(0);
-
-        if(target == null)
-            return null;
-
-        route.remove(0);
-        return target;
     }
 }

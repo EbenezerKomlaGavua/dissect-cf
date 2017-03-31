@@ -20,6 +20,12 @@ public class BasePacket extends StorageObject {
         super(myid + totalPackets++, mysize, vary);
     }
 
+    /**
+     * Check if the supplied Object is scheduled for deregistry
+     *
+     * @param toDeregister - The Object to check for deregistration
+     * @return - True if Object is scheduled for deregistration
+     */
     boolean shouldDeregister(Object toDeregister) {
         return deregistryList.contains(toDeregister);
     }
@@ -29,6 +35,12 @@ public class BasePacket extends StorageObject {
         return this;
     }
 
+    /**
+     * Schedule the supplied Object for Deregistry
+     *
+     * @param toDeregister - The Object to schedule for deregistration
+     * @return This Object (For inline declaration)
+     */
     BasePacket addDeregisterObject(Object toDeregister) {
         if (!deregistryList.contains(toDeregister))
             deregistryList.add(toDeregister);
@@ -36,15 +48,21 @@ public class BasePacket extends StorageObject {
         return this;
     }
 
-    public BasePacket removeDeregisterObject(Object toDeregister) {
-        deregistryList.remove(toDeregister);
-        return this;
-    }
-
+    /**
+     * Get whether or not this Packet should be saved to drive during transfer
+     *
+     * @return True if it should be saved
+     */
     boolean getShouldStore() {
         return shouldStore;
     }
 
+    /**
+     * Set whether or not this Packet should be saved to drive during transer
+     *
+     * @param shouldStore - Whether or not it should be saved
+     * @return This Object (For inline declaration)
+     */
     BasePacket setShouldStore(boolean shouldStore) {
         this.shouldStore = shouldStore;
         return this;
