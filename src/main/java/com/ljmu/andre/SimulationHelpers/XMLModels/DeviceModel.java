@@ -4,6 +4,9 @@ import com.ljmu.andre.SimulationHelpers.Application;
 import com.ljmu.andre.SimulationHelpers.Device;
 import com.ljmu.andre.SimulationHelpers.SimulationFileReader;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import javax.xml.bind.annotation.XmlElement;
 
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
@@ -12,6 +15,9 @@ import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
  * Created by Andre on 30/03/2017.
  */
 public class DeviceModel {
+    @XmlElement(name="CustomDevice")
+    public String deviceClass;
+
     @XmlElement(name="ID")
     public String id;
 
@@ -30,6 +36,24 @@ public class DeviceModel {
         if(traceProducer == null && traceProducerModel != null)
             traceProducer = traceProducerModel.generateProducer(id);
 
-        return new Device(id, traceProducer);
+        if(deviceClass == null)
+            return new Device(id, traceProducer);
+
+        try {
+            Class<? extends Device> customDeviceClass = (Class<? extends Device>) Class.forName(deviceClass);
+            Constructor deviceConstructor = customDeviceClass.getConstructor(String.class, GenericTraceProducer.class);
+
+            return (Device) deviceConstructor.newInstance(id, traceProducer);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
