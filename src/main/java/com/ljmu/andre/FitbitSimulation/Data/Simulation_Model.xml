@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Simulation>
+    <Devices>
+        <Device>
+            <ID>Watch</ID>
+            <TraceFileReader>
+                <SimulationFilePath>C:/Users/Andre/Documents/GitHub/dissect-cf/src/main/java/com/ljmu/andre/FitbitSimulation/Data/bluetooth_in.csv</SimulationFilePath>
+            </TraceFileReader>
+        </Device>
+        <Device>
+            <ID>Smartphone</ID>
+            <TraceFileReader>
+                <SimulationFilePath>C:/Users/Andre/Documents/GitHub/dissect-cf/src/main/java/com/ljmu/andre/FitbitSimulation/Data/network_out.csv</SimulationFilePath>
+            </TraceFileReader>
+        </Device>
+        <Device>
+            <ID>Cloud</ID>
+            <TraceFileReader>
+                <SimulationFilePath>C:/Users/Andre/Documents/GitHub/dissect-cf/src/main/java/com/ljmu/andre/FitbitSimulation/Data/network_in.csv</SimulationFilePath>
+            </TraceFileReader>
+        </Device>
+    </Devices>
+</Simulation>
