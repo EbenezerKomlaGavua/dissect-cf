@@ -22,6 +22,7 @@ public class WaterSensor extends Device {
     }
 
     @Override public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+        System.out.println("Doing stuff");
         if(connectionState == State.SUCCESS) {
             beginSend();
         }
@@ -30,8 +31,9 @@ public class WaterSensor extends Device {
     public void beginSend() {
         int delay = 0;
         for(int i = 0; i < 12; i++) {
-            delay += 1000;
+            delay += 10000;
             NetworkJob job = new NetworkJob(null, getId(), "Gateway", getFireCount() + delay, 5000, null, null, null);
+            addJob(job);
         }
 
         start();

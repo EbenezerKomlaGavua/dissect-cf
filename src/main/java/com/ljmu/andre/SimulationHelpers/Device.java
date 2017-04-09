@@ -212,6 +212,13 @@ public class Device extends Timed implements ConnectionEvent {
         logger.log("Stopped [ID: %s] [Success: %s]", id, unsubscribe());
     }
 
+    public void addJob(NetworkJob job) {
+        if(networkJobs == null)
+            networkJobs = new ArrayList<Job>();
+
+        networkJobs.add(job);
+    }
+
     /**
      * Attempt to send a packet to an Unresolved Device ID
      *
@@ -225,5 +232,6 @@ public class Device extends Timed implements ConnectionEvent {
     }
 
     public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+        Application.totalPackets++;
     }
 }

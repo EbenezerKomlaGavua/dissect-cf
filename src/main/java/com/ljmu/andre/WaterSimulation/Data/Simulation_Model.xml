@@ -6,7 +6,6 @@
         </Device>
         <Device>
             <ID>Gateway</ID>
-
             <TraceProducer>
                 <TargetDevice>Sensor0</TargetDevice>
                 <MaxPacketSize>50</MaxPacketSize>
@@ -32,15 +31,19 @@
         </Device>
         <Device>
             <ID>Sensor0</ID>
+            <CustomDevice>com.ljmu.andre.WaterSimulation.WaterSensor</CustomDevice>
         </Device>
         <Device>
             <ID>Sensor1</ID>
+            <CustomDevice>com.ljmu.andre.WaterSimulation.WaterSensor</CustomDevice>
         </Device>
         <Device>
             <ID>Sensor2</ID>
+            <CustomDevice>com.ljmu.andre.WaterSimulation.WaterSensor</CustomDevice>
         </Device>
         <Device>
             <ID>Sensor3</ID>
+            <CustomDevice>com.ljmu.andre.WaterSimulation.WaterSensor</CustomDevice>
         </Device>
     </Devices>
 </Simulation>

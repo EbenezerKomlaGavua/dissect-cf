@@ -63,7 +63,6 @@ public class Application {
 
                 // Create the appropriate Device Type based on the DeviceModel type \\
                 Device device = deviceModel.generateDevice();
-
                 // Add the device to the system so that it can be connected \\
                 devices.add(device);
                 deviceMap.put(device.getId(), device);
@@ -74,7 +73,6 @@ public class Application {
                 // Get the Device created from the DeviceModel \\
                 for (String connectedID : device.getRepository().getLatencies().keySet()) {
                     Device connectedDevice = deviceMap.get(connectedID);
-                    logger.log("COnnection: " + connectedID);
 
                     if (connectedDevice != null)
                         device.connectDevice(connectedDevice);
