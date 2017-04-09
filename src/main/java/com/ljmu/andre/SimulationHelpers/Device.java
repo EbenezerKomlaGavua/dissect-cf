@@ -50,9 +50,9 @@ public class Device extends Timed implements ConnectionEvent {
 
         if (this.traceProducer != null) {
             try {
-                if(traceProducer instanceof SimulationFileReader)
+                if (traceProducer instanceof SimulationFileReader)
                     networkJobs = traceProducer.getAllJobs();
-                else if(traceProducer instanceof SimulationTraceProducer)
+                else if (traceProducer instanceof SimulationTraceProducer)
                     networkJobs = ((SimulationTraceProducer) traceProducer).generateJobs();
 
                 Collections.sort(networkJobs, JobListAnalyser.submitTimeComparator);

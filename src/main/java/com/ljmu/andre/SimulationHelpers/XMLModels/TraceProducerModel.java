@@ -22,10 +22,14 @@ public class TraceProducerModel {
     @XmlElement(name="MaxJobDistance")
     public int maxJobDistance;
 
+    @XmlElement(name="JobCount")
+    public int jobCount;
+
     public GenericTraceProducer generateProducer(String source) {
+        System.out.println(this.toString());
         try {
             return new SimulationTraceProducer(source, deviceID, distributions.sizeModel.generateDistribution(),
-                    maxPacketSize, distributions.gapModel.generateDistribution(), maxJobDistance);
+                    maxPacketSize, distributions.gapModel.generateDistribution(), maxJobDistance, jobCount);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -33,6 +37,14 @@ public class TraceProducerModel {
         return null;
     }
 
+    @Override public String toString() {
+        return "TraceProducerModel{" +
+                "deviceID='" + deviceID + '\'' +
+                ", distributions=" + distributions +
+                ", maxPacketSize=" + maxPacketSize +
+                ", maxJobDistance=" + maxJobDistance +
+                '}';
+    }
 
     public static class Distributions {
         @XmlElement(name="Size")

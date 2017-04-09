@@ -29,6 +29,7 @@ public class Application {
     public static int totalPackets = 0;
     private static Application instance;
     private List<Device> devices = new ArrayList<Device>();
+    private boolean isInitialised = false;
 
     private Application() {
     }
@@ -36,7 +37,7 @@ public class Application {
     /**
      * Load the Simulation Data such as Machine Data and Device Models
      */
-    private void loadSimData(String machine_xml, String simulation_model_xml) {
+    public void loadSimData(String machine_xml, String simulation_model_xml) {
         try {
             // Initialise the Machine Handler \\
             MachineHandler.init(machine_xml);
@@ -88,12 +89,15 @@ public class Application {
         } catch (SAXException e) {
             e.printStackTrace();
         }
+
+        isInitialised = true;
     }
 
     /**
      * Start the simulation
      */
-    private void startSim() {
+    public void startSim() {
+        initCheck();
         // Subscribe all the built devices \\
         for (Device device : devices)
             device.start();
@@ -111,5 +115,10 @@ public class Application {
 
         logger.log("Starting Application");
         return instance;
+    }
+
+    private void initCheck() {
+        if(!isInitialised)
+            throw new IllegalStateException("Application not initialised");
     }
 }

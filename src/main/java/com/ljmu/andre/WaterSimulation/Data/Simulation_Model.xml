@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Simulation>
+    <Devices>
+        <Device>
+            <ID>Server</ID>
+        </Device>
+        <Device>
+            <ID>Gateway</ID>
+
+            <TraceProducer>
+                <TargetDevice>Sensor0</TargetDevice>
+                <MaxPacketSize>50</MaxPacketSize>
+                <MaxJobDistance>3600000</MaxJobDistance>
+                <JobCount>1000</JobCount>
+                <Distributions>
+                    <Size>
+                        <Range>
+                            <Upper>1</Upper>
+                            <Lower>1</Lower>
+                            <Probability>1</Probability>
+                        </Range>
+                    </Size>
+                    <Gap>
+                        <Range>
+                            <Upper>1</Upper>
+                            <Lower>1</Lower>
+                            <Probability>1</Probability>
+                        </Range>
+                    </Gap>
+                </Distributions>
+            </TraceProducer>
+        </Device>
+        <Device>
+            <ID>Sensor0</ID>
+        </Device>
+        <Device>
+            <ID>Sensor1</ID>
+        </Device>
+        <Device>
+            <ID>Sensor2</ID>
+        </Device>
+        <Device>
+            <ID>Sensor3</ID>
+        </Device>
+    </Devices>
+</Simulation>

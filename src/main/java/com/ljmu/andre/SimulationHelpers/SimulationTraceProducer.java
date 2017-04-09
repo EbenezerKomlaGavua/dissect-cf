@@ -35,9 +35,12 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
      */
     private long currentSubmitTime = 0;
 
+    private int jobCount;
+
     public SimulationTraceProducer(String source, String target,
                                    DistributionSpecifier size, final int maxPacketSize,
-                                   DistributionSpecifier gap, final int maxJobDistance) throws NoSuchMethodException, SecurityException {
+                                   DistributionSpecifier gap, final int maxJobDistance,
+                                   int jobCount) throws NoSuchMethodException, SecurityException {
         super(Job.class);
 
         this.source = source;
@@ -52,6 +55,8 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
         }
         sizeDistribution = size;
         distanceDistribution = gap;
+
+        this.jobCount = jobCount;
 
         System.out.println("Distance: " + distanceDistribution.toCSV());
     }
@@ -77,7 +82,7 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
             setJobNum(0);
             System.err.println("Simulation Trace Generator parameters: jobnum - " + getJobNum() + " totprocs - "
                     + getMaxTotalProcs());
-            final int maxLen = 40;
+            final int maxLen = jobCount;
             final ArrayList<Job> generatedList = new ArrayList<Job>(maxLen);
             for (int i = 0; i < maxLen; i++) {
                 long val = (long) (distanceDistribution.nextDouble() * (double) maxJobDistance);
