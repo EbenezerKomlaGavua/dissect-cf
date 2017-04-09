@@ -178,6 +178,10 @@ public class NetworkNode {
 		latencies.put(targetId, latency);
 	}
 
+	public Map<String, Integer> getLatencies() {
+		return latencies;
+	}
+
 	/**
 	 * Determines the total output bandwidth available for the node
 	 * 
