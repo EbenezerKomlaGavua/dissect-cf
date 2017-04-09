@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>at.ac.uibk.dps.cloud.simulator.simulatorhelper</groupId>
+	<groupId>at.ac.uibk.dps.cloud.simulator</groupId>
 	<artifactId>dissect-cf</artifactId>
 	<version>0.9.7-SNAPSHOT</version>
 	<name>DISSECT-CF</name>
@@ -24,15 +24,17 @@
 			<version>3.4</version>
 		</dependency>
 		<dependency>
-			<groupId>at.ac.uibk.dps.cloud.simulator.simulatorhelper</groupId>
+			<groupId>at.ac.uibk.dps.cloud.simulator</groupId>
 			<artifactId>dissect-cf</artifactId>
 			<version>0.9.7-SNAPSHOT</version>
 		</dependency>
+
 		<dependency>
 			<groupId>hu.mta.sztaki.lpds.cloud.simulator</groupId>
 			<artifactId>DistSysJavaHelpers</artifactId>
 			<version>1.0.2-SNAPSHOT</version>
 		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.sun.xml.bind/jaxb-impl -->
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
