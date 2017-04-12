@@ -34,14 +34,22 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
      * updated once a job is generated
      */
     private long currentSubmitTime = 0;
+    private long simTo;
+    private int jobCount;
+    private boolean shouldSave;
 
     public SimulationTraceProducer(String source, String target,
+                                   long simFrom, long simTo, int jobCount, boolean shouldSave,
                                    DistributionSpecifier size, final int maxPacketSize,
                                    DistributionSpecifier gap, final int maxJobDistance) throws NoSuchMethodException, SecurityException {
         super(Job.class);
 
         this.source = source;
         this.target = target;
+        this.currentSubmitTime = simFrom;
+        this.simTo = simTo;
+        this.jobCount = jobCount;
+        this.shouldSave = shouldSave;
         this.maxPacketSize = maxPacketSize;
         this.maxJobDistance = maxJobDistance;
         if (!size.isFinalized()) {
@@ -77,9 +85,10 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
             setJobNum(0);
             System.err.println("Simulation Trace Generator parameters: jobnum - " + getJobNum() + " totprocs - "
                     + getMaxTotalProcs());
-            final int maxLen = 40;
-            final ArrayList<Job> generatedList = new ArrayList<Job>(maxLen);
-            for (int i = 0; i < maxLen; i++) {
+            final ArrayList<Job> generatedList = new ArrayList<Job>();
+
+            while((simTo != -1 && currentSubmitTime <= simTo) &&
+                    (jobCount != -1 && generatedList.size() < jobCount)) {
                 long val = (long) (distanceDistribution.nextDouble() * (double) maxJobDistance);
                 System.out.println("Val: " + val);
 
@@ -97,6 +106,6 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
 
     private Job getJobInstance(String source, String target, int packetSize)
             throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        return new NetworkJob(null, source, target, currentSubmitTime, packetSize, null, null, null);
+        return new NetworkJob(null, source, target, currentSubmitTime, packetSize, shouldSave, null, null, null);
     }
 }

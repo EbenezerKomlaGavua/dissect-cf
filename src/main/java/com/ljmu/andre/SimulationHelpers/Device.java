@@ -189,8 +189,12 @@ public class Device extends Timed implements ConnectionEvent {
         // Get the Job that should be processed \\
         NetworkJob currentJob = (NetworkJob) networkJobs.get(currentJobNum);
 
+        // Craft the packet to be sent based on the current job \\
+        BasePacket packet = new DataPacket("DeviceData", currentJob.getPacketSize(), false)
+                .setShouldStore(currentJob.shouldSave());
+
         // Send the Job to the intended Target \\
-        sendPacket(currentJob.getTarget(), new DataPacket("DeviceData", currentJob.getPacketSize(), false));
+        sendPacket(currentJob.getTarget(), packet);
 
         logger.log("Job: " + currentJobNum + "/" + networkJobs.size());
 
@@ -225,5 +229,6 @@ public class Device extends Timed implements ConnectionEvent {
     }
 
     public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+        System.out.println("Free Cap Size: " + getRepository().getFreeStorageCapacity());
     }
 }
