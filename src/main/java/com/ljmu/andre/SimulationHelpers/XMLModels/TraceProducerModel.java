@@ -25,10 +25,13 @@ public class TraceProducerModel {
     @XmlElement(name="JobCount")
     public int jobCount = -1;
 
+    @XmlElement(name="StorePackets")
+    public boolean shouldSave = false;
+
     public GenericTraceProducer generateProducer(int simFrom, int simTo, String source) {
         try {
             return new SimulationTraceProducer(source, deviceID,
-                    simFrom, simTo, jobCount,
+                    simFrom, simTo, jobCount, shouldSave,
                     distributions.sizeModel.generateDistribution(), maxPacketSize,
                     distributions.gapModel.generateDistribution(), maxJobDistance);
         } catch (NoSuchMethodException e) {
