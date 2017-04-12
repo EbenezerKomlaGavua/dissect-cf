@@ -21,6 +21,12 @@ public class DeviceModel {
     @XmlElement(name="ID")
     public String id;
 
+    @XmlElement(name="SimulateFrom")
+    public int simFrom;
+
+    @XmlElement(name="SimulateTo")
+    public int simTo = -1;
+
     @XmlElement(name="TraceFileReader")
     public TraceFileReaderModel fileReaderModel;
 
@@ -31,10 +37,10 @@ public class DeviceModel {
         GenericTraceProducer traceProducer = null;
 
         if(fileReaderModel != null)
-            traceProducer = fileReaderModel.generateFileReader();
+            traceProducer = fileReaderModel.generateFileReader(simFrom, simTo);
 
         if(traceProducer == null && traceProducerModel != null)
-            traceProducer = traceProducerModel.generateProducer(id);
+            traceProducer = traceProducerModel.generateProducer(simFrom, simTo, id);
 
         if(deviceClass == null)
             return new Device(id, traceProducer);

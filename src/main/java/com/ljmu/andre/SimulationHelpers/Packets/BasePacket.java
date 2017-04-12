@@ -63,7 +63,7 @@ public class BasePacket extends StorageObject {
      * @param shouldStore - Whether or not it should be saved
      * @return This Object (For inline declaration)
      */
-    BasePacket setShouldStore(boolean shouldStore) {
+    public BasePacket setShouldStore(boolean shouldStore) {
         this.shouldStore = shouldStore;
         return this;
     }

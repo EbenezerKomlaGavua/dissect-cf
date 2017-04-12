@@ -15,13 +15,7 @@ public class TraceFileReaderModel {
     @XmlElement(name="SimulationFileName")
     public String simFileName;
 
-    @XmlElement(name="SimulateFrom")
-    public int simFrom;
-
-    @XmlElement(name="SimulateTo")
-    public int simTo = -1;
-
-    public SimulationFileReader generateFileReader() {
+    public SimulationFileReader generateFileReader(int simFrom, int simTo) {
         if(simFilePath == null && simFileName != null)
             simFilePath = Application.USER_DIR + "/" + simFileName;
 
