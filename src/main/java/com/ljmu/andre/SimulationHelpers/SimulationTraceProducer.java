@@ -87,8 +87,16 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
                     + getMaxTotalProcs());
             final ArrayList<Job> generatedList = new ArrayList<Job>();
 
-            while((simTo != -1 && currentSubmitTime <= simTo) &&
-                    (jobCount != -1 && generatedList.size() < jobCount)) {
+            System.out.println("COunt: " + jobCount);
+            System.out.println("FIrst: " + (simTo != -1 || jobCount != -1));
+            System.out.println("Second: " + (simTo == -1 || currentSubmitTime <= simTo));
+            System.out.println("Third: " + (jobCount == -1 || generatedList.size() < jobCount));
+
+            System.out.println("Current: " + currentSubmitTime + "|" + simTo);
+
+            while((simTo != -1 || jobCount != -1) &&
+                    ((simTo == -1 || currentSubmitTime <= simTo) &&
+                            (jobCount == -1 || generatedList.size() < jobCount))) {
                 long val = (long) (distanceDistribution.nextDouble() * (double) maxJobDistance);
                 System.out.println("Val: " + val);
 

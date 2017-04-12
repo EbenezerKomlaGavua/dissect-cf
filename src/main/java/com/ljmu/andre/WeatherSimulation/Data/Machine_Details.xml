@@ -43,7 +43,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Gateway" value="5" />
+            <latency towards="Station" value="5" />
         </repository>
     </machine>
 
@@ -211,7 +211,7 @@
             <latency towards="Sensor1" value="5" />
         </repository>
     </machine>
-    <machine id="Sensor3" cores="64" processing="0.001" memory="256000000000">
+    <machine id="Station" cores="64" processing="0.001" memory="256000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -224,7 +224,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="Sensor3" capacity="5000000000000" inBW="250000"
+        <repository id="Station" capacity="5000000000000" inBW="250000"
                     outBW="250000" diskBW="50000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -248,7 +248,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Sensor2" value="5" />
+            <latency towards="Server" value="5" />
         </repository>
     </machine>
 </cloud>

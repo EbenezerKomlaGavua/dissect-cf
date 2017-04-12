@@ -34,8 +34,8 @@ public class SimulationFileReader extends TraceFileReaderFoundation {
      * @throws NoSuchMethodException If the class of the jobType does not hold one of the expected
      *                               constructors.
      */
-    public SimulationFileReader(String traceKind, String fileName, int from, int to, boolean allowReadingFurther) throws SecurityException, NoSuchMethodException {
-        super(traceKind, fileName, from, to, allowReadingFurther, Job.class);
+    public SimulationFileReader(String traceKind, String fileName, long from, long to, boolean allowReadingFurther) throws SecurityException, NoSuchMethodException {
+        super(traceKind, fileName, (int) from, (int) to, allowReadingFurther, Job.class);
         jobName = traceKind;
     }
 
