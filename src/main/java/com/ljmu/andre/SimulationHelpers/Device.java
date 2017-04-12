@@ -31,10 +31,9 @@ public class Device extends Timed implements ConnectionEvent {
     private PhysicalMachine physicalMachine;
     private Repository repository;
     private GenericTraceProducer traceProducer;
-    private String customAttributes;
 
     Device(String id) {
-        this(id, null, null);
+        this(id, null);
     }
 
     /**
@@ -43,18 +42,17 @@ public class Device extends Timed implements ConnectionEvent {
      * @param id            - The ID of the Device
      * @param traceProducer - An OPTIONAL Trace File Reader which will load a list of jobs to run through
      */
-    public Device(String id, GenericTraceProducer traceProducer, String customAttributes) {
+    public Device(String id, GenericTraceProducer traceProducer) {
         this.id = id;
         this.physicalMachine = MachineHandler.claimPM(id);
         this.repository = physicalMachine.localDisk;
         this.traceProducer = traceProducer;
-        this.customAttributes = customAttributes;
 
         if (this.traceProducer != null) {
             try {
-                if (traceProducer instanceof SimulationFileReader)
+                if(traceProducer instanceof SimulationFileReader)
                     networkJobs = traceProducer.getAllJobs();
-                else if (traceProducer instanceof SimulationTraceProducer)
+                else if(traceProducer instanceof SimulationTraceProducer)
                     networkJobs = ((SimulationTraceProducer) traceProducer).generateJobs();
 
                 Collections.sort(networkJobs, JobListAnalyser.submitTimeComparator);
@@ -94,10 +92,6 @@ public class Device extends Timed implements ConnectionEvent {
 
     public List<Job> getJobs() {
         return networkJobs;
-    }
-
-    public String getCustomAttributes() {
-        return customAttributes;
     }
 
     /**

@@ -47,13 +47,13 @@ public class DeviceModel {
             traceProducer = traceProducerModel.generateProducer(simFrom, simTo, id);
 
         if(deviceClass == null)
-            return new Device(id, traceProducer, customAttributes);
+            return new Device(id, traceProducer);
 
         try {
             Class<? extends Device> customDeviceClass = (Class<? extends Device>) Class.forName(deviceClass);
-            Constructor deviceConstructor = customDeviceClass.getConstructor(String.class, GenericTraceProducer.class, String.class);
+            Constructor deviceConstructor = customDeviceClass.getConstructor(String.class, GenericTraceProducer.class);
 
-            return (Device) deviceConstructor.newInstance(id, traceProducer, customAttributes);
+            return (Device) deviceConstructor.newInstance(id, traceProducer);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {
