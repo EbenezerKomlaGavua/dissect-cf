@@ -13,6 +13,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.file.TraceFileReaderFoun
 public class SimulationFileReader extends TraceFileReaderFoundation {
     private static final Logger logger = new Logger(SimulationFileReader.class);
     private static final boolean bypassBreakdowns = true;
+    private static final boolean shouldStore = false;
     private String jobName;
     private Job previousJob;
 
@@ -33,8 +34,8 @@ public class SimulationFileReader extends TraceFileReaderFoundation {
      * @throws NoSuchMethodException If the class of the jobType does not hold one of the expected
      *                               constructors.
      */
-    public SimulationFileReader(String traceKind, String fileName, int from, int to, boolean allowReadingFurther) throws SecurityException, NoSuchMethodException {
-        super(traceKind, fileName, from, to, allowReadingFurther, Job.class);
+    public SimulationFileReader(String traceKind, String fileName, long from, long to, boolean allowReadingFurther) throws SecurityException, NoSuchMethodException {
+        super(traceKind, fileName, (int) from, (int) to, allowReadingFurther, Job.class);
         jobName = traceKind;
     }
 
@@ -60,7 +61,7 @@ public class SimulationFileReader extends TraceFileReaderFoundation {
         long submit = Long.parseLong(fragments[4]);
         //logger.log("Submit: " + submit);
 
-        Job job = new NetworkJob(null, source, target, submit, packet, jobName, group, previousJob);
+        Job job = new NetworkJob(null, source, target, submit, packet, shouldStore, jobName, group, previousJob);
         previousJob = job;
         return job;
     }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Simulation>
+    <Devices>
+        <Device>
+            <ID>Server</ID>
+        </Device>
+
+        <Device>
+            <ID>Station</ID>
+            <CustomDevice attr="sensors=8">com.ljmu.andre.WeatherSimulation.Station</CustomDevice>
+
+            <TraceProducer>
+                <StorePackets>true</StorePackets>
+                <TargetDevice>Server</TargetDevice>
+                <MaxPacketSize>200</MaxPacketSize>
+                <MaxJobDistance>3600000</MaxJobDistance>
+                <JobCount>600</JobCount>
+                <Distributions template="max"/>
+            </TraceProducer>
+        </Device>
+    </Devices>
+</Simulation>

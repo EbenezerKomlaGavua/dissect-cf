@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<cloud id="MachineHolder"
+       scheduler="hu.mta.sztaki.lpds.cloud.simulator.iaas.vmscheduling.RoundRobinScheduler"
+       pmcontroller="hu.mta.sztaki.lpds.cloud.simulator.iaas.pmscheduling.AlwaysOnMachines">
+
+    <!-- pluto - AMD Opteron(tm) Processor 6262HE (3200.07 bogomips) x64, 256GB,
+        disk ??? -->
+    <machine id="Server" cores="64" processing="0.001" memory="256000000000">
+        <powerstates kind="host">
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                idle="296" max="493" inState="default" />
+            <!-- OFF is not measured! -->
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                idle="20" max="20" inState="OFF" />
+        </powerstates>
+        <!-- statedelays are unknown -->
+        <statedelays startup="0" shutdown="0" />
+        <!-- disk capacities, bandwidthes are unknown -->
+        <repository id="Server" capacity="500000000" inBW="250000"
+                    outBW="250000" diskBW="50000">
+            <powerstates kind="storage">
+                <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="6.5" max="9" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <powerstates kind="network">
+                <!-- Not measured! http://www.cl.cam.ac.uk/~acr31/pubs/sohan-10gbpower.pdf -->
+                <!-- 2 x 1Gbps NICs -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="3.4" max="3.8" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <!-- latencies are unknown -->
+            <latency towards="Station" value="5" />
+        </repository>
+    </machine>
+
+    <!-- pluto - AMD Opteron(tm) Processor 6262HE (3200.07 bogomips) x64, 256GB,
+        disk ??? -->
+    <machine id="Gateway" cores="64" processing="0.001" memory="256000000000">
+        <powerstates kind="host">
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                idle="296" max="493" inState="default" />
+            <!-- OFF is not measured! -->
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                idle="20" max="20" inState="OFF" />
+        </powerstates>
+        <!-- statedelays are unknown -->
+        <statedelays startup="0" shutdown="0" />
+        <!-- disk capacities, bandwidthes are unknown -->
+        <repository id="Gateway" capacity="500000000" inBW="250000"
+                    outBW="250000" diskBW="50000">
+            <powerstates kind="storage">
+                <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="6.5" max="9" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <powerstates kind="network">
+                <!-- Not measured! http://www.cl.cam.ac.uk/~acr31/pubs/sohan-10gbpower.pdf -->
+                <!-- 2 x 1Gbps NICs -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="3.4" max="3.8" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <!-- latencies are unknown -->
+            <latency towards="Server" value="5" />
+            <latency towards="Sensor0" value="5" />
+        </repository>
+    </machine>
+
+    <machine id="Sensor0" cores="64" processing="0.001" memory="256000000000">
+        <powerstates kind="host">
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                idle="296" max="493" inState="default" />
+            <!-- OFF is not measured! -->
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                idle="20" max="20" inState="OFF" />
+        </powerstates>
+        <!-- statedelays are unknown -->
+        <statedelays startup="0" shutdown="0" />
+        <!-- disk capacities, bandwidthes are unknown -->
+        <repository id="Sensor0" capacity="5000000000000" inBW="250000"
+                    outBW="250000" diskBW="50000">
+            <powerstates kind="storage">
+                <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="6.5" max="9" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <powerstates kind="network">
+                <!-- Not measured! http://www.cl.cam.ac.uk/~acr31/pubs/sohan-10gbpower.pdf -->
+                <!-- 2 x 1Gbps NICs -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="3.4" max="3.8" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <!-- latencies are unknown -->
+            <latency towards="Gateway" value="5" />
+        </repository>
+    </machine>
+    <machine id="Sensor1" cores="64" processing="0.001" memory="256000000000">
+        <powerstates kind="host">
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                idle="296" max="493" inState="default" />
+            <!-- OFF is not measured! -->
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                idle="20" max="20" inState="OFF" />
+        </powerstates>
+        <!-- statedelays are unknown -->
+        <statedelays startup="0" shutdown="0" />
+        <!-- disk capacities, bandwidthes are unknown -->
+        <repository id="Sensor1" capacity="5000000000000" inBW="250000"
+                    outBW="250000" diskBW="50000">
+            <powerstates kind="storage">
+                <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="6.5" max="9" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <powerstates kind="network">
+                <!-- Not measured! http://www.cl.cam.ac.uk/~acr31/pubs/sohan-10gbpower.pdf -->
+                <!-- 2 x 1Gbps NICs -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="3.4" max="3.8" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <!-- latencies are unknown -->
+            <latency towards="Sensor0" value="5" />
+        </repository>
+    </machine>
+    <machine id="Sensor2" cores="64" processing="0.001" memory="256000000000">
+        <powerstates kind="host">
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                idle="296" max="493" inState="default" />
+            <!-- OFF is not measured! -->
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                idle="20" max="20" inState="OFF" />
+        </powerstates>
+        <!-- statedelays are unknown -->
+        <statedelays startup="0" shutdown="0" />
+        <!-- disk capacities, bandwidthes are unknown -->
+        <repository id="Sensor2" capacity="5000000000000" inBW="250000"
+                    outBW="250000" diskBW="50000">
+            <powerstates kind="storage">
+                <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="6.5" max="9" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <powerstates kind="network">
+                <!-- Not measured! http://www.cl.cam.ac.uk/~acr31/pubs/sohan-10gbpower.pdf -->
+                <!-- 2 x 1Gbps NICs -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="3.4" max="3.8" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <!-- latencies are unknown -->
+            <latency towards="Sensor1" value="5" />
+        </repository>
+    </machine>
+    <machine id="Station" cores="64" processing="0.001" memory="256000000000">
+        <powerstates kind="host">
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                idle="296" max="493" inState="default" />
+            <!-- OFF is not measured! -->
+            <power
+                model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                idle="20" max="20" inState="OFF" />
+        </powerstates>
+        <!-- statedelays are unknown -->
+        <statedelays startup="0" shutdown="0" />
+        <!-- disk capacities, bandwidthes are unknown -->
+        <repository id="Station" capacity="5000000000000" inBW="250000"
+                    outBW="250000" diskBW="50000">
+            <powerstates kind="storage">
+                <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="6.5" max="9" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <powerstates kind="network">
+                <!-- Not measured! http://www.cl.cam.ac.uk/~acr31/pubs/sohan-10gbpower.pdf -->
+                <!-- 2 x 1Gbps NICs -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
+                    idle="3.4" max="3.8" inState="default" />
+                <!-- Not measured! -->
+                <power
+                    model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
+                    idle="0" max="0" inState="OFF" />
+            </powerstates>
+            <!-- latencies are unknown -->
+            <latency towards="Server" value="5" />
+        </repository>
+    </machine>
+</cloud>

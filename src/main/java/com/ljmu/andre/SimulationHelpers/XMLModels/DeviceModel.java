@@ -7,6 +7,7 @@ import com.ljmu.andre.SimulationHelpers.SimulationFileReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
@@ -18,14 +19,17 @@ public class DeviceModel {
     @XmlElement(name="CustomDevice")
     public String deviceClass;
 
+    @XmlAttribute(name="attr")
+    public String customAttributes;
+
     @XmlElement(name="ID")
     public String id;
 
     @XmlElement(name="SimulateFrom")
-    public int simFrom;
+    public long simFrom;
 
     @XmlElement(name="SimulateTo")
-    public int simTo = -1;
+    public long simTo = -1;
 
     @XmlElement(name="TraceFileReader")
     public TraceFileReaderModel fileReaderModel;

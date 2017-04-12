@@ -90,6 +90,10 @@ public class Device extends Timed implements ConnectionEvent {
         return success;
     }
 
+    public List<Job> getJobs() {
+        return networkJobs;
+    }
+
     /**
      * Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
      */

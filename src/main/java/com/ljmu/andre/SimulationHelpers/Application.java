@@ -36,7 +36,7 @@ public class Application {
     /**
      * Load the Simulation Data such as Machine Data and Device Models
      */
-    private void loadSimData(String machine_xml, String simulation_model_xml) {
+    public void loadSimData(String machine_xml, String simulation_model_xml) {
         try {
             // Initialise the Machine Handler \\
             MachineHandler.init(machine_xml);
@@ -93,7 +93,7 @@ public class Application {
     /**
      * Start the simulation
      */
-    private void startSim() {
+    public void startSim() {
         // Subscribe all the built devices \\
         for (Device device : devices)
             device.start();
