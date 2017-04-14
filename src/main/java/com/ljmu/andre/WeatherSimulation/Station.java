@@ -10,6 +10,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
  */
 public class Station extends Device {
     int currentJob = 0;
+    int sensors;
 
     /**
      * Initiate a new Device and claim a PhysicalMachine for it
@@ -17,8 +18,10 @@ public class Station extends Device {
      * @param id            - The ID of the Device
      * @param traceProducer - An OPTIONAL Trace File Reader which will load a list of jobs to run through
      */
-    public Station(String id, GenericTraceProducer traceProducer) {
-        super(id, traceProducer);
+    public Station(String id, GenericTraceProducer traceProducer, String customAttributes) {
+        super(id, traceProducer, customAttributes);
+
+        sensors = Integer.parseInt(getAttribute("sensors"));
     }
 
     @Override public void tick(long fires) {
@@ -27,7 +30,9 @@ public class Station extends Device {
             return;
         }
 
-
+        for(int i = 0; i < sensors; i++) {
+            new Metered(1000);
+        }
     }
 
     public static class Metered extends DeferredEvent {
@@ -44,7 +49,7 @@ public class Station extends Device {
         }
 
         @Override protected void eventAction() {
-
+            Station.this.getRepository().
         }
     }
 }

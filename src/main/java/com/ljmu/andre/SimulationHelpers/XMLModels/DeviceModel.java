@@ -1,8 +1,6 @@
 package com.ljmu.andre.SimulationHelpers.XMLModels;
 
-import com.ljmu.andre.SimulationHelpers.Application;
 import com.ljmu.andre.SimulationHelpers.Device;
-import com.ljmu.andre.SimulationHelpers.SimulationFileReader;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -16,44 +14,45 @@ import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
  * Created by Andre on 30/03/2017.
  */
 public class DeviceModel {
-    @XmlElement(name="CustomDevice")
+    @XmlElement(name = "CustomDevice")
     public String deviceClass;
 
-    @XmlAttribute(name="custom_attr")
+    @XmlAttribute(name = "custom_attr")
     public String customAttributes;
 
-    @XmlElement(name="ID")
+    @XmlElement(name = "ID")
     public String id;
 
-    @XmlElement(name="SimulateFrom")
+    @XmlElement(name = "SimulateFrom")
     public long simFrom;
 
-    @XmlElement(name="SimulateTo")
+    @XmlElement(name = "SimulateTo")
     public long simTo = -1;
 
-    @XmlElement(name="TraceFileReader")
+    @XmlElement(name = "TraceFileReader")
     public TraceFileReaderModel fileReaderModel;
 
-    @XmlElement(name="TraceProducer")
+    @XmlElement(name = "TraceProducer")
     public TraceProducerModel traceProducerModel;
 
     public Device generateDevice() {
         GenericTraceProducer traceProducer = null;
 
-        if(fileReaderModel != null)
+        if (fileReaderModel != null)
             traceProducer = fileReaderModel.generateFileReader(simFrom, simTo);
 
-        if(traceProducer == null && traceProducerModel != null)
+        if (traceProducer == null && traceProducerModel != null)
             traceProducer = traceProducerModel.generateProducer(simFrom, simTo, id);
 
-        if(deviceClass == null)
-            return new Device(id, traceProducer);
+        System.out.println("custom: " + customAttributes);
+        if (deviceClass == null)
+            return new Device(id, traceProducer, customAttributes);
 
         try {
             Class<? extends Device> customDeviceClass = (Class<? extends Device>) Class.forName(deviceClass);
-            Constructor deviceConstructor = customDeviceClass.getConstructor(String.class, GenericTraceProducer.class);
+            Constructor deviceConstructor = customDeviceClass.getConstructor(String.class, GenericTraceProducer.class, String.class);
 
-            return (Device) deviceConstructor.newInstance(id, traceProducer);
+            return (Device) deviceConstructor.newInstance(id, traceProducer, customAttributes);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {

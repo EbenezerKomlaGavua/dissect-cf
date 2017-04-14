@@ -8,7 +8,9 @@ import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
@@ -31,9 +33,10 @@ public class Device extends Timed implements ConnectionEvent {
     private PhysicalMachine physicalMachine;
     private Repository repository;
     private GenericTraceProducer traceProducer;
+    private Map<String, String> customAttributes;
 
     Device(String id) {
-        this(id, null);
+        this(id, null, null);
     }
 
     /**
@@ -42,23 +45,41 @@ public class Device extends Timed implements ConnectionEvent {
      * @param id            - The ID of the Device
      * @param traceProducer - An OPTIONAL Trace File Reader which will load a list of jobs to run through
      */
-    public Device(String id, GenericTraceProducer traceProducer) {
+    public Device(String id, GenericTraceProducer traceProducer, String customAttributes) {
         this.id = id;
         this.physicalMachine = MachineHandler.claimPM(id);
         this.repository = physicalMachine.localDisk;
         this.traceProducer = traceProducer;
 
+        if(customAttributes != null)
+            buildCustomAttributes(customAttributes);
+
         if (this.traceProducer != null) {
             try {
-                if(traceProducer instanceof SimulationFileReader)
+                if (traceProducer instanceof SimulationFileReader)
                     networkJobs = traceProducer.getAllJobs();
-                else if(traceProducer instanceof SimulationTraceProducer)
+                else if (traceProducer instanceof SimulationTraceProducer)
                     networkJobs = ((SimulationTraceProducer) traceProducer).generateJobs();
 
                 Collections.sort(networkJobs, JobListAnalyser.submitTimeComparator);
             } catch (TraceManagementException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void buildCustomAttributes(String attributes) {
+        customAttributes = new HashMap<String, String>();
+        String[] attrList = attributes.split(",");
+
+        for(String keyValue : attrList) {
+            String[] splitKeyVal = keyValue.split("=");
+            String key = splitKeyVal[0];
+            String value = splitKeyVal[1];
+
+            customAttributes.put(key, value);
+
+            System.out.println("Put attr: " + key + " | " + value);
         }
     }
 
@@ -92,6 +113,10 @@ public class Device extends Timed implements ConnectionEvent {
 
     public List<Job> getJobs() {
         return networkJobs;
+    }
+
+    public String getAttribute(String key) {
+        return customAttributes.get(key);
     }
 
     /**
