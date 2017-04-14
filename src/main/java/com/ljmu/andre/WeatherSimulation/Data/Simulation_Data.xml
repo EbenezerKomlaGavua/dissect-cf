@@ -5,9 +5,9 @@
             <ID>Server</ID>
         </Device>
 
-        <Device>
+        <Device custom_attr="sensors=8">
             <ID>Station</ID>
-            <CustomDevice attr="sensors=8">com.ljmu.andre.WeatherSimulation.Station</CustomDevice>
+            <CustomDevice>com.ljmu.andre.WeatherSimulation.Station</CustomDevice>
 
             <TraceProducer>
                 <StorePackets>true</StorePackets>
