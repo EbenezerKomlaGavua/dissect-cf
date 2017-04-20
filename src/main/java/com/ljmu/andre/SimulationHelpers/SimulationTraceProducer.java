@@ -38,13 +38,10 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
     private int jobCount;
     private boolean shouldSave;
 
-    private int jobCount;
-
     public SimulationTraceProducer(String source, String target,
                                    long simFrom, long simTo, int jobCount, boolean shouldSave,
                                    DistributionSpecifier size, final int maxPacketSize,
-                                   DistributionSpecifier gap, final int maxJobDistance,
-                                   int jobCount) throws NoSuchMethodException, SecurityException {
+                                   DistributionSpecifier gap, final int maxJobDistance) throws NoSuchMethodException, SecurityException {
         super(Job.class);
 
         this.source = source;

@@ -17,22 +17,22 @@ public class WaterSensor extends Device {
      * @param id            - The ID of the Device
      * @param traceProducer - An OPTIONAL Trace File Reader which will load a list of jobs to run through
      */
-    public WaterSensor(String id, GenericTraceProducer traceProducer) {
-        super(id, traceProducer);
+    public WaterSensor(String id, GenericTraceProducer traceProducer, String customAttributes) {
+        super(id, traceProducer, customAttributes);
     }
 
     @Override public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
         System.out.println("Doing stuff");
         if(connectionState == State.SUCCESS) {
-            beginSend();
+            beginSend(packet);
         }
     }
 
-    public void beginSend() {
+    public void beginSend(BasePacket packet) {
         int delay = 0;
         for(int i = 0; i < 12; i++) {
             delay += 10000;
-            NetworkJob job = new NetworkJob(null, getId(), "Gateway", getFireCount() + delay, 5000, null, null, null);
+            NetworkJob job = new NetworkJob(null, getId(), "Gateway", getFireCount() + delay, 5000, true, null, null, null);
             addJob(job);
         }
 

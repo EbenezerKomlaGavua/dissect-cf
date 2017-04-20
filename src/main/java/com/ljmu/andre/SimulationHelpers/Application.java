@@ -32,7 +32,6 @@ public class Application {
     private static Application instance;
     private boolean isInitialised;
     private List<Device> devices = new ArrayList<Device>();
-    private boolean isInitialised = false;
 
     private Application() {
     }
@@ -121,10 +120,6 @@ public class Application {
         logger.log("Total packets sent: " + totalPackets);
     }
 
-    public void initCheck() {
-        if(!isInitialised)
-            throw new IllegalStateException("Application is not initialised! Load the Simulation Model first!");
-    }
     public static Application getInstance() {
         if (instance == null)
             instance = new Application();

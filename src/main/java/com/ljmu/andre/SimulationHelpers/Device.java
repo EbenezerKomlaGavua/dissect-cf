@@ -249,6 +249,5 @@ public class Device extends Timed implements ConnectionEvent {
     }
 
     public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
-        Application.totalPackets++;
     }
 }
