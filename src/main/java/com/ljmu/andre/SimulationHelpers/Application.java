@@ -52,7 +52,7 @@ public class Application {
 
             // Convert the XML file to the representing SimulationModel object
             SimulationModel model = (SimulationModel) unmarshaller.unmarshal(file);
-            logger.log("Model: " + model.deviceModels.size());
+            logger.log("Loading %s Devices", model.deviceModels.size());
 
             // A cache used to quickly access loaded devices \\
             Map<String, Device> deviceMap = new HashMap<String, Device>();
@@ -75,9 +75,14 @@ public class Application {
                 // Get the Device created from the DeviceModel \\
                 for (String connectedID : device.getRepository().getLatencies().keySet()) {
                     Device connectedDevice = deviceMap.get(connectedID);
+                    logger.log("Connecting %s to %s", device.getId(), connectedID);
 
                     if (connectedDevice != null)
                         device.connectDevice(connectedDevice);
+                    else {
+                        logger.err("Couldn't connect devices [Source: %s] [Target: %s]",
+                                device.getId(), connectedID);
+                    }
                 }
             }
 
@@ -117,7 +122,8 @@ public class Application {
         Timed.simulateUntilLastEvent();
 
         // Print the total number of packets that were sent \\
-        logger.log("Total packets sent: " + totalPackets);
+        logger.log("Simulation Packet Stats [Total: %s] [Successful: %s] [Failed: %s]",
+                totalPackets, successfulPackets, failedPackets);
     }
 
     public static Application getInstance() {
