@@ -31,6 +31,7 @@ public class Application {
     private static int successfulPackets = 0;
     private static int failedPackets = 0;
     private static Application instance;
+    private boolean isInitialised;
     private List<Device> devices = new ArrayList<Device>();
     private boolean isInitialised = false;
 
@@ -83,6 +84,8 @@ public class Application {
                         device.connectDevice(connectedDevice);
                 }
             }
+
+            isInitialised = true;
         } catch (JAXBException e) {
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
@@ -110,7 +113,6 @@ public class Application {
      */
     public void startSim() {
         initCheck();
-
         // Subscribe all the built devices \\
         for (Device device : devices)
             device.start();
@@ -131,11 +133,10 @@ public class Application {
         }
     }
 
-    private void initCheck() {
-        if (!isInitialised)
-            throw new IllegalStateException("Application not initialised");
+    public void initCheck() {
+        if(!isInitialised)
+            throw new IllegalStateException("Application is not initialised! Load the Simulation Model first!");
     }
-
     public static Application getInstance() {
         if (instance == null)
             instance = new Application();
