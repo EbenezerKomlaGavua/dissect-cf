@@ -9,6 +9,7 @@ public class NetworkJob extends Job {
     private long packetSize;
     private String source;
     private String target;
+    private boolean shouldSave;
 
     /**
      * The generic constructor to be used by most of the trace generators and in
@@ -24,11 +25,12 @@ public class NetworkJob extends Job {
      * @param group
      * @param preceding
      */
-    public NetworkJob(String id, String source, String target, long submit, long packetSize, String user, String group, Job preceding) {
+    public NetworkJob(String id, String source, String target, long submit, long packetSize, boolean shouldSave, String user, String group, Job preceding) {
         super(id, submit, 0, 0, 0, 0, 0, user, group, null, preceding, 0);
         this.packetSize = packetSize;
         this.source = source;
         this.target = target;
+        this.shouldSave = shouldSave;
     }
 
 
@@ -42,6 +44,10 @@ public class NetworkJob extends Job {
 
     public String getTarget() {
         return target;
+    }
+
+    public boolean shouldSave() {
+        return shouldSave;
     }
 
     @Override public void started() {

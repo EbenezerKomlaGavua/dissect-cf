@@ -7,6 +7,7 @@ import com.ljmu.andre.SimulationHelpers.SimulationFileReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
@@ -18,8 +19,17 @@ public class DeviceModel {
     @XmlElement(name="CustomDevice")
     public String deviceClass;
 
+    @XmlAttribute(name="custom_attr")
+    public String customAttributes;
+
     @XmlElement(name="ID")
     public String id;
+
+    @XmlElement(name="SimulateFrom")
+    public long simFrom;
+
+    @XmlElement(name="SimulateTo")
+    public long simTo = -1;
 
     @XmlElement(name="TraceFileReader")
     public TraceFileReaderModel fileReaderModel;
@@ -31,18 +41,19 @@ public class DeviceModel {
         GenericTraceProducer traceProducer = null;
 
         if(fileReaderModel != null)
-            traceProducer = fileReaderModel.generateFileReader();
+            traceProducer = fileReaderModel.generateFileReader(simFrom, simTo);
 
         if(traceProducer == null && traceProducerModel != null)
-            traceProducer = traceProducerModel.generateProducer(id);
+            traceProducer = traceProducerModel.generateProducer(simFrom, simTo, id);
 
         if(deviceClass == null)
-            return new Device(id, traceProducer);
+            return new Device(id, traceProducer, customAttributes);
 
         try {
             Class<? extends Device> customDeviceClass = (Class<? extends Device>) Class.forName(deviceClass);
-            Constructor<? extends Device> constructor = customDeviceClass.getConstructor(String.class, GenericTraceProducer.class);
-            return constructor.newInstance(id, traceProducer);
+            Constructor deviceConstructor = customDeviceClass.getConstructor(String.class, GenericTraceProducer.class, String.class);
+
+            return (Device) deviceConstructor.newInstance(id, traceProducer, customAttributes);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (NoSuchMethodException e) {

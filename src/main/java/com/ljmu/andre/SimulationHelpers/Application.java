@@ -26,8 +26,11 @@ import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 public class Application {
     public static final String USER_DIR = System.getProperty("user.dir");
     private static final Logger logger = new Logger(Application.class);
-    public static int totalPackets = 0;
+    private static int totalPackets = 0;
+    private static int successfulPackets = 0;
+    private static int failedPackets = 0;
     private static Application instance;
+    private boolean isInitialised;
     private List<Device> devices = new ArrayList<Device>();
     private boolean isInitialised = false;
 
@@ -78,6 +81,8 @@ public class Application {
                         device.connectDevice(connectedDevice);
                 }
             }
+
+            isInitialised = true;
         } catch (JAXBException e) {
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
@@ -89,6 +94,15 @@ public class Application {
         }
 
         isInitialised = true;
+    }
+
+    public static void packetTransaction(boolean successful) {
+        if(successful)
+            successfulPackets++;
+        else
+            failedPackets++;
+
+        totalPackets++;
     }
 
     /**
@@ -107,6 +121,10 @@ public class Application {
         logger.log("Total packets sent: " + totalPackets);
     }
 
+    public void initCheck() {
+        if(!isInitialised)
+            throw new IllegalStateException("Application is not initialised! Load the Simulation Model first!");
+    }
     public static Application getInstance() {
         if (instance == null)
             instance = new Application();

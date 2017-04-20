@@ -31,9 +31,10 @@ public class Device extends Timed implements ConnectionEvent {
     private PhysicalMachine physicalMachine;
     private Repository repository;
     private GenericTraceProducer traceProducer;
+    private String customAttributes;
 
     Device(String id) {
-        this(id, null);
+        this(id, null, null);
     }
 
     /**
@@ -42,11 +43,12 @@ public class Device extends Timed implements ConnectionEvent {
      * @param id            - The ID of the Device
      * @param traceProducer - An OPTIONAL Trace File Reader which will load a list of jobs to run through
      */
-    public Device(String id, GenericTraceProducer traceProducer) {
+    public Device(String id, GenericTraceProducer traceProducer, String customAttributes) {
         this.id = id;
         this.physicalMachine = MachineHandler.claimPM(id);
         this.repository = physicalMachine.localDisk;
         this.traceProducer = traceProducer;
+        this.customAttributes = customAttributes;
 
         if (this.traceProducer != null) {
             try {
@@ -88,6 +90,14 @@ public class Device extends Timed implements ConnectionEvent {
             logger.log("Device was not connected: " + device.getId());
 
         return success;
+    }
+
+    public List<Job> getJobs() {
+        return networkJobs;
+    }
+
+    public String getCustomAttributes() {
+        return customAttributes;
     }
 
     /**
@@ -141,6 +151,8 @@ public class Device extends Timed implements ConnectionEvent {
                 PacketHandler.sendPacket(this, target, routingPacket);
             }
         } else {
+            Application.packetTransaction(connectionState==State.SUCCESS);
+
             // If the packet is not a RoutingPacket or the connection FAILED \\
             // Signal the outer class that a full connection cycle has finished \\
             handleConnectionFinished(source, connectionState, packet);
@@ -189,8 +201,12 @@ public class Device extends Timed implements ConnectionEvent {
         // Get the Job that should be processed \\
         NetworkJob currentJob = (NetworkJob) networkJobs.get(currentJobNum);
 
+        // Craft the packet to be sent based on the current job \\
+        BasePacket packet = new DataPacket("DeviceData", currentJob.getPacketSize(), false)
+                .setShouldStore(currentJob.shouldSave());
+
         // Send the Job to the intended Target \\
-        sendPacket(currentJob.getTarget(), new DataPacket("DeviceData", currentJob.getPacketSize(), false));
+        sendPacket(currentJob.getTarget(), packet);
 
         logger.log("Job: " + currentJobNum + "/" + networkJobs.size());
 
@@ -198,8 +214,9 @@ public class Device extends Timed implements ConnectionEvent {
         if (++currentJobNum < networkJobs.size()) {
             // Get the next job, calculate the time difference, and update the frequency to wait until it's ready \\
             Job nextJob = networkJobs.get(currentJobNum);
-            long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
-            logger.log("TimeDiff: " + timeDiff);
+            long timeDiff = nextJob.getSubmittimeSecs() - Timed.getFireCount();
+
+            logger.log("Next job starts in %sms", timeDiff);
             this.updateFrequency(timeDiff);
         } else
             stop();
