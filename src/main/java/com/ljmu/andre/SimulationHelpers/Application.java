@@ -26,7 +26,9 @@ import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 public class Application {
     public static final String USER_DIR = System.getProperty("user.dir");
     private static final Logger logger = new Logger(Application.class);
-    public static int totalPackets = 0;
+    private static int totalPackets = 0;
+    private static int successfulPackets = 0;
+    private static int failedPackets = 0;
     private static Application instance;
     private List<Device> devices = new ArrayList<Device>();
 
@@ -88,6 +90,15 @@ public class Application {
         } catch (SAXException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void packetTransaction(boolean successful) {
+        if(successful)
+            successfulPackets++;
+        else
+            failedPackets++;
+
+        totalPackets++;
     }
 
     /**
