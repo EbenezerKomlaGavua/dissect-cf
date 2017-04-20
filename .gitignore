@@ -15,3 +15,17 @@ bin
 lib/gson-2\.8\.0\.jar
 
 lib/gson-2\.8\.0-sources\.jar
+
+Smartphone\.csv
+
+Cloud\.csv
+
+Watch\.csv
+
+src/main/java/com/ljmu/andre/FitbitSimulation/Data/network_out\.csv
+
+src/main/java/com/ljmu/andre/FitbitSimulation/Data/network_in\.csv
+
+src/main/java/com/ljmu/andre/FitbitSimulation/Data/bluetooth_in\.csv
+
+*.csv

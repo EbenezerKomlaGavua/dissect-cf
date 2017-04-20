@@ -6,6 +6,9 @@ import com.ljmu.andre.SimulationHelpers.Packets.PacketHandler;
 import com.ljmu.andre.SimulationHelpers.Packets.RoutingPacket;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -31,6 +34,7 @@ public class Device extends Timed implements ConnectionEvent {
     private PhysicalMachine physicalMachine;
     private Repository repository;
     private GenericTraceProducer traceProducer;
+    public FileWriter fileWriter;
 
     Device(String id) {
         this(id, null);
@@ -47,6 +51,17 @@ public class Device extends Timed implements ConnectionEvent {
         this.physicalMachine = MachineHandler.claimPM(id);
         this.repository = physicalMachine.localDisk;
         this.traceProducer = traceProducer;
+
+        File outputFile = new File(Application.USER_DIR + "/" + id + ".csv");
+
+        try {
+            if(!outputFile.exists())
+                outputFile.createNewFile();
+
+            fileWriter = new FileWriter(outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         if (this.traceProducer != null) {
             try {
@@ -189,6 +204,13 @@ public class Device extends Timed implements ConnectionEvent {
         // Get the Job that should be processed \\
         NetworkJob currentJob = (NetworkJob) networkJobs.get(currentJobNum);
 
+        if(fires < currentJob.getSubmittimeSecs()) {
+            long timeDiff = currentJob.getSubmittimeSecs() - fires;
+            logger.log("TimeDiff: " + timeDiff);
+            this.updateFrequency(timeDiff);
+            return;
+        }
+
         // Send the Job to the intended Target \\
         sendPacket(currentJob.getTarget(), new DataPacket("DeviceData", currentJob.getPacketSize(), false));
 
@@ -198,7 +220,7 @@ public class Device extends Timed implements ConnectionEvent {
         if (++currentJobNum < networkJobs.size()) {
             // Get the next job, calculate the time difference, and update the frequency to wait until it's ready \\
             Job nextJob = networkJobs.get(currentJobNum);
-            long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
+            long timeDiff = nextJob.getSubmittimeSecs() - fires;
             logger.log("TimeDiff: " + timeDiff);
             this.updateFrequency(timeDiff);
         } else
@@ -221,9 +243,19 @@ public class Device extends Timed implements ConnectionEvent {
      */
     boolean sendPacket(String targetID, BasePacket packet) {
         logger.log("Sending to: " + targetID);
+
+        try {
+            String packetCSV = String.format(",%s,%s,%s", packet.id, packet.size, Timed.getFireCount());
+
+            fileWriter.write(targetID + packetCSV + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return PacketHandler.sendPacket(this, targetID, packet);
     }
 
     public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+        Application.totalPackets++;
     }
 }

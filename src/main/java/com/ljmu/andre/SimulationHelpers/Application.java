@@ -7,6 +7,7 @@ import com.ljmu.andre.SimulationHelpers.XMLModels.SimulationModel;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -98,6 +99,7 @@ public class Application {
      */
     public void startSim() {
         initCheck();
+
         // Subscribe all the built devices \\
         for (Device device : devices)
             device.start();
@@ -107,6 +109,20 @@ public class Application {
 
         // Print the total number of packets that were sent \\
         logger.log("Total packets sent: " + totalPackets);
+
+        for(Device device : devices) {
+            try {
+                device.fileWriter.flush();
+                device.fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void initCheck() {
+        if (!isInitialised)
+            throw new IllegalStateException("Application not initialised");
     }
 
     public static Application getInstance() {
@@ -115,10 +131,5 @@ public class Application {
 
         logger.log("Starting Application");
         return instance;
-    }
-
-    private void initCheck() {
-        if(!isInitialised)
-            throw new IllegalStateException("Application not initialised");
     }
 }
