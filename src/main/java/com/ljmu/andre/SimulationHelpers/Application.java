@@ -26,8 +26,11 @@ import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 public class Application {
     public static final String USER_DIR = System.getProperty("user.dir");
     private static final Logger logger = new Logger(Application.class);
-    public static int totalPackets = 0;
+    private static int totalPackets = 0;
+    private static int successfulPackets = 0;
+    private static int failedPackets = 0;
     private static Application instance;
+    private boolean isInitialised;
     private List<Device> devices = new ArrayList<Device>();
 
     private Application() {
@@ -49,7 +52,7 @@ public class Application {
 
             // Convert the XML file to the representing SimulationModel object
             SimulationModel model = (SimulationModel) unmarshaller.unmarshal(file);
-            logger.log("Model: " + model.deviceModels.size());
+            logger.log("Loading %s Devices", model.deviceModels.size());
 
             // A cache used to quickly access loaded devices \\
             Map<String, Device> deviceMap = new HashMap<String, Device>();
@@ -73,12 +76,18 @@ public class Application {
                 // Get the Device created from the DeviceModel \\
                 for (String connectedID : device.getRepository().getLatencies().keySet()) {
                     Device connectedDevice = deviceMap.get(connectedID);
-                    logger.log("COnnection: " + connectedID);
+                    logger.log("Connecting %s to %s", device.getId(), connectedID);
 
                     if (connectedDevice != null)
                         device.connectDevice(connectedDevice);
+                    else {
+                        logger.err("Couldn't connect devices [Source: %s] [Target: %s]",
+                                device.getId(), connectedID);
+                    }
                 }
             }
+
+            isInitialised = true;
         } catch (JAXBException e) {
             e.printStackTrace();
         } catch (ParserConfigurationException e) {
@@ -90,10 +99,20 @@ public class Application {
         }
     }
 
+    public static void packetTransaction(boolean successful) {
+        if(successful)
+            successfulPackets++;
+        else
+            failedPackets++;
+
+        totalPackets++;
+    }
+
     /**
      * Start the simulation
      */
     public void startSim() {
+        initCheck();
         // Subscribe all the built devices \\
         for (Device device : devices)
             device.start();
@@ -102,9 +121,14 @@ public class Application {
         Timed.simulateUntilLastEvent();
 
         // Print the total number of packets that were sent \\
-        logger.log("Total packets sent: " + totalPackets);
+        logger.log("Simulation Packet Stats [Total: %s] [Successful: %s] [Failed: %s]",
+                totalPackets, successfulPackets, failedPackets);
     }
 
+    public void initCheck() {
+        if(!isInitialised)
+            throw new IllegalStateException("Application is not initialised! Load the Simulation Model first!");
+    }
     public static Application getInstance() {
         if (instance == null)
             instance = new Application();

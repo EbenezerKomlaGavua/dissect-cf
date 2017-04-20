@@ -1,7 +1,7 @@
 package com.ljmu.andre.SimulationHelpers;
 
-import java.io.IOException;
-import java.io.RandomAccessFile;
+import com.ljmu.andre.SimulationHelpers.Utils.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,12 +11,12 @@ import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.TraceManagementException;
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.random.DistributionSpecifier;
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.random.GenericRandomTraceGenerator;
-import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.random.SimpleRandomTraceGenerator;
 
 /**
  * Created by Andre on 09/04/2017.
  */
 public class SimulationTraceProducer extends GenericRandomTraceGenerator implements Chartable {
+    private static final Logger logger = new Logger(SimulationTraceProducer.class);
     private final String source, target;
 
     /**
@@ -60,8 +60,6 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
         }
         sizeDistribution = size;
         distanceDistribution = gap;
-
-        System.out.println("Distance: " + distanceDistribution.toCSV());
     }
 
     @Override public String toCSV() {
@@ -83,29 +81,20 @@ public class SimulationTraceProducer extends GenericRandomTraceGenerator impleme
     protected List<Job> generateJobs() throws TraceManagementException {
         try {
             setJobNum(0);
-            System.err.println("Simulation Trace Generator parameters: jobnum - " + getJobNum() + " totprocs - "
-                    + getMaxTotalProcs());
+            logger.log("Generating %s jobs", jobCount);
+
             final ArrayList<Job> generatedList = new ArrayList<Job>();
 
-            System.out.println("COunt: " + jobCount);
-            System.out.println("FIrst: " + (simTo != -1 || jobCount != -1));
-            System.out.println("Second: " + (simTo == -1 || currentSubmitTime <= simTo));
-            System.out.println("Third: " + (jobCount == -1 || generatedList.size() < jobCount));
-
-            System.out.println("Current: " + currentSubmitTime + "|" + simTo);
-
-            while((simTo != -1 || jobCount != -1) &&
+            while ((simTo != -1 || jobCount != -1) &&
                     ((simTo == -1 || currentSubmitTime <= simTo) &&
                             (jobCount == -1 || generatedList.size() < jobCount))) {
-                long val = (long) (distanceDistribution.nextDouble() * (double) maxJobDistance);
-                System.out.println("Val: " + val);
-
                 currentSubmitTime += (long) (distanceDistribution.nextDouble() * (double) maxJobDistance);
-                System.out.println("Submit: " + currentSubmitTime + " | " + distanceDistribution.nextDouble());
                 int packetSize = (int) (sizeDistribution.nextDouble() * maxPacketSize);
                 Job j = getJobInstance(source, target, packetSize);
                 generatedList.add(j);
             }
+
+            logger.log("Generated %s jobs", jobCount);
             return generatedList;
         } catch (Exception e) {
             throw new TraceManagementException("Could not generate jobs", e);

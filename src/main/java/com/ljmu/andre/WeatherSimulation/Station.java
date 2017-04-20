@@ -49,7 +49,6 @@ public class Station extends Device {
         }
 
         @Override protected void eventAction() {
-            Station.this.getRepository().
         }
     }
 }

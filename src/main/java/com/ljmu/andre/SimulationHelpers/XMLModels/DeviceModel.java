@@ -17,7 +17,7 @@ public class DeviceModel {
     @XmlElement(name = "CustomDevice")
     public String deviceClass;
 
-    @XmlAttribute(name = "custom_attr")
+    @XmlAttribute(name="custom_attr")
     public String customAttributes;
 
     @XmlElement(name = "ID")

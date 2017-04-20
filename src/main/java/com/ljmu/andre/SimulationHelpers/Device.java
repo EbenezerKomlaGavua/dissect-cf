@@ -170,6 +170,8 @@ public class Device extends Timed implements ConnectionEvent {
                 PacketHandler.sendPacket(this, target, routingPacket);
             }
         } else {
+            Application.packetTransaction(connectionState==State.SUCCESS);
+
             // If the packet is not a RoutingPacket or the connection FAILED \\
             // Signal the outer class that a full connection cycle has finished \\
             handleConnectionFinished(source, connectionState, packet);
@@ -231,8 +233,9 @@ public class Device extends Timed implements ConnectionEvent {
         if (++currentJobNum < networkJobs.size()) {
             // Get the next job, calculate the time difference, and update the frequency to wait until it's ready \\
             Job nextJob = networkJobs.get(currentJobNum);
-            long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
-            logger.log("TimeDiff: " + timeDiff);
+            long timeDiff = nextJob.getSubmittimeSecs() - Timed.getFireCount();
+
+            logger.log("Next job starts in %sms", timeDiff);
             this.updateFrequency(timeDiff);
         } else
             stop();
@@ -258,6 +261,5 @@ public class Device extends Timed implements ConnectionEvent {
     }
 
     public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
-        System.out.println("Free Cap Size: " + getRepository().getFreeStorageCapacity());
     }
 }

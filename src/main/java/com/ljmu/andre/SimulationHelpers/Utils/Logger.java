@@ -50,4 +50,34 @@ public class Logger {
 
         System.out.println(message);
     }
+
+
+    /**
+     * Format the message with overloaded params and call {@link this#err(String)}
+     *
+     * @param message - The message to be printed (Containing formatting)
+     * @param params  - The parameters to bind to the messages formatting
+     */
+    public void err(String message, Object... params) {
+        message = String.format(message, params);
+        err(message);
+    }
+
+    /**
+     * Log an error message to the console with the current time and class tag
+     *
+     * @param message - The message to be printed
+     */
+    public void err(String message) {
+        // Format the current time of the simulation \\
+        String time = sdf.format(new Date(Timed.getFireCount() - TimeUnit.HOURS.toMillis(1)));
+
+        // Concatinate the time/tag and message \\
+        message = String.format("[%s][%s] %s",
+                time,
+                subscribedClass.getSimpleName(),
+                message);
+
+        System.err.println(message);
+    }
 }

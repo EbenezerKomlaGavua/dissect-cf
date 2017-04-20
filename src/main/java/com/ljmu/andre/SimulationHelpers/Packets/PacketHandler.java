@@ -125,14 +125,28 @@ public class PacketHandler {
             // Determine whether the packet should be saved to disk \\
             if (packet.getShouldStore()) {
                 // Register the packet to the source \\
-                registerPacketIfNotExist(source, packet);
+                if(!registerPacketIfNotExist(source, packet)) {
+                    logger.err("No more drive space left on [Device: %s]", source.getId());
+
+                    target.connectionFinished(source, State.FAILED, packet);
+                    return false;
+                }
 
                 // Attempt to send and save the packet on the target \\
-                return source.getRepository()
+
+                boolean hasDelivered = source.getRepository()
                         .requestContentDelivery(
                                 packet.id,
                                 target.getRepository(),
                                 consumptionEvent);
+
+                if(!hasDelivered) {
+                    target.connectionFinished(source, State.FAILED, packet);
+                    logger.err("Could not deliver packet [Source: %s] [Target: %s]",
+                            source.getId(), target.getId());
+                }
+
+                return hasDelivered;
             } else {
                 // Attempt to transfer the packet accross the network \\
                 NetworkNode.initTransfer(
@@ -146,7 +160,8 @@ public class PacketHandler {
                 return true;
             }
         } catch (NetworkException e) {
-            logger.log("Failed to send packet: " + packet.id + "\nReason: " + e.getMessage());
+            logger.err("Failed to send packet [ID: %s]", packet.id);
+            e.printStackTrace();
 
             // Check if the packet was registered before we tried to send it
             boolean packetIsRegistered = source.getRepository().lookup(packet.id) != null;
@@ -158,10 +173,10 @@ public class PacketHandler {
                     source.getRepository().registerObject(packet))
                 packet.addDeregisterObject(source);
 
-            // Alert the source that the packet failed
-            source.connectionFinished(source, State.FAILED, packet);
         }
 
+        // Alert the source that the packet failed
+        source.connectionFinished(source, State.FAILED, packet);
         return false;
     }
 
@@ -194,13 +209,12 @@ public class PacketHandler {
                 // Mark the child as visited so that it's not checked again \\
                 visited.add(child.getId());
                 route.push(child);
-                logger.log("Child: " + child.getId());
+                logger.log("Route Node: " + child.getId());
 
                 // If the target is reached, return the Stack as a Queue \\
                 if (child.getId().equals(targetID))
                     return new LinkedList<ConnectionEvent>(route);
-            } else
-                logger.log("Popped: " + route.pop().getId());
+            }
         }
 
         // Return Null if no Route could be established \\
@@ -246,11 +260,13 @@ public class PacketHandler {
      * @param source - The Device to Check/Register the Packet with
      * @param packet - The Packet to Check/Register
      */
-    private static void registerPacketIfNotExist(ConnectionEvent source, BasePacket packet) {
+    private static boolean registerPacketIfNotExist(ConnectionEvent source, BasePacket packet) {
         if (source.getRepository().lookup(packet.id) == null) {
             logger.log("Registering packet: " + packet);
-            source.getRepository().registerObject(packet);
+            return source.getRepository().registerObject(packet);
         }
+
+        return true;
     }
 
     /**
