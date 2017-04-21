@@ -197,6 +197,13 @@ public class Repository extends NetworkNode {
 		return requestContentDelivery(id, newId, this, ev);
 	}
 
+	public void deregAll() {
+		HashMap<String, StorageObject> mirror = new HashMap<String, StorageObject>(contents);
+
+		for(StorageObject obj : mirror.values()) {
+			deregisterObject(obj);
+		}
+	}
 	/**
 	 * This function registers a storage object for transfer. This object must
 	 * be already stored in the requested repository. After the transfer is

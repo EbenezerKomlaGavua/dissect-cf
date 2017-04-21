@@ -7,8 +7,14 @@ import com.ljmu.andre.SimulationHelpers.Packets.DataPacket;
 import com.ljmu.andre.SimulationHelpers.Packets.PacketHandler;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import hu.mta.sztaki.lpds.cloud.simulator.DeferredEvent;
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
+import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
 
 /**
  * Created by Andre on 13/04/2017.
@@ -39,17 +45,24 @@ public class Station extends Device {
         if(getRepository().getFreeStorageCapacity() < getRepository().getMaxStorageCapacity()) {
             //logger.log("Used space: " + (getRepository().getMaxStorageCapacity() - getRepository().getFreeStorageCapacity()));
             //getRepository().
+
+            int totalUsage = 0;
+
+            for(StorageObject obj : getRepository().contents())
+                totalUsage += obj.size;
+
+            logger.log("Used: %s, Free Space: %s", totalUsage, getRepository().getFreeStorageCapacity());
         }
 
-        new Metered(1);
+        for( int i = 0; i < sensors; i++)
+            new Metered(1);
+
         logger.log("Stats: [Current: %s] [Total: %s]", currentJob, getJobs().size());
     }
 
-    @Override public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
-        logger.log("Doing shit");
-        boolean state = getRepository().deregisterObject(packet);
-
-        logger.log("State: %s, Free Space: %s", state, getRepository().getFreeStorageCapacity());
+    public void sent(BasePacket packet) {
+        logger.log("Sent");
+        getRepository().deregisterObject(packet);
     }
 
     public class Metered extends DeferredEvent {
@@ -66,7 +79,8 @@ public class Station extends Device {
         }
 
         @Override protected void eventAction() {
-            PacketHandler.sendPacket(Station.this, "Server", new DataPacket("Data", 200, false));
+            DataPacket packet = new DataPacket("Data", 200, false);
+            PacketHandler.sendPacket(Station.this, "Server", packet);
         }
     }
 }

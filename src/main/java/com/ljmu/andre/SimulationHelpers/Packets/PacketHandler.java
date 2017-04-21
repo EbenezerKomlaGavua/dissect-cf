@@ -3,6 +3,7 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent.State;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
+import com.ljmu.andre.WeatherSimulation.Station;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -145,6 +146,9 @@ public class PacketHandler {
                     logger.err("Could not deliver packet [Source: %s] [Target: %s]",
                             source.getId(), target.getId());
                 }
+
+                if(source.getId().equals("Station"))
+                    ((Station) source).sent(packet);
 
                 return hasDelivered;
             } else {

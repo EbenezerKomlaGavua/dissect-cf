@@ -19,13 +19,13 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="Server" capacity="500000000" inBW="250000"
-                    outBW="250000" diskBW="50000">
+        <repository id="Server" capacity="38000000000000" inBW="250000"
+                    outBW="250000" diskBW="100000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
                 <power
                     model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
-                    idle="6.5" max="9" inState="default" />
+                    idle="65" max="90" inState="default" />
                 <!-- Not measured! -->
                 <power
                     model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.ConstantConsumptionModel"
@@ -62,8 +62,8 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="Gateway" capacity="500000000" inBW="250000"
-                    outBW="250000" diskBW="50000">
+        <repository id="Gateway" capacity="60000" inBW="1000"
+                    outBW="1000" diskBW="1000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
                 <power
