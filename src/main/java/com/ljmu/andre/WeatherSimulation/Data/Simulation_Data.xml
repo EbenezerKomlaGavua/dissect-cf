@@ -8,13 +8,13 @@
         <Device custom_attr="sensors=8">
             <ID>Station</ID>
             <CustomDevice>com.ljmu.andre.WeatherSimulation.Station</CustomDevice>
+            <SimulateTo>43140000</SimulateTo>
 
             <TraceProducer>
                 <StorePackets>true</StorePackets>
                 <TargetDevice>Server</TargetDevice>
-                <MaxPacketSize>200</MaxPacketSize>
-                <MaxJobDistance>3600000</MaxJobDistance>
-                <JobCount>600</JobCount>
+                <MaxPacketSize>0</MaxPacketSize>
+                <MaxJobDistance>60000</MaxJobDistance>
                 <Distributions template="max"/>
             </TraceProducer>
         </Device>

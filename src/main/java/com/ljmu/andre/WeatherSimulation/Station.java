@@ -1,6 +1,10 @@
 package com.ljmu.andre.WeatherSimulation;
 
+import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.Device;
+import com.ljmu.andre.SimulationHelpers.Packets.BasePacket;
+import com.ljmu.andre.SimulationHelpers.Packets.DataPacket;
+import com.ljmu.andre.SimulationHelpers.Packets.PacketHandler;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
 import hu.mta.sztaki.lpds.cloud.simulator.DeferredEvent;
@@ -27,18 +31,28 @@ public class Station extends Device {
     }
 
     @Override public void tick(long fires) {
-        if(currentJob++ > getJobs().size()) {
+        if(++currentJob > getJobs().size()) {
             stop();
             return;
         }
 
-        for(int i = 0; i < sensors; i++) {
-            new Metered(1000);
-            logger.log("Meter");
+        if(getRepository().getFreeStorageCapacity() < getRepository().getMaxStorageCapacity()) {
+            //logger.log("Used space: " + (getRepository().getMaxStorageCapacity() - getRepository().getFreeStorageCapacity()));
+            //getRepository().
         }
+
+        new Metered(1);
+        logger.log("Stats: [Current: %s] [Total: %s]", currentJob, getJobs().size());
     }
 
-    public static class Metered extends DeferredEvent {
+    @Override public void handleConnectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+        logger.log("Doing shit");
+        boolean state = getRepository().deregisterObject(packet);
+
+        logger.log("State: %s, Free Space: %s", state, getRepository().getFreeStorageCapacity());
+    }
+
+    public class Metered extends DeferredEvent {
 
         /**
          * Allows constructing objects that will receive an eventAction() call from
@@ -52,6 +66,7 @@ public class Station extends Device {
         }
 
         @Override protected void eventAction() {
+            PacketHandler.sendPacket(Station.this, "Server", new DataPacket("Data", 200, false));
         }
     }
 }
