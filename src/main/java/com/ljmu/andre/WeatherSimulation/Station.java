@@ -1,5 +1,6 @@
 package com.ljmu.andre.WeatherSimulation;
 
+import com.ljmu.andre.SimulationHelpers.Application;
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.Device;
 import com.ljmu.andre.SimulationHelpers.Packets.BasePacket;
@@ -11,10 +12,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 
 import hu.mta.sztaki.lpds.cloud.simulator.DeferredEvent;
+import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.GenericTraceProducer;
 import hu.mta.sztaki.lpds.cloud.simulator.io.StorageObject;
+
+import static com.ljmu.andre.SimulationHelpers.Application.server;
 
 /**
  * Created by Andre on 13/04/2017.
@@ -34,6 +39,7 @@ public class Station extends Device {
         super(id, traceProducer, customAttributes);
 
         sensors = Integer.parseInt(getAttribute("sensors"));
+        this.updateFrequency(60000);
     }
 
     @Override public void tick(long fires) {
@@ -42,21 +48,29 @@ public class Station extends Device {
             return;
         }
 
-        for( int i = 0; i < sensors; i++)
-            new Metered(1);
+        for( int i = 0; i < sensors; i++) {
+            int delay = new Random().nextInt(60) + 1;
+
+            new Metered(1000 * delay);
+        }
 
         if(getRepository().getFreeStorageCapacity() < getRepository().getMaxStorageCapacity()) {
             //logger.log("Used space: " + (getRepository().getMaxStorageCapacity() - getRepository().getFreeStorageCapacity()));
             //getRepository().
 
-            int totalUsage = 0;
+            int fileSize = 0;
 
-            for(StorageObject obj : getRepository().contents()) {
-                totalUsage += obj.size;
+            for(StorageObject obj : getRepository().contents())
+                fileSize += obj.size;
+
+            long servUsage = server.getRepository().getMaxStorageCapacity() - server.getRepository().getFreeStorageCapacity();
+            long statUsage = getRepository().getMaxStorageCapacity() - getRepository().getFreeStorageCapacity();
+            Application.write(servUsage +"," + statUsage + "," + Timed.getFireCount());
+
+            for(StorageObject obj : getRepository().contents())
                 PacketHandler.sendPacket(Station.this, "Server", (DataPacket) obj);
-            }
 
-            logger.log("Used: %s, Free Space: %s", totalUsage, getRepository().getFreeStorageCapacity());
+            logger.log("Used: %s, Free Space: %s", fileSize, getRepository().getFreeStorageCapacity());
         }
 
 

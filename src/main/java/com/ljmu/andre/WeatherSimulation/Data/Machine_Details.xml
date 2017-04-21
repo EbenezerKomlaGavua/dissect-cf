@@ -43,7 +43,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Station" value="5" />
+            <latency towards="Station" value="11" />
         </repository>
     </machine>
 
@@ -86,7 +86,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Server" value="5" />
+            <latency towards="Server" value="11" />
             <latency towards="Sensor0" value="5" />
         </repository>
     </machine>

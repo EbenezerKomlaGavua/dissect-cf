@@ -7,6 +7,7 @@ import com.ljmu.andre.SimulationHelpers.XMLModels.SimulationModel;
 import org.xml.sax.SAXException;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,8 +31,10 @@ public class Application {
     private static int successfulPackets = 0;
     private static int failedPackets = 0;
     private static Application instance;
+    private static FileWriter writer;
     private boolean isInitialised;
     private List<Device> devices = new ArrayList<Device>();
+    public static Device server;
 
     private Application() {
     }
@@ -66,6 +69,9 @@ public class Application {
                 // Create the appropriate Device Type based on the DeviceModel type \\
                 Device device = deviceModel.generateDevice();
 
+                if(deviceModel.id.equals("Server"))
+                    server = device;
+
                 // Add the device to the system so that it can be connected \\
                 devices.add(device);
                 deviceMap.put(device.getId(), device);
@@ -99,20 +105,20 @@ public class Application {
         }
     }
 
-    public static void packetTransaction(boolean successful) {
-        if(successful)
-            successfulPackets++;
-        else
-            failedPackets++;
-
-        totalPackets++;
-    }
-
     /**
      * Start the simulation
      */
     public void startSim() {
         initCheck();
+        File outputFile = new File(USER_DIR + "/cloud_output_sim.csv");
+        try {
+            if (!outputFile.exists())
+                outputFile.createNewFile();
+
+            writer = new FileWriter(outputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // Subscribe all the built devices \\
         for (Device device : devices)
             device.start();
@@ -123,12 +129,39 @@ public class Application {
         // Print the total number of packets that were sent \\
         logger.log("Simulation Packet Stats [Total: %s] [Successful: %s] [Failed: %s]",
                 totalPackets, successfulPackets, failedPackets);
+
+        try {
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void write(String message) {
+        try {
+            writer.write(message + "\n");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        logger.log("Writing: " + message);
     }
 
     public void initCheck() {
-        if(!isInitialised)
+        if (!isInitialised)
             throw new IllegalStateException("Application is not initialised! Load the Simulation Model first!");
     }
+
+    public static void packetTransaction(boolean successful) {
+        if (successful)
+            successfulPackets++;
+        else
+            failedPackets++;
+
+        totalPackets++;
+    }
+
     public static Application getInstance() {
         if (instance == null)
             instance = new Application();
