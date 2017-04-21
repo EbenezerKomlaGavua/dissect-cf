@@ -42,20 +42,23 @@ public class Station extends Device {
             return;
         }
 
+        for( int i = 0; i < sensors; i++)
+            new Metered(1);
+
         if(getRepository().getFreeStorageCapacity() < getRepository().getMaxStorageCapacity()) {
             //logger.log("Used space: " + (getRepository().getMaxStorageCapacity() - getRepository().getFreeStorageCapacity()));
             //getRepository().
 
             int totalUsage = 0;
 
-            for(StorageObject obj : getRepository().contents())
+            for(StorageObject obj : getRepository().contents()) {
                 totalUsage += obj.size;
+                PacketHandler.sendPacket(Station.this, "Server", (DataPacket) obj);
+            }
 
             logger.log("Used: %s, Free Space: %s", totalUsage, getRepository().getFreeStorageCapacity());
         }
 
-        for( int i = 0; i < sensors; i++)
-            new Metered(1);
 
         logger.log("Stats: [Current: %s] [Total: %s]", currentJob, getJobs().size());
     }
@@ -79,8 +82,9 @@ public class Station extends Device {
         }
 
         @Override protected void eventAction() {
-            DataPacket packet = new DataPacket("Data", 200, false);
-            PacketHandler.sendPacket(Station.this, "Server", packet);
+            DataPacket packet = (DataPacket) new DataPacket("Data", 200, false)
+                    .addDeregisterObject(Station.this);
+            Station.this.getRepository().registerObject(packet);
         }
     }
 }
