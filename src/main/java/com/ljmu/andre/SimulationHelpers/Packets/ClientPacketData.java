@@ -3,41 +3,34 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 import java.io.Serializable;
 import java.util.concurrent.ThreadLocalRandom;
 
+@SuppressWarnings("serial")
 public class ClientPacketData implements Serializable{
 
 	  @SerializedName("Id")
-
 	    private String id;
 
 	    @SerializedName("Simulation Duration")
-
 	    private long simDuration;
 
 	    @SerializedName("Start Time")
-
 	    private long startTime;
 
 	    @SerializedName("Frequency")
-	   
-	    private long frequency;
+	   	    private long frequency;
 
 	    @SerializedName("Min Data/Sec")
-
 	    private double minDataPerSec;
 
 
 	    @SerializedName("Max Data/Sec")
-
 	    private double maxDataPerSec;
 
 
 	    @SerializedName("Send Delay")
-
 	    private long sendDelay;
 
 
 	    @SerializedName("Max Connection Attempts")
-
 	    private int connectionCap;
 	    
 	    

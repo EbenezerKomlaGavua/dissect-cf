@@ -3,6 +3,8 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.Packets.BasePacket;
 import com.ljmu.andre.SimulationHelpers.Packets.SubscriptionPacket;
@@ -16,10 +18,10 @@ import com.ljmu.andre.SimulationHelpers.Packets.*;
 public class ClientPacket  extends Timed implements ConnectionEvent{
 
 	private final int connectionCap;
-    private int connectionAttempts = 0;
-    private boolean isOnCooldown = false;
+   // private int connectionAttempts = 0;
+   // private boolean isOnCooldown = false;
     
-    private String serverpacket;
+    private ServerPacket serverpacket;
     private PhysicalMachine clientpacketMachine;
     
     private ClientPacketData clientpacketData;
@@ -28,12 +30,12 @@ public class ClientPacket  extends Timed implements ConnectionEvent{
     private int dataCollection = 0;
     private long lastSentTime = 0;
 	
-    public ClientPacket(PhysicalMachine clientpacketMachine, ClientPacketData clientpacketData) {
-	this(clientpacketMachine,null,clientpacketData);
-    }
+   // public ClientPacket(PhysicalMachine clientpacketMachine, ClientPacketData clientpacketData) {
+	//this(clientpacketMachine,null,clientpacketData);
+ //   }
     
     
-    public ClientPacket (PhysicalMachine clientpacketMachine, String serverpacket,ClientPacketData clientpacketData) {
+    public ClientPacket (PhysicalMachine clientpacketMachine, ServerPacket serverpacket,ClientPacketData clientpacketData) {
     this.clientpacketMachine = clientpacketMachine;
     this.serverpacket = serverpacket;
     this.clientpacketData = clientpacketData;
@@ -45,25 +47,30 @@ public class ClientPacket  extends Timed implements ConnectionEvent{
         subscribe(clientpacketData.getFrequency());
     }
     	
-    //Establishing a route for data transfer
-   public void getServerPacket(String serverpacket) {
-	   this.serverpacket = serverpacket;
-	   BasePacket routePacket = new RoutingPacket(route).getRoute();
-	   PacketHandler.sendPacket(this, serverpacket,routePacket);
-   }
-    
+  //Establishing a route for data transfer
+    public void getServerPacket(ServerPacket serverpacket,String route,BasePacket payload,Queue<ConnectionEvent>  routePacket) {
+ 	   this.serverpacket = serverpacket;
+ 	  //String route = null;
+	Queue<ConnectionEvent>  routePack = new RoutingPacket(route, payload, serverpacket, routePacket).getRoute();
+ 	   PacketHandler.sendPacket(serverpacket, route, payload);
+    }
+     
     
     // Binding the client to the server to establish a connection. The client must subscribe for server to accept
-    public void bindServerPacket(String serverpacket) {
+    public void bindServerPacket(ServerPacket serverpacket) {
     	this.serverpacket = serverpacket;
     	BasePacket subPacket = new SubscriptionPacket(true).setShouldStore(isSubscribed());
     	PacketHandler.sendPacket(this,serverpacket, subPacket);
     }
     
+  
+    
     //If the connection is established, the Id of the server will be obtained
     public String getId() {
         return getRepository().getName();
     }
+    
+    
     
     
     // If the connection fails , packet transfer will fail
@@ -108,11 +115,11 @@ public class ClientPacket  extends Timed implements ConnectionEvent{
 
 
 
-           BasePacket basePacket = new RoutingPacket("clientpacketData",dataCollection).getPayload(this);
+          BasePacket basePacket = new DataPacket("clientpacketData",dataCollection, false);
             
             sendList.add(basePacket);
 
-            ArrayList<BasePacket> failedPackets = PacketHandler.sendPacket(this, serverpacket, sendList);
+          //  ArrayList<BasePacket> failedPackets = PacketHandler.sendPacket(this, serverpacket, basePacket);
             dataCollection = 0;
             lastSentTime = fires;
         }
