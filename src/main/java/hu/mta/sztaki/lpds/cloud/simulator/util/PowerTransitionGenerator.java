@@ -30,6 +30,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.PowerState;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 /**
  * This helper class provides a simple way to generate the necessary power
@@ -45,6 +46,7 @@ import java.util.EnumMap;
  */
 public class PowerTransitionGenerator {
 
+	
 	/**
 	 * The generator function that derives the power transition and power state
 	 * definitions from a few simple parameters. The generated power states will
@@ -110,5 +112,24 @@ public class PowerTransitionGenerator {
 		netStates.put(PhysicalMachine.State.OFF, new PowerState(0, 0, ConstantConsumptionModel.class));
 		return returner;
 	}
+	/**
+	 * fetches the required power state from the corresponding power state map. If
+	 * the new state is not listed, it serves back the default mapping
+	 * 
+	 * @param theMap
+	 *            The map to look up the new power state
+	 * @param newState
+	 *            the textual spec of the power state
+	 * @return the power state to be used in accordance to the textual spec
+	 */
+	public static PowerState getPowerStateFromMap(final Map<String, PowerState> theMap, final String newState) {
+		PowerState returner;
+		if ((returner = theMap.get(newState)) == null) {
+			Object defaultPowerState = null;
+			returner = theMap.get(defaultPowerState);
+		}
+		return returner;
+	}
 
 }
+

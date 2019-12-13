@@ -63,16 +63,14 @@ public class ClientPacket  extends Timed implements ConnectionEvent{
     	PacketHandler.sendPacket(this,serverpacket, subPacket);
     }
     
-  
-    
+      
     //If the connection is established, the Id of the server will be obtained
     public String getId() {
         return getRepository().getName();
     }
     
     
-    
-    
+        
     // If the connection fails , packet transfer will fail
      @Override
     public void tick(long fires) {
