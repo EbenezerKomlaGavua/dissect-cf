@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Simulation>
+    <Devices>
+           <SocketConnnection>
+            <ID>ClientMachine</ID>
+            <MachineID>ClientMachine</MachineID>
+            <SimulationFileName>network_in.csv</SimulationFileName>
+            <Connection>
+                <TargetDevice>ServerMachine</TargetDevice>
+                <Latency>5</Latency>
+            </Connection>
+        </SocketConnnection>
+    </Devices>
+</Simulation>

@@ -5,15 +5,18 @@ import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 public class Main {
 	
 	private static final Logger logger = new Logger(Main.class);
-    public static Scenario scenario;
-        public static void main(String[] args) {
 
-        try {
-            scenario = new Scenario();
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
+    public static Scenarioo scenarioo;
+	
+	  public static void main(String[] args) {
 
-    }
+		  try {
 
+	            scenarioo = new Scenarioo();
+
+	        } catch (Throwable e) {
+
+	            e.printStackTrace();
+	        }
+	    }
 }
