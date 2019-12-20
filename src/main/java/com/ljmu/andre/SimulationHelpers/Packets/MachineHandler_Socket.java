@@ -19,10 +19,12 @@ import hu.mta.sztaki.lpds.cloud.simulator.util.CloudLoader;
 public class MachineHandler_Socket  {
     private static final Logger logger = new Logger( MachineHandler_Socket.class);
     private static IaaSService iaaSService;
+   // private static IaaSService iaaSService;
     private static boolean isInitialized = false;
 
     public static void init(@NotNull String MACHINE_SOCKET_XML_PATH) throws ParserConfigurationException, SAXException, IOException {
         iaaSService = CloudLoader.loadNodes(MACHINE_SOCKET_XML_PATH);
+       
         isInitialized = true;
     }
 

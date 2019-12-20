@@ -5,9 +5,12 @@ import java.util.List;
 
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.Device;
+import com.ljmu.andre.SimulationHelpers.NetworkJob;
+import com.ljmu.andre.SimulationHelpers.SimulationFileReader;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
+import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
@@ -26,8 +29,10 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	private BasePacket packet;
 	private Repository repository;
 	
+	private List<Job> jobList;
+	private int jobNumber = 0;
 	
-		
+	private SimulationFileReader simulationFileReader;
 	 /**
      * Initiate a new Device and claim a PhysicalMachine for it
      *
@@ -41,6 +46,17 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 		this.id = id;
 		this.repository = client.localDisk;
 	}
+	
+	
+	public ClientMachine(
+            PhysicalMachine client,
+            SimulationFileReader simulationFileReader) {
+        this.client = client;
+        this.simulationFileReader = simulationFileReader;
+        jobList = simulationFileReader.getAllJobs();
+
+    }
+	
 	
 	
 	 /**
@@ -62,6 +78,30 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 		PacketHandler.sendPacket(this, server, bindPacket);
 	}
 
+	
+	 
+		@Override
+		public void tick(long fires) {
+			// TODO Auto-generated method stub
+			NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
+	        PacketHandler.sendPacket(this, server, new DataPacket("Data", currentJob.getPacketSize(), false));
+	        logger.log("Job: " + jobNumber + "/" + jobList.size());
+
+	        if (++jobNumber < jobList.size()) {
+	            Job nextJob = jobList.get(jobNumber);
+	            long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
+	            logger.log("TimeDiff: " + timeDiff);
+	            this.updateFrequency(timeDiff);
+
+	        } else {
+
+	            PacketHandler.sendPacket(this, server, new SubscriptionPacket(false));
+
+	            stop();
+
+	        }
+			
+		}
 	
 	@Override
 	public void conComplete() {
@@ -92,14 +132,11 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	}
 
 
-
 	@Override
 	public void connectionStarted(ConnectionEvent source) {
 		// TODO Auto-generated method stub
 		
 	}
-
-
 
 	@Override
 	public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
@@ -110,21 +147,17 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	        }
 	}
 
-
-
 	@Override
 	public Repository getRepository() {
 		// TODO Auto-generated method stub
 		return client.localDisk;
 	}
 
-
 	@Override
 	public List<ConnectionEvent> getConnectedDevices() {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	  //If the connection is established, the Id of the server will be obtained
 	@Override
 	public String getId() {
@@ -133,10 +166,11 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	}
 
 
-	@Override
-	public void tick(long fires) {
-		// TODO Auto-generated method stub
-		
-	}
+	 private void stop() {
+	        unsubscribe();
+
+	    }
+	
+	
 
 }

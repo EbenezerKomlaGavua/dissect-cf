@@ -52,8 +52,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	    }
 	
 	
-		
-		
+				
 	public void tick(long fires) {
 		// TODO Auto-generated method stub
 		logger.log("Tick: " + fires);

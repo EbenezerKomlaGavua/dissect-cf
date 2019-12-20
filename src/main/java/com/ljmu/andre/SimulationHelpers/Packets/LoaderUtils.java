@@ -1,5 +1,8 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
+import com.ljmu.andre.SimulationHelpers.NetworkJob;
+//import static com.ljmu.andre.SimulationHelpers.Packets.NETWORK_IN_NEW_CSV;
+
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
@@ -10,15 +13,30 @@ public class LoaderUtils {
 	 
 
 
-	    static ClientMachine getClientMachine() throws NoSuchMethodException {
+	static ClientMachine getClientMachine() throws NoSuchMethodException {
      PhysicalMachine clientMachine = MachineHandler_Socket.claimPM("ClientMachine");
 
      if (clientMachine == null)
 
          throw new NullPointerException("ClientMachine not found");
 
+    // TraceFileReader traceFileReader = new TraceFileReader(
 
+     /// "NetworkIN",
+
+     // NETWORK_IN_CSV,
+
+    // 0, Integer.MAX_VALUE, true,
+
+     // NetworkJob.class);
+    
+     
+             
+     
      return new ClientMachine(clientMachine, null, 0, null, null, null);
+     
+     
+     
     // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
 
              //"BluetoothIN",
@@ -30,7 +48,7 @@ public class LoaderUtils {
             // NetworkJob.class);
 
 
-
+ 
 
 
 }
