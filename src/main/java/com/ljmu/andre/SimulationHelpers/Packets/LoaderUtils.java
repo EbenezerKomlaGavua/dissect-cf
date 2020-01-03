@@ -5,35 +5,43 @@ import com.ljmu.andre.SimulationHelpers.NetworkJob;
 
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
+import hu.mta.sztaki.lpds.cloud.simulator.helpers.trace.file.TraceFileReaderFoundation;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
+import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 public class LoaderUtils {
 	
 	 private static final Logger logger = new Logger(LoaderUtils.class);
+	private static final String Address = null;
+	private static final int Port = 0;
 	 
 
 
 	static ClientMachine getClientMachine() throws NoSuchMethodException {
-     PhysicalMachine clientMachine = MachineHandler_Socket.claimPM("ClientMachine");
+     PhysicalMachine client = MachineHandler_Socket.claimPM("ClientMachine");
 
-     if (clientMachine == null)
+     if (client == null)
 
          throw new NullPointerException("ClientMachine not found");
 
-    // TraceFileReader traceFileReader = new TraceFileReader(
+   // TraceFileReaderFoundation traceFileReader = new TraceFileReader(
 
-     /// "NetworkIN",
+     // "NetworkIN",
 
-     // NETWORK_IN_CSV,
+    //  NETWORK_IN_CSV,
 
     // 0, Integer.MAX_VALUE, true,
 
-     // NetworkJob.class);
+    //  NetworkJob.class);
     
      
              
      
-     return new ClientMachine(clientMachine, null, 0, null, null, null);
+     ServerMachine server = null;
+	int port = 0;
+	String id = null;
+	Repository repository = null;
+	return new ClientMachine(client, server, port, Address, id, repository);
      
      
      
@@ -77,7 +85,28 @@ public class LoaderUtils {
 
 
 
-     return new ServerMachine(server, 0, null, null, null);
+     String id = null;
+	ClientMachine client = null;
+	return new ServerMachine(server,  Port, Address, client, id);
+	
+ }	
+
+	
+	 static Cloud getCloud() throws NoSuchMethodException {
+
+	    /// FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
+
+	            // "NetworkIN",
+
+	             //NETWORK_IN_CSV,
+
+	            // 0, Integer.MAX_VALUE, true,
+
+	            // NetworkJob.class);
+
+	     return new Cloud(MachineHandler_Socket.claimPM("Cloud"));
+
+	// }
 
  }
  }

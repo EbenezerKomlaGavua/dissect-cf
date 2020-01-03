@@ -11,7 +11,7 @@ public class Scenarioo extends Timed {
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket.xml";
 	private ClientMachine clientmachine;
     private ServerMachine servermachine;
-	
+    private Cloud cloud;
 	
 	// The gap between packet transfer
 		public static int timeIncrement = 5;
@@ -24,15 +24,16 @@ public class Scenarioo extends Timed {
 		        MachineHandler_Socket.init( MACHINE_SOCKET_XML_PATH);
 		        servermachine = LoaderUtils.getServerMachine();
 		        clientmachine = LoaderUtils.getClientMachine();
+		        cloud = LoaderUtils.getCloud();
 		        clientmachine.start();
 		        servermachine.start();
+		        cloud.start();
 		        clientmachine.bindServerMachine(servermachine);
 		       
 		        Timed.simulateUntil(2);
 }
 		
 		
-
 		@Override
 		public void tick(long fires) {
 			// TODO Auto-generated method stub

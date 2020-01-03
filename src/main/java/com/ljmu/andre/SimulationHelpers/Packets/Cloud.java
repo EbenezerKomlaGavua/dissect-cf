@@ -14,7 +14,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public class Cloud extends Timed implements ConnectionEvent{
 	private static final Logger logger = new Logger(Cloud.class);
 	
-	private ServerPacket serverpacket;
+	private ServerMachine server;
 	 private PhysicalMachine cloudMachine;
 
 	 
@@ -23,8 +23,12 @@ public class Cloud extends Timed implements ConnectionEvent{
 	    private int jobNumber = 0;
 	 	 
 	   
-	   public void bindServerPacket(ServerPacket serverpacket) {
-	        this.serverpacket = serverpacket;
+	   public Cloud(PhysicalMachine claimPM) {
+			// TODO Auto-generated constructor stub
+		}
+
+	public void bindServerMachine(ServerMachine server) {
+	        this.server = server;
 
 	    } 
 	    
@@ -32,7 +36,7 @@ public class Cloud extends Timed implements ConnectionEvent{
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
 	    	NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
-	     PacketHandler.sendPacket(this, serverpacket, new DataPacket("Data", currentJob.getPacketSize(), false));
+	     PacketHandler.sendPacket(this, server, new DataPacket("Data", currentJob.getPacketSize(), false));
 	    	
 	     logger.log("Job: " + jobNumber + "/" + jobList.size());
 
@@ -42,7 +46,7 @@ public class Cloud extends Timed implements ConnectionEvent{
 	            logger.log("TimeDiff: " + timeDiff);
 	            this.updateFrequency(timeDiff);
 	        } else {
-	            PacketHandler.sendPacket(this, serverpacket, new SubscriptionPacket(false));
+	            PacketHandler.sendPacket(this, server, new SubscriptionPacket(false));
 	            stop();
 	        }
 	    	    }
