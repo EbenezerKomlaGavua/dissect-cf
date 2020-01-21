@@ -1,5 +1,7 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
+import java.io.RandomAccessFile;
+
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
@@ -21,6 +23,9 @@ public class Scenarioo extends Timed {
 			   subscribe(1);
 			   logger.log("Starting Scenario");
 
+			   RandomAccessFile raf=new RandomAccessFile(MACHINE_SOCKET_XML_PATH,"r");
+			   System.out.println(raf.read());
+			   raf.close();
 		        MachineHandler_Socket.init( MACHINE_SOCKET_XML_PATH);
 		        servermachine = LoaderUtils.getServerMachine();
 		        clientmachine = LoaderUtils.getClientMachine();
