@@ -31,10 +31,10 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode;
 
 import java.util.EnumMap;
-<<<<<<< HEAD
-=======
+//<<<<<<< HEAD
+//=======
 import java.util.HashMap;
->>>>>>> 62b47dc0046a2a6ddf33e0b6f3a779d2c56aae01
+//>>>>>>> 62b47dc0046a2a6ddf33e0b6f3a779d2c56aae01
 import java.util.Map;
 
 /**
@@ -51,9 +51,9 @@ import java.util.Map;
  */
 public class PowerTransitionGenerator {
 
-<<<<<<< HEAD
+//<<<<<<< HEAD
 	
-=======
+///=======
 	public static final String defaultPowerState = "default";
 
 	/**
@@ -79,7 +79,7 @@ public class PowerTransitionGenerator {
 		network
 	}
 
->>>>>>> 62b47dc0046a2a6ddf33e0b6f3a779d2c56aae01
+//>>>>>>> 62b47dc0046a2a6ddf33e0b6f3a779d2c56aae01
 	/**
 	 * The generator function that derives the power transition and power state
 	 * definitions from a few simple parameters. The generated power states will all
@@ -153,6 +153,8 @@ public class PowerTransitionGenerator {
 		}
 		return returner;
 	}
+	
+	/**
 	/**
 	 * fetches the required power state from the corresponding power state map. If
 	 * the new state is not listed, it serves back the default mapping
@@ -163,6 +165,7 @@ public class PowerTransitionGenerator {
 	 *            the textual spec of the power state
 	 * @return the power state to be used in accordance to the textual spec
 	 */
+	/**
 	public static PowerState getPowerStateFromMap(final Map<String, PowerState> theMap, final String newState) {
 		PowerState returner;
 		if ((returner = theMap.get(newState)) == null) {
@@ -171,6 +174,7 @@ public class PowerTransitionGenerator {
 		}
 		return returner;
 	}
+	*/
 
 }
 
