@@ -138,7 +138,7 @@ public class PacketHandler {
                         .requestContentDelivery(
                                 packet.id,
                                 target.getRepository(),
-                                consumptionEvent);
+                                consumptionEvent) != null;
 
                 if(!hasDelivered) {
                     target.connectionFinished(source, State.FAILED, packet);
