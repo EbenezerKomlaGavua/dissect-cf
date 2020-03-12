@@ -12,17 +12,41 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public class LoaderUtils {
 	
 	 private static final Logger logger = new Logger(LoaderUtils.class);
-	private static final String Address = null;
-	private static final int Port = 0;
+	//private static final String Address = null;
+	//private static final int Port = 0;
+	private static DataPacket datapacket;
+	private static ClientMachine ClientMachine;
 	 
 
+	
+	
+	static ServerMachine getServerMachine() throws NoSuchMethodException {
+
+	     PhysicalMachine ServerMachine = MachineHandler_Socket.claimPM("ServerMachine");
+
+	     if (ServerMachine == null)
+
+	         throw new NullPointerException("ServerMachine not found");
+
+
+	     	DataPacket NewdataPacket= datapacket;
+	    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
+
+	             
+		return new ServerMachine(ServerMachine,  datapacket, ClientMachine);
+		
+	 }	
+	
+	
 
 	static ClientMachine getClientMachine() throws NoSuchMethodException {
-     PhysicalMachine client = MachineHandler_Socket.claimPM("ClientMachine");
+     PhysicalMachine ClientMachine = MachineHandler_Socket.claimPM("ClientMachine");
 
-     if (client == null)
+     if (ClientMachine == null)
 
          throw new NullPointerException("ClientMachine not found");
+     
+     DataPacket NewdataPacket= datapacket;
 
    // TraceFileReaderFoundation traceFileReader = new TraceFileReader(
 
@@ -37,59 +61,16 @@ public class LoaderUtils {
      
              
      
-     ServerMachine server = null;
-	int port = 0;
-	String id = null;
-	Repository repository = null;
-	return new ClientMachine(client, server, port, Address, id, repository);
+    // ServerMachine ServerMachine = null;
+	//int port = 0;
+	//String id = null;
+	//Repository repository = null;
+	return new ClientMachine(ClientMachine,  null, datapacket, null);
      
      
-     
-    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
-
-             //"BluetoothIN",
-
-            // BLUETOOTH_IN_CSV,
-
-            // 0, Integer.MAX_VALUE, true,
-
-            // NetworkJob.class);
-
-
  
-
-
 }
-//}
 
-
- static ServerMachine getServerMachine() throws NoSuchMethodException {
-
-     PhysicalMachine server = MachineHandler_Socket.claimPM("Server");
-
-     if (server == null)
-
-         throw new NullPointerException("ServerMachine not found");
-
-
-
-    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
-
-             //"NetworkOUT",
-
-            // NETWORK_OUT_CSV,
-
-            // 0, Integer.MAX_VALUE, true,
-
-            // NetworkJob.class);
-
-
-
-     String id = null;
-	ClientMachine client = null;
-	return new ServerMachine(server,  Port, Address, client, id);
-	
- }	
 
 	
 	 static Cloud getCloud() throws NoSuchMethodException {
@@ -113,20 +94,4 @@ public class LoaderUtils {
 
 
 
-// static Cloud getCloud() throws NoSuchMethodException {
 
-    /// FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
-
-            // "NetworkIN",
-
-             //NETWORK_IN_CSV,
-
-            // 0, Integer.MAX_VALUE, true,
-
-            // NetworkJob.class);
-
-     //return new Cloud(MachineHandler.claimPM("Cloud"), traceFileReader);
-
-// }
-
-//}

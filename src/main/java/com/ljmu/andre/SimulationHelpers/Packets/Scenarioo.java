@@ -9,7 +9,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 public class Scenarioo extends Timed {
 	private static final Logger logger = new Logger(Scenarioo.class);
 	 private static final String USER_DIR = System.getProperty("user.dir");
-	 public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
+	 //public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
 	private ClientMachine clientmachine;
     private ServerMachine servermachine;
@@ -20,7 +20,7 @@ public class Scenarioo extends Timed {
 
 		
 		   Scenarioo() throws Exception {
-			   subscribe(1);
+			 //  subscribe(1);
 			   logger.log("Starting Scenario");
 
 			   RandomAccessFile raf=new RandomAccessFile(MACHINE_SOCKET_XML_PATH,"r");
@@ -33,7 +33,14 @@ public class Scenarioo extends Timed {
 		        clientmachine.start();
 		        servermachine.start();
 		        cloud.start();
+		        
+		        servermachine.bindClientMachine(clientmachine);
 		        clientmachine.bindServerMachine(servermachine);
+		        cloud.bindClientMachine(clientmachine);
+		        
+		        
+		        
+		        subscribe(1);
 		       
 		        Timed.simulateUntil(2);
 }

@@ -19,63 +19,67 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 public class ClientMachine  extends Timed implements ConsumptionEvent,ConnectionEvent{
   private static final Logger logger = new Logger(ClientMachine.class);
-  private static final int SUBSCRIBE_FREQ = 100;
-	PhysicalMachine client;
-	private String Address;
-	private int Port;
+ private static final int SUBSCRIBE_FREQ = 100;
+	PhysicalMachine ClientMachine;
+	//private String Address;
+	///private int Port;
 	 private String id;
-	private ServerMachine server;
+	private ServerMachine ServerMachine;
 	private List<String> failedPacketIds = new ArrayList<String>();
 	private BasePacket packet;
 	private Repository repository;
+	private DataPacket datapacket;
+	
 	
 	private List<Job> jobList;
 	private int jobNumber = 0;
 	
-	private SimulationFileReader simulationFileReader;
+	//private SimulationFileReader simulationFileReader;
 	 /**
      * Initiate a new Device and claim a PhysicalMachine for it
      *
      * @param id            - The ID of the Device
   */
-	public ClientMachine(PhysicalMachine client,ServerMachine server,int Port,String Address,String id, Repository repository) {
-		this.client= client;
-		this.server= server;
-		this.Address= Address;
-		this.Port= Port;
-		this.id = id;
-		this.repository = client.localDisk;
+	public ClientMachine(PhysicalMachine ClientMachine,ServerMachine ServerMachine, DataPacket datapacket, Repository repository) {
+		this.ClientMachine= ClientMachine;
+		this.ServerMachine= ServerMachine;
+		//this.Address= Address;
+		//this.Port= Port;
+		//this.id = id;
+		this.datapacket= datapacket;
+		this.repository = ClientMachine.localDisk;
 	}
 	
 	
-	public ClientMachine(
-            PhysicalMachine client,
-            SimulationFileReader simulationFileReader) {
-        this.client = client;
-        this.simulationFileReader = simulationFileReader;
-        jobList = simulationFileReader.getAllJobs();
+//	public ClientMachine(
+           // PhysicalMachine client,
+           // SimulationFileReader simulationFileReader) {
+        //this.client = client;
+       // this.simulationFileReader = simulationFileReader;
+      //  jobList = simulationFileReader.getAllJobs();
 
-    }
+   // }
 	
 	
 	
 	 /**
      * Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
      */
-    public void start() {
-        logger.log("Started [ID: %s] [Success: %s]", id, subscribe(SUBSCRIBE_FREQ));
-    }
+  //  public void start() {
+       /// logger.log("Started [ID: %s] [Success: %s]", id, subscribe(SUBSCRIBE_FREQ));
+   // }
 
     public PhysicalMachine getPhysicalMachine() {
-        return client;
+        return ClientMachine;
     }
 	
 	
 	// Binding the client to the server to establish a connection. The client must subscribe for server to accept
-	public void bindServerMachine(ServerMachine server) {
-		this.server = server;
-		BasePacket bindPacket= new SubscriptionPacket(true).setShouldStore(true);
-		PacketHandler.sendPacket(this, server, bindPacket);
+	public void bindServerMachine(ServerMachine ServerMachine) {
+		this.ServerMachine = ServerMachine;
+		//BasePacket bindPacket= new SubscriptionPacket(true).setShouldStore(true);
+		//PacketHandler.sendPacket(this, ServerMachine, bindPacket);
+		  PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", 10,true));
 	}
 
 	
@@ -84,7 +88,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
 			NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
-	        PacketHandler.sendPacket(this, server, new DataPacket("Data", currentJob.getPacketSize(), false));
+	       /// PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", currentJob.getPacketSize(), false));
 	        logger.log("Job: " + jobNumber + "/" + jobList.size());
 
 	        if (++jobNumber < jobList.size()) {
@@ -95,7 +99,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 
 	        } else {
 
-	            PacketHandler.sendPacket(this, server, new SubscriptionPacket(false));
+	            PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
 
 	            stop();
 
@@ -115,42 +119,72 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 		
 	}
 
-	public String getAddress() {
-		return Address;
-	}
+	//public String getAddress() {
+		//return Address;
+	//}
 
-	public void setAddress(String address) {
-		Address = address;
-	}
+	//public void setAddress(String address) {
+		//Address = address;
+	//}
 
-	public int getPort() {
-		return Port;
-	}
+	//public int getPort() {
+		//return Port;
+	//}
 
-	public void setPort(int port) {
-		Port = port;
-	}
+	//public void setPort(int port) {
+	//	Port = port;
+	//}
 
+	private void stop() {
 
-	@Override
-	public void connectionStarted(ConnectionEvent source) {
-		// TODO Auto-generated method stub
-		
-	}
+        logger.log("Stopped: " + unsubscribe());
 
-	@Override
-	public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
-		// TODO Auto-generated method stub
-		 if (connectionState == State.FAILED && source == this) {
-	            failedPacketIds.add(packet.id);
-	            System.out.println("Added failed packet");
+    }
+
+	@Override public void connectionStarted(ConnectionEvent source) {
+
+        logger.log("Received connection init: " + source.getRepository().getName());
+
+    }
+	
+	public void start() {
+
+        logger.log("Started [Frequency: %s]", subscribe(0));
+
+    }
+	
+
+	 @Override public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+	        logger.log("Connection finished: " + connectionState);
+	        printStorageMetrics();
+        if (connectionState == State.SUCCESS)
+	            handleSuccess(source, packet);
+
+	    }
+	 
+	 private void printStorageMetrics() {
+	        long freeCap = getRepository().getFreeStorageCapacity();
+	        long maxCap = getRepository().getMaxStorageCapacity();
+	        logger.log("Disk: [%s/%s]", freeCap, maxCap);
+
+	    }
+
+	 private void handleSuccess(ConnectionEvent source, BasePacket packet) {
+	        if (packet instanceof SubscriptionPacket) {
+	            SubscriptionPacket subPacket = (SubscriptionPacket) packet;
+	            logger.log("Subscription: " + subPacket.getSubState());
+	        } else if (packet instanceof DataPacket) {
+	            logger.log("packet: " + packet);
+	        } else {
+	            logger.log("Unknown packet type: " + packet.getClass().getName());
+
 	        }
-	}
+	    }
 
 	@Override
 	public Repository getRepository() {
 		// TODO Auto-generated method stub
-		return client.localDisk;
+		return ClientMachine.localDisk;
 	}
 
 	@Override
@@ -166,10 +200,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	}
 
 
-	 private void stop() {
-	        unsubscribe();
-
-	    }
+	
 	
 	
 

@@ -18,24 +18,25 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	 private static final Logger logger = new Logger(ServerMachine.class);
 	 private static final int SUBSCRIBE_FREQ = 100;
 	 private String id;
-	PhysicalMachine server;
-	private String Address;
-	private ClientMachine client;
-	private int Port;
+	PhysicalMachine ServerMachine;
+	//private String Address;
+	private ClientMachine ClientMachine;
+	//private int Port;
      private static int totalPackets = 0;
 	 private static int successfulPackets = 0;
 	 private static int failedPackets = 0;
-	//private BasePacket packet;
+	private DataPacket datapacket;
 	
 	
 	
 	//Create the constructor for the serverMachine
-	public ServerMachine(PhysicalMachine server,int Port,String Address,ClientMachine client,String id) {
-		this.server= server;
-		this.Address= Address;
-		this.Port= Port;
-		this.client = client;
-		 this.id = id;
+	public ServerMachine(PhysicalMachine ServerMachine, DataPacket datapacket, ClientMachine ClientMachine) {
+		this.ServerMachine= ServerMachine;
+		this.datapacket = datapacket;
+		//this.Address= Address;
+		//this.Port= Port;
+		this.ClientMachine = ClientMachine;
+		 //this.id = id;
 	}
 
 	/**
@@ -47,8 +48,13 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	    }
 
 	   
+	 public void bindClientMachine(ClientMachine ClientMachine) {
+	        this.ClientMachine = ClientMachine;
+
+	    } 
+	 
 		public PhysicalMachine getPhysicalMachine() {
-	        return server;
+	        return ServerMachine;
 	    }
 	
 	
@@ -78,21 +84,21 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 		
 	}
 
-	public String getAddress() {
-		return Address;
-	}
+	//public String getAddress() {
+		//return Address;
+//	}
 
-	public void setAddress(String address) {
-		Address = address;
-	}
+	//public void setAddress(String address) {
+	//	Address = address;
+//	}
 
-	public int getPort() {
-		return Port;
-	}
+//	public int getPort() {
+	//	return Port;
+	//}
 
-	public void setPort(int port) {
-		Port = port;
-	}
+	//public void setPort(int port) {
+		//Port = port;
+	//}
 
 	 /**
      * Signal that a packet has been transferred to this Device
@@ -176,7 +182,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	@Override
 	public Repository getRepository() {
 		// TODO Auto-generated method stub
-		return server.localDisk;
+		return ServerMachine.localDisk;
 	}
 
 

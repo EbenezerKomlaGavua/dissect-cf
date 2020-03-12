@@ -14,8 +14,8 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public class Cloud extends Timed implements ConnectionEvent{
 	private static final Logger logger = new Logger(Cloud.class);
 	
-	private ServerMachine server;
-	 private PhysicalMachine cloudMachine;
+	private ClientMachine ClientMachine;
+	 private PhysicalMachine CloudMachine;
 
 	 
 	 
@@ -27,8 +27,8 @@ public class Cloud extends Timed implements ConnectionEvent{
 			// TODO Auto-generated constructor stub
 		}
 
-	public void bindServerMachine(ServerMachine server) {
-	        this.server = server;
+	public void bindClientMachine(ClientMachine ClientMachine) {
+	        this.ClientMachine = ClientMachine;
 
 	    } 
 	    
@@ -36,7 +36,7 @@ public class Cloud extends Timed implements ConnectionEvent{
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
 	    	NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
-	     PacketHandler.sendPacket(this, server, new DataPacket("Data", currentJob.getPacketSize(), false));
+	     PacketHandler.sendPacket(this, ClientMachine, new DataPacket("Data", currentJob.getPacketSize(), false));
 	    	
 	     logger.log("Job: " + jobNumber + "/" + jobList.size());
 
@@ -46,7 +46,7 @@ public class Cloud extends Timed implements ConnectionEvent{
 	            logger.log("TimeDiff: " + timeDiff);
 	            this.updateFrequency(timeDiff);
 	        } else {
-	            PacketHandler.sendPacket(this, server, new SubscriptionPacket(false));
+	            PacketHandler.sendPacket(this, ClientMachine, new SubscriptionPacket(false));
 	            stop();
 	        }
 	    	    }
@@ -76,7 +76,7 @@ public class Cloud extends Timed implements ConnectionEvent{
 	@Override
 	public Repository getRepository() {
 		// TODO Auto-generated method stub
-		return cloudMachine.localDisk;
+		return CloudMachine.localDisk;
 	}
 
 	@Override
