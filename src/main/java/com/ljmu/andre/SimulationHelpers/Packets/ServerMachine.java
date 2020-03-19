@@ -16,7 +16,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 public class ServerMachine extends Timed  implements ConsumptionEvent, ConnectionEvent{
 	 private static final Logger logger = new Logger(ServerMachine.class);
-	 private static final int SUBSCRIBE_FREQ = 100;
+	 private static final int SUBSCRIBE_FREQ = 4;
 	 private String id;
 	PhysicalMachine ServerMachine;
 	//private String Address;

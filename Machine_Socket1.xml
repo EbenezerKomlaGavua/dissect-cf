@@ -86,7 +86,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="Watch" value="5" />
+            <latency towards="ServerMachine" value="5" />
         </repository>
     </machine>
 

@@ -42,7 +42,7 @@ public class Scenarioo extends Timed {
 		        
 		        subscribe(1);
 		       
-		        Timed.simulateUntil(2);
+		        Timed.simulateUntil(1);
 }
 		
 		

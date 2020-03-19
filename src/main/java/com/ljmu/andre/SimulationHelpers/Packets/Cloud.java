@@ -35,12 +35,12 @@ public class Cloud extends Timed implements ConnectionEvent{
 	    @Override
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
-	    	NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
-	     PacketHandler.sendPacket(this, ClientMachine, new DataPacket("Data", currentJob.getPacketSize(), false));
+	    //	NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
+	   //  PacketHandler.sendPacket(this, ClientMachine, new DataPacket("Data", currentJob.getPacketSize(), false));
 	    	
-	     logger.log("Job: " + jobNumber + "/" + jobList.size());
-
-	        if (++jobNumber < jobList.size()) {
+	    // logger.log("Job: " + jobNumber + "/" + jobList.size());
+/**
+	       if (++jobNumber < jobList.size()) {
 	            Job nextJob = jobList.get(jobNumber);
 	            long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
 	            logger.log("TimeDiff: " + timeDiff);
@@ -50,8 +50,8 @@ public class Cloud extends Timed implements ConnectionEvent{
 	            stop();
 	        }
 	    	    }
-	 
-	 
+	 **/
+	    }
 	 private void stop() {
 	        logger.log("Stopped: " + unsubscribe());
 	    }

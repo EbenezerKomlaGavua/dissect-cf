@@ -19,7 +19,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 public class ClientMachine  extends Timed implements ConsumptionEvent,ConnectionEvent{
   private static final Logger logger = new Logger(ClientMachine.class);
- private static final int SUBSCRIBE_FREQ = 100;
+ private static final int SUBSCRIBE_FREQ = 4;
 	PhysicalMachine ClientMachine;
 	//private String Address;
 	///private int Port;
@@ -31,8 +31,11 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	private DataPacket datapacket;
 	
 	
-	private List<Job> jobList;
-	private int jobNumber = 0;
+	//private List<Job> jobList;
+	//private int jobNumber = 0;
+	private int NumberOfPackets = 1;
+	private int PacketsCount=5;
+	private boolean Boolean;
 	
 	//private SimulationFileReader simulationFileReader;
 	 /**
@@ -77,35 +80,32 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	// Binding the client to the server to establish a connection. The client must subscribe for server to accept
 	public void bindServerMachine(ServerMachine ServerMachine) {
 		this.ServerMachine = ServerMachine;
-		//BasePacket bindPacket= new SubscriptionPacket(true).setShouldStore(true);
-		//PacketHandler.sendPacket(this, ServerMachine, bindPacket);
-		  PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", 10,true));
+		BasePacket bindPacket= new SubscriptionPacket(true).setShouldStore(true);
+		PacketHandler.sendPacket(this, ServerMachine, bindPacket);
+		//PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
 	}
 
-	
-	 
+		 
 		@Override
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
-			NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
-	       /// PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", currentJob.getPacketSize(), false));
-	        logger.log("Job: " + jobNumber + "/" + jobList.size());
+					
 
-	        if (++jobNumber < jobList.size()) {
-	            Job nextJob = jobList.get(jobNumber);
-	            long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
-	            logger.log("TimeDiff: " + timeDiff);
-	            this.updateFrequency(timeDiff);
-
-	        } else {
-
-	            PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
-
-	            stop();
-
-	        }
+		     while (NumberOfPackets< PacketsCount) {
+		    	 logger.log("Packet: " + NumberOfPackets);
+		    	 NumberOfPackets++;
+				PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", 10,true));
+				//PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
+				
+				}
+		     connectionFinished(ServerMachine, null, packet);
+				//handleSuccess(ServerMachine, packet);
+				
+				stop();
 			
-		}
+			}
+
+	        
 	
 	@Override
 	public void conComplete() {
@@ -119,21 +119,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 		
 	}
 
-	//public String getAddress() {
-		//return Address;
-	//}
-
-	//public void setAddress(String address) {
-		//Address = address;
-	//}
-
-	//public int getPort() {
-		//return Port;
-	//}
-
-	//public void setPort(int port) {
-	//	Port = port;
-	//}
+	
 
 	private void stop() {
 
@@ -158,6 +144,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	        logger.log("Connection finished: " + connectionState);
 	        printStorageMetrics();
         if (connectionState == State.SUCCESS)
+        	
 	            handleSuccess(source, packet);
 
 	    }
@@ -199,9 +186,48 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 		return getRepository().getName();
 	}
 
-
-	
-	
 	
 
 }
+
+
+//NetworkJob currentJob = (NetworkJob) jobList.get(jobNumber);
+/// PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", currentJob.getPacketSize(), false));
+// logger.log("Job: " + jobNumber + "/" + jobList.size());
+	//DataPacket datapacket = new DataPacket(id, fires, Boolean);
+
+//if (++jobNumber < jobList.size()) {
+// Job nextJob = jobList.get(jobNumber);
+ ///long timeDiff = nextJob.getSubmittimeSecs() - currentJob.getSubmittimeSecs();
+//  logger.log("TimeDiff: " + timeDiff);
+// this.updateFrequency(timeDiff);
+
+//  } else {
+
+ 
+	//PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
+
+/// stop();
+
+//  }
+
+//}
+
+
+
+
+//public String getAddress() {
+		//return Address;
+	//}
+
+	//public void setAddress(String address) {
+		//Address = address;
+	//}
+
+	//public int getPort() {
+		//return Port;
+	//}
+
+	//public void setPort(int port) {
+	//	Port = port;
+	//}
