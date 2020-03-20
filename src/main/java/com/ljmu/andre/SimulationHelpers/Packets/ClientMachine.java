@@ -2,6 +2,7 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.Device;
@@ -19,7 +20,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 public class ClientMachine  extends Timed implements ConsumptionEvent,ConnectionEvent{
   private static final Logger logger = new Logger(ClientMachine.class);
- private static final int SUBSCRIBE_FREQ = 4;
+ private static final int SUBSCRIBE_FREQ = 5;
 	PhysicalMachine ClientMachine;
 	//private String Address;
 	///private int Port;
@@ -85,8 +86,17 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 		//PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
 	}
 
-		 
-		@Override
+	
+	public void traceServerMachine(ServerMachine ServerMachine) {
+		this.ServerMachine = ServerMachine;
+		//Queue<ConnectionEvent> routingPacket = new RoutingPacket().getRoute().add(arg0)
+	
+	
+	}
+	
+	
+	
+	@Override
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
 					
@@ -98,11 +108,12 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 				//PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
 				
 				}
-		     connectionFinished(ServerMachine, null, packet);
+		    // connectionFinished(ServerMachine, null, packet);
 				//handleSuccess(ServerMachine, packet);
 				
 				stop();
-			
+			connectionFinished(ServerMachine, null, packet);
+		
 			}
 
 	        
@@ -141,9 +152,12 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	
 
 	 @Override public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
-	        logger.log("Connection finished: " + connectionState);
+		logger.log("Finished ",  unsubscribe());
+		 
+		 // logger.log("Connection finished: " + connectionState);
 	        printStorageMetrics();
-        if (connectionState == State.SUCCESS)
+	        handleSuccess(source, packet);
+       // if (connectionState == State.SUCCESS)
         	
 	            handleSuccess(source, packet);
 
@@ -162,8 +176,8 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	            logger.log("Subscription: " + subPacket.getSubState());
 	        } else if (packet instanceof DataPacket) {
 	            logger.log("packet: " + packet);
-	        } else {
-	            logger.log("Unknown packet type: " + packet.getClass().getName());
+	        //} else {
+	           // logger.log("Unknown packet type: " + packet.getClass().getName());
 
 	        }
 	    }
