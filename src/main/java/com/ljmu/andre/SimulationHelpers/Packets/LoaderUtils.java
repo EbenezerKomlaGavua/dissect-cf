@@ -33,7 +33,7 @@ public class LoaderUtils {
 	    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
 
 	             
-		return new ServerMachine(ServerMachine,  datapacket, ClientMachine);
+		return new ServerMachine(ServerMachine,  datapacket, ClientMachine, null, null);
 		
 	 }	
 	

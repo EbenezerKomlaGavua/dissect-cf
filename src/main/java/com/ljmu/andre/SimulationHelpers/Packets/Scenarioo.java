@@ -11,7 +11,7 @@ public class Scenarioo extends Timed {
 	 private static final String USER_DIR = System.getProperty("user.dir");
 	 //public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
-	private ClientMachine clientmachine;
+	private ClientMachine ClientMachine;
     private ServerMachine servermachine;
     private Cloud cloud;
 	
@@ -28,28 +28,29 @@ public class Scenarioo extends Timed {
 			   raf.close();
 		        MachineHandler_Socket.init( MACHINE_SOCKET_XML_PATH);
 		        servermachine = LoaderUtils.getServerMachine();
-		        clientmachine = LoaderUtils.getClientMachine();
+		        ClientMachine = LoaderUtils.getClientMachine();
 		        cloud = LoaderUtils.getCloud();
-		        clientmachine.start();
+		        ClientMachine.start();
 		        servermachine.start();
 		        cloud.start();
 		        
-		        servermachine.bindClientMachine(clientmachine);
-		        clientmachine.bindServerMachine(servermachine);
-		        cloud.bindClientMachine(clientmachine);
+		        servermachine.bindClientMachine(ClientMachine);
+		        ClientMachine.bindServerMachine(servermachine);
+		        cloud.bindClientMachine(ClientMachine);
 		        
 		        
 		        
-		        subscribe(1);
+		        subscribe(2);
 		       
-		        Timed.simulateUntil(1);
+		       // Timed.simulateUntil(3);
+		        Timed.simulateUntilLastEvent();
 }
 		
 		
 		@Override
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
-			  if (! servermachine.isSubscribed() && !clientmachine.isSubscribed()) {
+			  if (! servermachine.isSubscribed() && !ClientMachine.isSubscribed()) {
 		            unsubscribe();
 		            logger.log("No more subscribers... ENDING");
 

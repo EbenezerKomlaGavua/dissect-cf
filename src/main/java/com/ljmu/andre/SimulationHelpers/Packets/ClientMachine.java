@@ -5,13 +5,10 @@ import java.util.List;
 import java.util.Queue;
 
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
-import com.ljmu.andre.SimulationHelpers.Device;
-import com.ljmu.andre.SimulationHelpers.NetworkJob;
-import com.ljmu.andre.SimulationHelpers.SimulationFileReader;
-import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
+import com.ljmu.andre.SimulationHelpers.ConnectionEvent.State;
+import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
-import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
@@ -30,13 +27,16 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 	private BasePacket packet;
 	private Repository repository;
 	private DataPacket datapacket;
+	 private static int totalPackets = 0;
+	 private static int successfulPackets = 0;
+	 private static int failedPackets = 0;
 	
 	
 	//private List<Job> jobList;
 	//private int jobNumber = 0;
 	private int NumberOfPackets = 1;
 	private int PacketsCount=5;
-	private boolean Boolean;
+
 	
 	//private SimulationFileReader simulationFileReader;
 	 /**
@@ -63,7 +63,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
       //  jobList = simulationFileReader.getAllJobs();
 
    // }
-	
+	//public static int timeIncrement = 20;
 	
 	
 	 /**
@@ -102,6 +102,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 					
 
 		     while (NumberOfPackets< PacketsCount) {
+		    	 
 		    	 logger.log("Packet: " + NumberOfPackets);
 		    	 NumberOfPackets++;
 				PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", 10,true));
@@ -138,7 +139,8 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 
     }
 
-	@Override public void connectionStarted(ConnectionEvent source) {
+	@Override 
+	public void connectionStarted(ConnectionEvent source) {
 
         logger.log("Received connection init: " + source.getRepository().getName());
 
@@ -151,17 +153,68 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
     }
 	
 
-	 @Override public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
-		logger.log("Finished ",  unsubscribe());
+	// @Override public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+		//logger.log("Finished ",  unsubscribe());
 		 
 		 // logger.log("Connection finished: " + connectionState);
-	        printStorageMetrics();
-	        handleSuccess(source, packet);
+	      //  printStorageMetrics();
+	       // handleSuccess(source, packet);
        // if (connectionState == State.SUCCESS)
         	
-	            handleSuccess(source, packet);
+	          //  handleSuccess(source, packet);
 
-	    }
+	   // }
+	 
+	// close connection and print storage metrics
+		@Override
+		public void connectionFinished(ConnectionEvent ServerMachine, State connectionState, BasePacket packet) {
+			// TODO Auto-generated method stub
+			
+			// Check if the packet is a RoutingPacket and if the connection has failed \\
+	        if (packet instanceof RoutingPacket && connectionState != State.FAILED) {
+	            RoutingPacket routingPacket = (RoutingPacket) packet;
+
+	            // Get the Device this packet should move to next and remove it from the queue \\
+	            ConnectionEvent target = routingPacket.getRoute().poll();
+
+	            // If the target is Null or the TargetID is that of this Device \\
+	            // Unbox the Payload and recurse this method again with the payload \\
+	            if (target == null || target.getId().equals(this.getId())) {
+	                logger.log("Found Destination [Null? %s]", target == null);
+	                this.connectionFinished(routingPacket.getSource(), connectionState, routingPacket.getPayload());
+	            } else {
+	                // Otherwise, forward the packet to the next target \\
+	                logger.log("Forwarding!");
+	                PacketHandler.sendPacket(this, target, routingPacket);
+	            }
+	        } else {
+	                  packetTransaction(connectionState==State.SUCCESS);
+
+	            // If the packet is not a RoutingPacket or the connection FAILED \\
+	            // Signal the outer class that a full connection cycle has finished \\
+	           // connectionFinished(ServerMachine, connectionState, packet);
+	            logger.log("Connection finished: " + connectionState);
+	            printStorageMetrics();
+
+	        }
+		}
+
+	        public static void packetTransaction(boolean successful) {
+	            if(successful)
+	                successfulPackets++;
+	            else
+	                failedPackets++;
+
+	            totalPackets++;
+	        }
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 	 
 	 private void printStorageMetrics() {
 	        long freeCap = getRepository().getFreeStorageCapacity();
@@ -170,7 +223,7 @@ public class ClientMachine  extends Timed implements ConsumptionEvent,Connection
 
 	    }
 
-	 private void handleSuccess(ConnectionEvent source, BasePacket packet) {
+	 private void handleSuccess(ConnectionEvent ClientMachine, BasePacket packet) {
 	        if (packet instanceof SubscriptionPacket) {
 	            SubscriptionPacket subPacket = (SubscriptionPacket) packet;
 	            logger.log("Subscription: " + subPacket.getSubState());

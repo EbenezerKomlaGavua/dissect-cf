@@ -26,36 +26,41 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	 private static int successfulPackets = 0;
 	 private static int failedPackets = 0;
 	private DataPacket datapacket;
+	private Repository repository;
 	
 	
+	
+	public void start() {
+        //logger.log("Started [ID: %s] [Success: %s]", getRepository().getName(), subscribe(SUBSCRIBE_FREQ));
+		logger.log("Started [Frequency: %s]", subscribe(SUBSCRIBE_FREQ));
+    }
+
+   
+ public void bindClientMachine(ClientMachine ClientMachine) {
+        this.ClientMachine = ClientMachine;
+
+    } 
+ 
+	public PhysicalMachine getPhysicalMachine() {
+        return ServerMachine;
+    }
 	
 	//Create the constructor for the serverMachine
-	public ServerMachine(PhysicalMachine ServerMachine, DataPacket datapacket, ClientMachine ClientMachine) {
+	public ServerMachine(PhysicalMachine ServerMachine, DataPacket datapacket, ClientMachine ClientMachine, Repository repository, String id) {
 		this.ServerMachine= ServerMachine;
 		this.datapacket = datapacket;
 		//this.Address= Address;
 		//this.Port= Port;
 		this.ClientMachine = ClientMachine;
-		 //this.id = id;
+		 this.id = id;
+		 this.repository = ServerMachine.localDisk;
 	}
 
 	/**
      * Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
      */
 	
-	 public void start() {
-	        logger.log("Started [ID: %s] [Success: %s]", id, subscribe(SUBSCRIBE_FREQ));
-	    }
-
-	   
-	 public void bindClientMachine(ClientMachine ClientMachine) {
-	        this.ClientMachine = ClientMachine;
-
-	    } 
 	 
-		public PhysicalMachine getPhysicalMachine() {
-	        return ServerMachine;
-	    }
 	
 	
 				
@@ -65,9 +70,9 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	}
 	
 	@Override
-	public void connectionStarted(ConnectionEvent client) {
+	public void connectionStarted(ConnectionEvent ClientMachine) {
 		// TODO Auto-generated method stub
-		logger.log("Received connection init: " + client.getRepository().getName());
+		logger.log("Received connection init: " + ClientMachine.getRepository().getName());
 	}
 	
 	
@@ -112,7 +117,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	
 // close connection and print storage metrics
 	@Override
-	public void connectionFinished(ConnectionEvent client, State connectionState, BasePacket packet) {
+	public void connectionFinished(ConnectionEvent ClientMachine, State connectionState, BasePacket packet) {
 		// TODO Auto-generated method stub
 		
 		// Check if the packet is a RoutingPacket and if the connection has failed \\
@@ -137,7 +142,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 
             // If the packet is not a RoutingPacket or the connection FAILED \\
             // Signal the outer class that a full connection cycle has finished \\
-            connectionFinished(client, connectionState, packet);
+            connectionFinished(ClientMachine, connectionState, packet);
             logger.log("Connection finished: " + connectionState);
             printStorageMetrics();
 
@@ -174,7 +179,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	
 	
 // handle received subscription  packets
-	private void handleSuccess(ConnectionEvent client, BasePacket packet) {
+	private void handleSuccess(ConnectionEvent ClientMachine, BasePacket packet) {
 		
 	}
 	
@@ -199,7 +204,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	@Override
 	public String getId() {
 		// TODO Auto-generated method stub
-		return null;
+		return getRepository().getName();
 	}
 
 }
