@@ -30,20 +30,22 @@ public class Scenarioo extends Timed {
 		        servermachine = LoaderUtils.getServerMachine();
 		        ClientMachine = LoaderUtils.getClientMachine();
 		        cloud = LoaderUtils.getCloud();
-		        ClientMachine.start();
-		        servermachine.start();
-		        cloud.start();
-		        
+		        		        
 		        servermachine.bindClientMachine(ClientMachine);
 		        ClientMachine.bindServerMachine(servermachine);
 		        cloud.bindClientMachine(ClientMachine);
 		        
-		        
-		        
-		        subscribe(2);
+		        ClientMachine.start();
+		        servermachine.start();
+		        cloud.start();
+		        //subscribe(1000);
+
+		        //simulateUntilLastEvent();
+		        subscribe(1);
 		       
-		       // Timed.simulateUntil(3);
-		        Timed.simulateUntilLastEvent();
+		        Timed.simulateUntil(10);
+		      
+		        //Timed.simulateUntilLastEvent();
 }
 		
 		
@@ -53,6 +55,7 @@ public class Scenarioo extends Timed {
 			  if (! servermachine.isSubscribed() && !ClientMachine.isSubscribed()) {
 		            unsubscribe();
 		            logger.log("No more subscribers... ENDING");
+		           // System.exit(5);
 
 		        }
 

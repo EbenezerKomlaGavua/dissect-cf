@@ -28,8 +28,52 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	private DataPacket datapacket;
 	private Repository repository;
 	
+
+	
+
+	 /**
+
+    * Call {@link this#connectDevice(ConnectionEvent)}
+
+    * if result is TRUE, update the Repository's Latency Map
+
+    *
+
+    * @param device  - The Device to connect to this one
+
+    * @param latency - The Latency of the connection
+
+    * @return True if successfully connected
+
+    */
+
+   public boolean connectDevice(ConnectionEvent ServerMachine, int latency) {
+
+       boolean success = PhysicalMachine(ServerMachine);
+
+
+
+       if (success)
+
+           this.getRepository().addLatency(ServerMachine.getRepository().getName(), latency);
+
+
+
+       return success;
+
+   }
 	
 	
+	
+	
+	private boolean PhysicalMachine(ConnectionEvent serverMachine2) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+
+
 	public void start() {
         //logger.log("Started [ID: %s] [Success: %s]", getRepository().getName(), subscribe(SUBSCRIBE_FREQ));
 		logger.log("Started [Frequency: %s]", subscribe(SUBSCRIBE_FREQ));
