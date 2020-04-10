@@ -1,5 +1,6 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.ljmu.andre.SimulationHelpers.Application;
@@ -27,8 +28,8 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	 private static int failedPackets = 0;
 	private DataPacket datapacket;
 	private Repository repository;
-	
-
+	private BasePacket packet;
+	 private List<String> Packet = new ArrayList<String>();
 	
 
 	 /**
@@ -36,9 +37,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
     * Call {@link this#connectDevice(ConnectionEvent)}
 
     * if result is TRUE, update the Repository's Latency Map
-
     *
-
     * @param device  - The Device to connect to this one
 
     * @param latency - The Latency of the connection
@@ -47,33 +46,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 
     */
 
-   public boolean connectDevice(ConnectionEvent ServerMachine, int latency) {
-
-       boolean success = PhysicalMachine(ServerMachine);
-
-
-
-       if (success)
-
-           this.getRepository().addLatency(ServerMachine.getRepository().getName(), latency);
-
-
-
-       return success;
-
-   }
-	
-	
-	
-	
-	private boolean PhysicalMachine(ConnectionEvent serverMachine2) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
-
-
+   
 	public void start() {
         //logger.log("Started [ID: %s] [Success: %s]", getRepository().getName(), subscribe(SUBSCRIBE_FREQ));
 		logger.log("Started [Frequency: %s]", subscribe(SUBSCRIBE_FREQ));
@@ -103,9 +76,7 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 	/**
      * Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
      */
-	
 	 
-	
 	
 				
 	public void tick(long fires) {
@@ -119,12 +90,14 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 		logger.log("Received connection init: " + ClientMachine.getRepository().getName());
 	}
 	
-	
-	
+		
 	@Override
 	public void conComplete() {
 		// TODO Auto-generated method stub
-		
+		logger.log("Packet[" + packet.id + "] successfully sent");
+
+		//source.connectionFinished(source, State.SUCCESS, packet);
+		//ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, packet);
 	}
 
 	@Override
@@ -207,8 +180,21 @@ public class ServerMachine extends Timed  implements ConsumptionEvent, Connectio
 //}
 //}
 
+        public void receivePacket(final ClientMachine fromTheClientMachine) {
+        	final long reqStart = Timed.getFireCount();
+        	Scenarioo.logMessage(hashCode() + " Server is not responding, let's wait!");
+        	
+        	
+        	
+        	
+        }
 		
-		
+        
+        
+        
+        
+        
+        
         
       // if (connectionState == State.SUCCESS);
         //    handleSuccess(client, packet);

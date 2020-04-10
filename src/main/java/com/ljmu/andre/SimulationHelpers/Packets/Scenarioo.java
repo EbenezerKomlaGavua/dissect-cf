@@ -11,17 +11,23 @@ public class Scenarioo extends Timed {
 	 private static final String USER_DIR = System.getProperty("user.dir");
 	 //public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
+	private static final BasePacket Packet = null;
 	private ClientMachine ClientMachine;
     private ServerMachine servermachine;
     private Cloud cloud;
 	
 	// The gap between packet transfer
-		public static int timeIncrement = 5;
-
+		///public static int timeIncrement = 5;
+		 public static int timeIncrement = 100;
+		 
+		 public static void logMessage(String message) {
+				System.out.println("@ T+" + Timed.getFireCount() + "ms " + message);
+			}
 		
 		   Scenarioo() throws Exception {
 			 //  subscribe(1);
 			   logger.log("Starting Scenario");
+			  
 
 			   RandomAccessFile raf=new RandomAccessFile(MACHINE_SOCKET_XML_PATH,"r");
 			   System.out.println(raf.read());
@@ -30,20 +36,26 @@ public class Scenarioo extends Timed {
 		        servermachine = LoaderUtils.getServerMachine();
 		        ClientMachine = LoaderUtils.getClientMachine();
 		        cloud = LoaderUtils.getCloud();
-		        		        
-		        servermachine.bindClientMachine(ClientMachine);
-		        ClientMachine.bindServerMachine(servermachine);
-		        cloud.bindClientMachine(ClientMachine);
-		        
+		        	
 		        ClientMachine.start();
 		        servermachine.start();
 		        cloud.start();
+		        
+		        
+		        
+		        ClientMachine.bindServerMachine(servermachine);
+		        servermachine.bindClientMachine(ClientMachine);
+		        cloud.bindClientMachine(ClientMachine);
+		        
+		        
+		      //  ClientMachine.sendDataClientMachine(ClientMachine, servermachine, Packet);
+		       
 		        //subscribe(1000);
 
 		        //simulateUntilLastEvent();
 		        subscribe(1);
 		       
-		        Timed.simulateUntil(10);
+		        Timed.simulateUntil(100000);
 		      
 		        //Timed.simulateUntilLastEvent();
 }
@@ -52,20 +64,14 @@ public class Scenarioo extends Timed {
 		@Override
 		public void tick(long fires) {
 			// TODO Auto-generated method stub
+			
+			
+			
+			
 			  if (! servermachine.isSubscribed() && !ClientMachine.isSubscribed()) {
 		            unsubscribe();
 		            logger.log("No more subscribers... ENDING");
 		           // System.exit(5);
-
-		        }
-
-		        try {
-
-		            Thread.sleep(1);
-
-		        } catch (InterruptedException e) {
-
-		            e.printStackTrace();
 
 		        }
 		}
