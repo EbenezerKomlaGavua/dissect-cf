@@ -66,5 +66,14 @@ public class ClientMachineTest {
 		assertTrue(bindingMessage, true);
 		
 	}
+	
+	//Checking the stop method of the ClientMachine
+	@Test
+	public void StopClientMachine() {
+		ClientMachine.stop();
+		String StopMessage = "The ClientMachine has stopped working";
+		
+		assertTrue(StopMessage,true);
+	}
 		
 }

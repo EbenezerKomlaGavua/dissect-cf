@@ -251,7 +251,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	 * 
 	 * 
 	 **/
-	private void stop() {
+	public void stop() {
 
 		logger.log("Stopped: " + unsubscribe());
 	}
