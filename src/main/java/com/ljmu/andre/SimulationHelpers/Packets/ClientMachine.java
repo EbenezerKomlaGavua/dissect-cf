@@ -22,24 +22,21 @@ import hu.mta.sztaki.lpds.cloud.simulator.DeferredEvent;
 public class ClientMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
 	private static final Logger logger = new Logger(ClientMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
-	private static PhysicalMachine ClientMachine;
+	protected  PhysicalMachine ClientMachine;
 	// private String Address;
 	/// private int Port;
-	private String Id;
-	private static ServerMachine ServerMachine;
+	String Id;
+	 Repository repository;
+	protected  ServerMachine ServerMachine;
 	// private List<String> failedPacketIds = new ArrayList<String>();
-	private BasePacket packet;
-	// private DataPacket datapacket;
-	// private static int totalPackets = 0;
-	// private static int successfulPackets = 0;
-	// private static int failedPackets = 0;
+	protected BasePacket packet;
+	
 	private static Queue<ConnectionEvent> ConnectionRoute;
 	// private List<ConnectionEvent> connectedDevices = new
 	// ArrayList<ConnectionEvent>();
 	private List<String> Packet = new ArrayList<String>();
-
-	// private List<Job> jobList;
-	// private int jobNumber = 0;
+	
+	
 	private int NumberOfPackets = 1;
 	private int PacketsCount = 5;
 	// private int routingPacket =10;
@@ -58,8 +55,9 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	 *
 	 * @param id - The ID of the Device
 	 */
-	public ClientMachine(PhysicalMachine ClientMachine, ServerMachine ServerMachine, BasePacket packet,
-			Repository repository, String Id) {
+	
+	// Create the constructor of the ClientMachine
+	public ClientMachine(PhysicalMachine ClientMachine, ServerMachine ServerMachine, BasePacket packet, Repository repository, String Id) {
 		this.ClientMachine = ClientMachine;
 		this.ServerMachine = ServerMachine;
 		// this.Address= Address;
@@ -68,12 +66,36 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		this.packet = packet;
 	}
 
-	/**
-	 * Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
-	 */
-	// public void start() {
-	/// logger.log("Started [ID: %s] [Success: %s]", id, subscribe(SUBSCRIBE_FREQ));
-	// }
+	//  Getting the repository
+	@Override
+	public Repository getRepository() {
+		// TODO Auto-generated method stub
+		return ClientMachine.localDisk;
+	}
+	
+	// Getting the Id of the ClientMachine
+	@Override
+	public String getId() {
+		// TODO Auto-generated method stub
+		return getRepository().getName();
+	}
+
+	//  Starting the clientMachine and subscribing for the simulation
+	//Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
+	public void start() {
+
+		logger.log("Started [Frequency: %s]", subscribe(0));
+	}
+
+	// Establishing a connection and returning the Id the ServerMachine
+	@Override
+	public void connectionStarted(ConnectionEvent ServerMachine) {
+
+		logger.log("Received connection init: " + ServerMachine.getRepository().getName());
+
+	}
+	
+	
 
 	public PhysicalMachine getPhysicalMachine() {
 		return ClientMachine;
@@ -94,13 +116,8 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		// PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
 	}
 
-	// public void sendDataClientMachine(ClientMachine ClientMachine, ServerMachine
-	// ServerMachine, BasePacket packet) {
-	/// BasePacket sendPacket = new RoutingPacket("Data", packet, ClientMachine,
-	// null);
-	// PacketHandler.sendPacket(ClientMachine, ServerMachine, sendPacket);
-	// }
-
+	
+	// Try Sending packet from the ClientMachine to the ServerMachine
 	public void sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
 			BasePacket packet) {
 		// ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine,
@@ -110,6 +127,11 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		PacketHandler.sendPacket(ClientMachine, ServerMachine, sendPacket);
 	}
 
+	
+	
+	
+	
+	
 	@Override
 	public void tick(long fires) {
 		// TODO Auto-generated method stub
@@ -177,6 +199,8 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 
 	}
 
+	
+	// Successful transfer of packets
 	@Override
 	public void conComplete() {
 		// TODO Auto-generated method stub
@@ -232,19 +256,9 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		logger.log("Stopped: " + unsubscribe());
 	}
 
-	@Override
-	public void connectionStarted(ConnectionEvent ServerMachine) {
+	
 
-		logger.log("Received connection init: " + ServerMachine.getRepository().getName());
-
-	}
-
-	public void start() {
-
-		logger.log("Started [Frequency: %s]", subscribe(0));
-
-	}
-
+	
 	/**
 	 * 
 	 * 
@@ -316,11 +330,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		}
 	}
 
-	@Override
-	public Repository getRepository() {
-		// TODO Auto-generated method stub
-		return ClientMachine.localDisk;
-	}
+	
 
 	@Override
 	public List<ConnectionEvent> getConnectedDevices() {
@@ -329,10 +339,5 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	}
 
 	// If the connection is established, the Id of the server will be obtained
-	@Override
-	public String getId() {
-		// TODO Auto-generated method stub
-		return getRepository().getName();
-	}
-
+	
 }

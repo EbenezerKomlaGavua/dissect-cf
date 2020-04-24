@@ -12,6 +12,7 @@ public class Main {
 
 		  try {
 
+			  // Call an instance scenario
 	            scenarioo = new Scenarioo();
 
 	        } catch (Throwable e) {

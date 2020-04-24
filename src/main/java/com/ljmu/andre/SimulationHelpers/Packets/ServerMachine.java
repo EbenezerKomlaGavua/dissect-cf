@@ -19,14 +19,14 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	private static final int SUBSCRIBE_FREQ = 5;
 	private String ServerMachineId;
 	PhysicalMachine ServerMachine;
-	// private String Address;
+	
 	private ClientMachine ClientMachine;
-	// private int Port;
+	
 	private static int totalPackets = 0;
 	private static int successfulPackets = 0;
 	private static int failedPackets = 0;
-	private DataPacket datapacket;
-	private Repository repository;
+	//private DataPacket datapacket;
+	 Repository repository;
 	private BasePacket packet;
 	private List<String> Packet = new ArrayList<String>();
 
@@ -44,38 +44,63 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	 * 
 	 */
 
-	public void start() {
-		// logger.log("Started [ID: %s] [Success: %s]", getRepository().getName(),
-		// subscribe(SUBSCRIBE_FREQ));
-		logger.log("Started [Frequency: %s]", subscribe(SUBSCRIBE_FREQ));
-	}
-
-	public void bindClientMachine(ClientMachine ClientMachine) {
-		this.ClientMachine = ClientMachine;
-
-	}
 
 	// Create the constructor for the serverMachine
-	public ServerMachine(PhysicalMachine ServerMachine, DataPacket datapacket, ClientMachine ClientMachine,
+	public ServerMachine(PhysicalMachine ServerMachine, BasePacket packet, ClientMachine ClientMachine,
 			Repository repository, String ServerMachineId) {
 		this.ServerMachine = ServerMachine;
-		this.datapacket = datapacket;
-		// this.Address= Address;
-		// this.Port= Port;
+		this.packet = packet;
 		this.ClientMachine = ClientMachine;
 		this.ServerMachineId = ServerMachineId;
 		this.repository = ServerMachine.localDisk;
 	}
 
+	// Get the PhysicalMachine call ServerMachine
 	public PhysicalMachine getPhysicalMachine() {
 		return ServerMachine;
 	}
-
+	// Get the repository of the ServerMachine
+	@Override
+	public Repository getRepository() {
+		// TODO Auto-generated method stub
+		return ServerMachine.localDisk;
+	}
+	
+	// Get the Id of the ServerMachine
+	@Override
+	public String getId() {
+		// TODO Auto-generated method stub
+		return getRepository().getName();
+	}
+	
 	public PhysicalMachine getConsumptionEvent() {
 		return ServerMachine;
 
 	}
 
+	
+	//Start the ServerMachine and subscribe it to the frequency
+	public void start() {
+		
+		logger.log("Started [Frequency: %s]", subscribe(SUBSCRIBE_FREQ));
+		// logger.log("Started [ID: %s] [Success: %s]", getRepository().getName(),
+				// subscribe(SUBSCRIBE_FREQ));
+	}
+
+	// Initial connection with the ClientMachine
+	@Override
+	public void connectionStarted(ConnectionEvent ClientMachine) {
+		// TODO Auto-generated method stub
+		logger.log("Received connection init: " + ClientMachine.getRepository().getName());
+	}
+	
+	// Bind the ClientMachine to the ServerMachine
+	public void bindClientMachine(ClientMachine ClientMachine) {
+		this.ClientMachine = ClientMachine;
+
+	}
+	
+	// Receive packets sent from the clientMachine
 	public void receivePacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
 			BasePacket packet) {
 		final long reqStart = Timed.getFireCount();
@@ -102,11 +127,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 		logger.log("Tick: " + fires);
 	}
 
-	@Override
-	public void connectionStarted(ConnectionEvent ClientMachine) {
-		// TODO Auto-generated method stub
-		logger.log("Received connection init: " + ClientMachine.getRepository().getName());
-	}
+	
 
 	@Override
 	public void conComplete() {
@@ -127,21 +148,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	// return Address;
 //	}
 
-	public String getServerMachineId() {
-		return ServerMachineId;
-	}
-
-	// public void setAddress(String address) {
-	// Address = address;
-//	}
-
-//	public int getPort() {
-	// return Port;
-	// }
-
-	// public void setPort(int port) {
-	// Port = port;
-	// }
+	
 
 	/**
 	 * Signal that a packet has been transferred to this Device If the Packet is a
@@ -196,12 +203,6 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 		totalPackets++;
 	}
 
-//}
-//}
-
-	// if (connectionState == State.SUCCESS);
-	// handleSuccess(client, packet);
-	// }
 
 	private void printStorageMetrics() {
 		long freeCap = getRepository().getFreeStorageCapacity();
@@ -210,16 +211,6 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 	}
 
-// handle received subscription  packets
-	private void handleSuccess(ConnectionEvent ClientMachine, BasePacket packet) {
-
-	}
-
-	@Override
-	public Repository getRepository() {
-		// TODO Auto-generated method stub
-		return ServerMachine.localDisk;
-	}
 
 	@Override
 	public List<ConnectionEvent> getConnectedDevices() {
@@ -227,11 +218,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 		return null;
 	}
 
-	@Override
-	public String getId() {
-		// TODO Auto-generated method stub
-		return getRepository().getName();
-	}
+	
 
 	public void consumptionEvent() {
 		// TODO Auto-generated method stub

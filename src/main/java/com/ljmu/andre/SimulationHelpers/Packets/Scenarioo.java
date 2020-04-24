@@ -13,7 +13,7 @@ public class Scenarioo extends Timed {
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
 	private static final BasePacket Packet = null;
 	private ClientMachine ClientMachine;
-	private ServerMachine servermachine;
+	private ServerMachine ServerMachine;
 	private Cloud cloud;
 
 	// The gap between packet transfer
@@ -31,25 +31,40 @@ public class Scenarioo extends Timed {
 		RandomAccessFile raf = new RandomAccessFile(MACHINE_SOCKET_XML_PATH, "r");
 		System.out.println(raf.read());
 		raf.close();
+		
+		// 	Initialise the machines with the xml file
 		MachineHandler_Socket.init(MACHINE_SOCKET_XML_PATH);
-		servermachine = LoaderUtils.getServerMachine();
+		//load the Server machine with LoaderUtils 
+		ServerMachine = LoaderUtils.getServerMachine();
+		//load the ClientMachine machine with LoaderUtils 
 		ClientMachine = LoaderUtils.getClientMachine();
+		//load the Cloud machine with LoaderUtils 
 		cloud = LoaderUtils.getCloud();
 
+		//Start the machines clientMachine, ServiceMachine and the Cloud
 		ClientMachine.start();
-		servermachine.start();
+		ServerMachine.start();
 		cloud.start();
-
-		ClientMachine.bindServerMachine(servermachine);
-		servermachine.bindClientMachine(ClientMachine);
+		
+		//Bind ClientMachine to ServerMachine
+		ClientMachine.bindServerMachine(ServerMachine);
+		
+		ServerMachine.bindClientMachine(ClientMachine);
+		//Bind   Cloud to ClientMachine
 		cloud.bindClientMachine(ClientMachine);
 
-		// ClientMachine.sendDataClientMachine(ClientMachine, servermachine, Packet);
-		ClientMachine.sendPacket(ClientMachine, servermachine, Packet);
-		servermachine.receivePacket(servermachine, ClientMachine, Packet);
+		
+		
+		// Send packet from ClientMachine to ServerMachine
+		//ClientMachine.sendPacket(ClientMachine, Servermachine, Packet);
+		
+		//Receive packet from the ServerMachine
+		ServerMachine.receivePacket(ServerMachine, ClientMachine, Packet);
 		// subscribe(1000);
 
 		// simulateUntilLastEvent();
+		
+		 // Subscribe and simulate
 		subscribe(1);
 
 		Timed.simulateUntil(100000);
@@ -61,7 +76,7 @@ public class Scenarioo extends Timed {
 	public void tick(long fires) {
 		// TODO Auto-generated method stub
 
-		if (!servermachine.isSubscribed() && !ClientMachine.isSubscribed()) {
+		if (!ServerMachine.isSubscribed() && !ClientMachine.isSubscribed()) {
 			unsubscribe();
 			logger.log("No more subscribers... ENDING");
 			// System.exit(5);

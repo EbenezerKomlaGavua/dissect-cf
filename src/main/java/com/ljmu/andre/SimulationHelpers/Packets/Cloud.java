@@ -19,15 +19,16 @@ public class Cloud extends Timed implements ConnectionEvent{
 
 	 
 	 
-	 private List<Job> jobList;
-	    private int jobNumber = 0;
+	// private List<Job> jobList;
+	  ///  private int jobNumber = 0;
 	 	 
 	   
 	   public Cloud(PhysicalMachine claimPM) {
 			// TODO Auto-generated constructor stub
 		}
 
-	public void bindClientMachine(ClientMachine ClientMachine) {
+//Bind the cloud to the clientMachine
+	   public void bindClientMachine(ClientMachine ClientMachine) {
 	        this.ClientMachine = ClientMachine;
 
 	    } 
@@ -52,15 +53,18 @@ public class Cloud extends Timed implements ConnectionEvent{
 	    	    }
 	 **/
 	    }
+	    
+	    // Start and and subscribe the cloud
+	    public void start() {
+	        logger.log("Started [Frequency: %s]", subscribe(0));
+	    }
+	    
 	 private void stop() {
 	        logger.log("Stopped: " + unsubscribe());
 	    }
 
 
-	    public void start() {
-	        logger.log("Started [Frequency: %s]", subscribe(0));
-	    }
-	    
+	   
 	@Override
 	public void connectionStarted(ConnectionEvent source) {
 		// TODO Auto-generated method stub
@@ -72,7 +76,8 @@ public class Cloud extends Timed implements ConnectionEvent{
 		// TODO Auto-generated method stub
 		
 	}
-
+      
+	// Return the repository of the cloud
 	@Override
 	public Repository getRepository() {
 		// TODO Auto-generated method stub
