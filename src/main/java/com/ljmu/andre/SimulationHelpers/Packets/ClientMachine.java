@@ -22,6 +22,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.DeferredEvent;
 public class ClientMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
 	private static final Logger logger = new Logger(ClientMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
+	private static final State connectionState = null;
 	protected PhysicalMachine ClientMachine;
 	// private String Address;
 	/// private int Port;
@@ -117,9 +118,11 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	// The subscription packet is transferred and stored on the serverMachine.
 	public void bindServerMachine(ServerMachine ServerMachine) {
 		this.ServerMachine = ServerMachine;
-		BasePacket bindPacket = new SubscriptionPacket(true).setShouldStore(true);
+		//Create a bindPacket Object DataPacket for binding the ClientMachine to the ServerMachine, the Object must be stored after transfer.
+		BasePacket bindPacket = new DataPacket("Data", 10, true).setShouldStore(true);
+		
 		PacketHandler.sendPacket(this, ServerMachine, bindPacket);
-		// PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
+		
 	}
 
 	// In order to ensure that connected devices utilises the appropriate system resources, the consumptionEvent method is called.
@@ -143,18 +146,20 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	// A data packet or routing packet is transferred from the clientMachine.
 	public void sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
 			BasePacket packet) {
-		// ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine,
+		//ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine,
 		// ServerMachine, packet);
 		Scenarioo.logMessage(hashCode() + " Server is not responding, let's wait!");
-		BasePacket sendPacket = new RoutingPacket("Data", packet, ClientMachine, null);
+		//Create a sendPacket object DataPacket to transfer and store a data unit from the ClientMachine to the ServerMachine.
+		BasePacket sendPacket = new DataPacket("Data", 10, true);
 		PacketHandler.sendPacket(ClientMachine, ServerMachine, sendPacket);
 	}
 
 	
-	// The tick method is called upon to ensure the simulation of data transfer
-	// depending on the amount of time specified.
-	// This is to ensure that sufficient time is allocated for all the data packets
-	// to be transferred from the clientMachine to the ServerMachine.
+	
+	// After the ClientMachine is bind to the ServerMachine,
+	//the packets must be transferred and monitored. 
+	///This is ensured by the tick method providing sufficient time 
+	///and consumption of resources to transfer the packets.
 	// After the transfer is completed, the simulation is stopped and the connection
 	// closes.
 	@Override
@@ -162,14 +167,16 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		// TODO Auto-generated method stub
 
 		while (NumberOfPackets < PacketsCount) {
-			// ConsumptionEvent consumptionEvent = getConsumptionEvent();
+			/// ConsumptionEvent consumptionEvent = getConsumptionEvent();
 			PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", 10, true));
-
+			//Displays the number of Packets transferred from the ClientMachine to the ServerMachine.
 			logger.log("Packet: " + NumberOfPackets);
 			NumberOfPackets++;
 
-			// PacketHandler.sendPacket(this, ServerMachine, new SubscriptionPacket(false));
+			
 		}
+		//After the packets are transferred from the clientMachine to ServerMachine, the connection must closed 
+		//but not before the transfer is checked to ascertain the success of the transfer. This is certified by the connectionState.
 		connectionFinished(ServerMachine, null, packet);
 		handleSuccess(ServerMachine, packet);
 		stop();
@@ -217,6 +224,8 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	
 	// When the packets are transferred from the clientMachine to the ServerMachine, this method is called to close up the connection.
 	//Its main work is to assess if the packets were accurately delivered with the contents intact.
+	
+	
 	@Override
 	public void connectionFinished(ConnectionEvent ClientMachine, State connectionState, BasePacket packet) {
 		// TODO Auto-generated method stub
@@ -226,8 +235,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 			RoutingPacket routingPacket = (RoutingPacket) packet;
 
 			// Get the Device this packet should move to next and remove it from the queue
-			// \\
-			ConnectionEvent target = routingPacket.getRoute().poll();
+			ConnectionEvent ServerMachine = routingPacket.getRoute().poll();
 
 			// If the target is Null or the TargetID is that of this Device \\
 			// Unbox the Payload and recurse this method again with the payload \\
@@ -244,7 +252,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 
 			// If the packet is not a RoutingPacket or the connection FAILED \\
 			// Signal the outer class that a full connection cycle has finished \\
-			// connectionFinished(ServerMachine, connectionState, packet);
+			 ///connectionFinished(ServerMachine, connectionState, packet);
 			logger.log("Connection finished: " + connectionState);
 			printStorageMetrics();
 
@@ -262,26 +270,25 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 
 		}
 
-		// The method is utilised to determined the successful transfer of data packet. 
-		// It is executed after the connection is completed.
-		// When the packet is transferred, this method determines the type of packet transferred.
+		
+		//When the packet is transferred from the source to the target, the connectionFinished Method is called to close the connection.
+		//After that, the target(ServerMachine) must be checked to determine the type of packet transferred. That is the essence of this method.
 		private void handleSuccess(ConnectionEvent ServerMachine, BasePacket packet) {
 			if (packet instanceof SubscriptionPacket) {
 				SubscriptionPacket subPacket = (SubscriptionPacket) packet;
 				logger.log("Subscription: " + subPacket.getSubState());
 			} else if (packet instanceof DataPacket) {
 				logger.log("packet: " + packet);
-			} else {
-				logger.log("Unknown packet type: " + packet.getClass().getName());
+			//} else {
+				//logger.log("Unknown packet type: " + packet.getClass().getName());
 
 			}
 		}	
 	
 	
 	
-	
-	//This method is utilised to determine the number of successful or failed packets when the connection is closed.
-	//Since there is probability for any of this to occur, the total number of packets is also determined.
+	//When the transfer of data packets is completed, the number of packets transferred successfully or failed must be determined.
+	//Since there is probability for any of this success or failure to occur, the total number of packets must also determined.
 	public static void packetTransaction(boolean successful) {
 		if (successful)
 			successfulPackets++;
@@ -293,8 +300,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	}
 
 	
-
-	
+   
 	
 	
 	/**
