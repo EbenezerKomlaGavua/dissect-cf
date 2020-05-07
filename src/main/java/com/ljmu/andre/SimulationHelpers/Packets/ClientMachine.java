@@ -33,15 +33,13 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	protected BasePacket packet;
 
 	private static Queue<ConnectionEvent> ConnectionRoute;
-	 private List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
+	private List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
 	private List<String> Packet = new ArrayList<String>();
 	private static int successfulPackets;
 	private static int failedPackets;
 	private static int totalPackets = 0;
 	private int NumberOfPackets = 1;
 	private int PacketsCount = 5;
-	
-	
 
 	/**
 	 * Call {@link this#connectDevice(ConnectionEvent)} if result is TRUE, update
@@ -90,7 +88,8 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		return getRepository().getName();
 	}
 
-	// The clientMachine must be started and subscribed for the simulation to commence.
+	// The clientMachine must be started and subscribed for the simulation to
+	// commence.
 	// The method ensures that all the attributes are made accessible.
 	// Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
 	public void start() {
@@ -98,19 +97,17 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		logger.log("Started [Frequency: %s]", subscribe(0));
 	}
 
-	
 	// When the ClientMachine is started, a connection must be established to ensure
 	// data transfer.
 	// This is ascertained by returning the Id of the target Machine.
 	// If the connection is established, the Id of the server will be obtained
 
-	///  @return True if successfully connected
+	/// @return True if successfully connected
 	@Override
 	public void connectionStarted(ConnectionEvent ServerMachine) {
 		logger.log("Received connection init: " + ServerMachine.getRepository().getName());
 	}
 
-	
 	// Before a formal connection can be established for packets to be transferred,
 	// the clientMachine must be bound to the ServerMachine
 	// Bind the clientMachine to the serverMachine to establish a connection. The
@@ -118,48 +115,53 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	// The subscription packet is transferred and stored on the serverMachine.
 	public void bindServerMachine(ServerMachine ServerMachine) {
 		this.ServerMachine = ServerMachine;
-		//Create a bindPacket Object DataPacket for binding the ClientMachine to the ServerMachine, the Object must be stored after transfer.
+		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
+		// ServerMachine, the Object must be stored after transfer.
 		BasePacket bindPacket = new DataPacket("Data", 10, true).setShouldStore(true);
-		
+		// Execute the packet transfer from the ClientMachine to the ServerMachine
 		PacketHandler.sendPacket(this, ServerMachine, bindPacket);
-		
+
 	}
 
-	// In order to ensure that connected devices utilises the appropriate system resources, the consumptionEvent method is called.
-	// This ensures the systems resources are availed before packet transfer commences.
-		public ConsumptionEvent getConsumptionEvent(final ConsumptionEvent ClientMachine,
-				final ConnectionEvent ServerMachine, final BasePacket packet) {
-			return ClientMachine;
-		}
-	
-	// when the clietMachine is bound to the ServerMachine, the connection between the two devices is established.
-	//However, in order to utilise a routing packet, the connectionRoute must be determined, 
-	//This method ensures that the connectionRoute is obtained.
+	// In order to ensure that connected devices utilises the appropriate system
+	// resources, the consumptionEvent method is called.
+	// This ensures the systems resources are availed before packet transfer
+	// commences.
+	public ConsumptionEvent getConsumptionEvent(final ConsumptionEvent ClientMachine,
+			final ConnectionEvent ServerMachine, final BasePacket packet) {
+		return ClientMachine;
+	}
+
+	// when the clietMachine is bound to the ServerMachine, the connection between
+	// the two devices is established.
+	// However, in order to utilise a routing packet, the connectionRoute must be
+	// determined,
+	// This method ensures that the connectionRoute is obtained.
 	public static Queue<ConnectionEvent> getConnectionRoute(PhysicalMachine clientMachine, String ServerMachineId) {
 
 		return ConnectionRoute;
 	}
-	
-	
-	// After the clientMachine is bound to the serverMachine, packets can now be transferred. 
-	//This can be achieved by utilising the connection created between the clientMachine and the serverMachine.
+
+	// After the clientMachine is bound to the serverMachine, packets can now be
+	// transferred.
+	// This can be achieved by utilising the connection created between the
+	// clientMachine and the serverMachine.
 	// A data packet or routing packet is transferred from the clientMachine.
 	public void sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
 			BasePacket packet) {
-		//ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine,
+		// ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine,
 		// ServerMachine, packet);
 		Scenarioo.logMessage(hashCode() + " Server is not responding, let's wait!");
-		//Create a sendPacket object DataPacket to transfer and store a data unit from the ClientMachine to the ServerMachine.
+		// Create a sendPacket object DataPacket to transfer and store a data unit from
+		// the ClientMachine to the ServerMachine.
 		BasePacket sendPacket = new DataPacket("Data", 10, true);
 		PacketHandler.sendPacket(ClientMachine, ServerMachine, sendPacket);
 	}
 
-	
-	
 	// After the ClientMachine is bind to the ServerMachine,
-	//the packets must be transferred and monitored. 
-	///This is ensured by the tick method providing sufficient time 
-	///and consumption of resources to transfer the packets.
+	// the packets must be transferred and monitored.
+	/// This is ensured by the tick method providing sufficient time
+	/// and consumption of resources to transfer the packets.
 	// After the transfer is completed, the simulation is stopped and the connection
 	// closes.
 	@Override
@@ -169,24 +171,26 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		while (NumberOfPackets < PacketsCount) {
 			/// ConsumptionEvent consumptionEvent = getConsumptionEvent();
 			PacketHandler.sendPacket(this, ServerMachine, new DataPacket("Data", 10, true));
-			//Displays the number of Packets transferred from the ClientMachine to the ServerMachine.
+			// Displays the number of Packets transferred from the ClientMachine to the
+			// ServerMachine.
 			logger.log("Packet: " + NumberOfPackets);
 			NumberOfPackets++;
 
-			
 		}
-		//After the packets are transferred from the clientMachine to ServerMachine, the connection must closed 
-		//but not before the transfer is checked to ascertain the success of the transfer. This is certified by the connectionState.
+		// After the packets are transferred from the clientMachine to ServerMachine,
+		// the connection must closed
+		// but not before the transfer is checked to ascertain the success of the
+		// transfer. This is certified by the connectionState.
 		connectionFinished(ServerMachine, null, packet);
 		handleSuccess(ServerMachine, packet);
 		stop();
 	}
 
-	
-	// When the packets have been successful transferred from ClientMachine to ServerMachine
-	// This method will be called stop the simulation after the connection is
-	// finished and ServerMachine has confirmed successful
-	// receipt of packets. The ClientMachine can now unsubscribe from the frequency.
+	// When the packets have been successful transferred from ClientMachine to
+	// ServerMachine.
+	// The simulation must be stopped, thus after the connection is closed and the
+	// serverMachine has confirmed receipt of the packets.
+	// The ClientMachine can now unsubscribe from the frequency.
 	public void stop() {
 
 		logger.log("Stopped: " + unsubscribe());
@@ -202,9 +206,11 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		getConnectionRoute(ClientMachine, "Id");
 	}
 
-	// When the transfers of data is incomplete, this method is called to notify the clientMachine.
-	//This usually happens when the target device has issues or the frequency isn't stable.
-	//The error generated is printed for analysis.
+	// When the transfers of data is incomplete, this method is called to notify the
+	// clientMachine.
+	// This usually happens when the target device has issues or the frequency isn't
+	// stable.
+	// The error generated is printed for analysis.
 	@Override
 	public void conCancelled(ResourceConsumption problematic) {
 		// TODO Auto-generated method stub
@@ -212,20 +218,19 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		logger.log("Cancelled: " + problematic.toString());
 	}
 
-	
-	//This method is designed to obtain the list of connected devices (ClientMachine,ServerMachine) to utilise the connectionEvent.
+	// The devices to be used for the experiment (ClientMachine and ServerMachine)
+	// must be availed as a connectionEvent.
+	// This ensures that they can transfer packets and receive them as well.
 	@Override
 	public List<ConnectionEvent> getConnectedDevices() {
 		// TODO Auto-generated method stub
 		return connectedDevices;
 	}
 
-	
-	
-	// When the packets are transferred from the clientMachine to the ServerMachine, this method is called to close up the connection.
-	//Its main work is to assess if the packets were accurately delivered with the contents intact.
-	
-	
+	// When the packets are transferred from the clientMachine to the ServerMachine,
+	// this method is called to close up the connection.
+	// Its main work is to assess if the packets were accurately delivered with the
+	// contents intact.
 	@Override
 	public void connectionFinished(ConnectionEvent ClientMachine, State connectionState, BasePacket packet) {
 		// TODO Auto-generated method stub
@@ -252,43 +257,47 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 
 			// If the packet is not a RoutingPacket or the connection FAILED \\
 			// Signal the outer class that a full connection cycle has finished \\
-			 ///connectionFinished(ServerMachine, connectionState, packet);
+			/// connectionFinished(ServerMachine, connectionState, packet);
 			logger.log("Connection finished: " + connectionState);
 			printStorageMetrics();
 
 		}
 	}
 
-	
 	// When the data transfer is completed.
-		// The connection is closed.
-		// and storage metrics are printed out.
-		private void printStorageMetrics() {
-			long freeCap = getRepository().getFreeStorageCapacity();
-			long maxCap = getRepository().getMaxStorageCapacity();
-			logger.log("Disk: [%s/%s]", freeCap, maxCap);
+	// The connection is closed.
+	// and storage metrics are printed out.
+	// This determines the quantity of storage capacity utilised for data storage.
+	// It ascertains the presence of packets within the storage device.
+	private void printStorageMetrics() {
+		long freeCap = getRepository().getFreeStorageCapacity();
+		long maxCap = getRepository().getMaxStorageCapacity();
+		logger.log("Disk: [%s/%s]", freeCap, maxCap);
+
+	}
+
+	// When the packet is transferred from the source to the target, the
+	// connectionFinished Method is called to close the connection.
+	// After that, the target(ServerMachine) must be checked to determine the type
+	// of packet transferred. That is the essence of this method.
+	// Since either dataPacket or subscriptionPacket can be employed, the actual
+	// type stored must be ascertained.
+	private void handleSuccess(ConnectionEvent ServerMachine, BasePacket packet) {
+		if (packet instanceof SubscriptionPacket) {
+			SubscriptionPacket subPacket = (SubscriptionPacket) packet;
+			logger.log("Subscription: " + subPacket.getSubState());
+		} else if (packet instanceof DataPacket) {
+			logger.log("packet: " + packet);
+			// } else {
+			// logger.log("Unknown packet type: " + packet.getClass().getName());
 
 		}
+	}
 
-		
-		//When the packet is transferred from the source to the target, the connectionFinished Method is called to close the connection.
-		//After that, the target(ServerMachine) must be checked to determine the type of packet transferred. That is the essence of this method.
-		private void handleSuccess(ConnectionEvent ServerMachine, BasePacket packet) {
-			if (packet instanceof SubscriptionPacket) {
-				SubscriptionPacket subPacket = (SubscriptionPacket) packet;
-				logger.log("Subscription: " + subPacket.getSubState());
-			} else if (packet instanceof DataPacket) {
-				logger.log("packet: " + packet);
-			//} else {
-				//logger.log("Unknown packet type: " + packet.getClass().getName());
-
-			}
-		}	
-	
-	
-	
-	//When the transfer of data packets is completed, the number of packets transferred successfully or failed must be determined.
-	//Since there is probability for any of this success or failure to occur, the total number of packets must also determined.
+	// When the transfer of data packets is completed, the number of packets
+	// transferred successfully or failed must be determined.
+	// Since there is probability for any of this success or failure to occur, the
+	// total number of packets must also determined.
 	public static void packetTransaction(boolean successful) {
 		if (successful)
 			successfulPackets++;
@@ -296,13 +305,9 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		else
 			failedPackets++;
 
-			totalPackets++;
+		totalPackets++;
 	}
 
-	
-   
-	
-	
 	/**
 	 * public static void sendPacket(final ConnectionEvent ClientMachine, final
 	 * ConnectionEvent ServerMachine, BasePacket packet) { ConsumptionEvent
