@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-
+import static org.junit.Assert.*;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.junit.Before;
@@ -15,7 +15,7 @@ import org.xml.sax.SAXException;
 import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode.NetworkException;
 import junit.framework.Assert;
 
-
+//import org.junit.Assert;
 
 public class ClientMachineTest {
 	private static final String USER_DIR = System.getProperty("user.dir");
@@ -42,8 +42,14 @@ public class ClientMachineTest {
 		 ServerMachine.start();
 	      cloud.start();
 			
-		}
+		
+	}
    
+	
+	
+	
+	
+	
 	//Checking the establishment of a connection between the ClientMachine and the ServerMachine
 	@Test
 	public void CheckConnectionTest() throws Exception{
@@ -54,10 +60,22 @@ public class ClientMachineTest {
     }
       
 	
+	//Checking the stop method of the ClientMachine
+		@Test
+		public void StopClientMachine() {
+			ClientMachine.stop();
+			String StopMessage = "The ClientMachine has stopped working";
+			
+			assertTrue(StopMessage,true);
+		}
+		
 		
 	// Checking whether the ClientMachine was able to bind with the ServerMachine
 	@Test
 	public void bindServerMachineTest() throws NetworkException , ParserConfigurationException, SAXException, IOException, NoSuchMethodException {
+		
+		
+		
 		
 		
 		ClientMachine.bindServerMachine(ServerMachine);
@@ -67,13 +85,36 @@ public class ClientMachineTest {
 		
 	}
 	
-	//Checking the stop method of the ClientMachine
-	@Test
-	public void StopClientMachine() {
-		ClientMachine.stop();
-		String StopMessage = "The ClientMachine has stopped working";
+	
+	
+	@SuppressWarnings("deprecation")
+	
 		
-		assertTrue(StopMessage,true);
+	@Test
+	public void bindTest() throws NetworkException {
+		
+		int packet = ClientMachine.bindServerMachine(ServerMachine);
+	
+		Assert.assertEquals("Binding didn't happen", packet, 1);
+	        	
+    
 	}
+	
+	
+	
+	
+	
+	@Test
+	public void sendPacket() throws NetworkException{
+		 int packet = 0;
+		//int packet2 = ClientMachine.sendPacket(ClientMachine, ServerMachine, packet);
+		
+	      //Assert.assertEquals(" No packet was transferred", packet2, 1);
+	
+	
+	}
+	
+	
+	
 		
 }

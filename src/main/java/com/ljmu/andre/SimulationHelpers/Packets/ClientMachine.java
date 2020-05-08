@@ -113,13 +113,14 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	// Bind the clientMachine to the serverMachine to establish a connection. The
 	// clientMachine must send a subscription packet to the serverMachine
 	// The subscription packet is transferred and stored on the serverMachine.
-	public void bindServerMachine(ServerMachine ServerMachine) {
+	public int bindServerMachine(ServerMachine ServerMachine) {
 		this.ServerMachine = ServerMachine;
 		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
 		// ServerMachine, the Object must be stored after transfer.
-		BasePacket bindPacket = new DataPacket("Data", 10, true).setShouldStore(true);
+		BasePacket bindPacket = new DataPacket("Data", 1, true).setShouldStore(true);
 		// Execute the packet transfer from the ClientMachine to the ServerMachine
 		PacketHandler.sendPacket(this, ServerMachine, bindPacket);
+		return NumberOfPackets;
 
 	}
 
@@ -147,7 +148,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	// This can be achieved by utilising the connection created between the
 	// clientMachine and the serverMachine.
 	// A data packet or routing packet is transferred from the clientMachine.
-	public void sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
+	public int sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
 			BasePacket packet) {
 		// ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine,
 		// ServerMachine, packet);
@@ -156,6 +157,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		// the ClientMachine to the ServerMachine.
 		BasePacket sendPacket = new DataPacket("Data", 10, true);
 		PacketHandler.sendPacket(ClientMachine, ServerMachine, sendPacket);
+		return NumberOfPackets;
 	}
 
 	// After the ClientMachine is bind to the ServerMachine,
