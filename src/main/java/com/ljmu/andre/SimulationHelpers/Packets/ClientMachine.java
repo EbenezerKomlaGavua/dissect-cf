@@ -17,7 +17,6 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode.NetworkException;
-import hu.mta.sztaki.lpds.cloud.simulator.DeferredEvent;
 
 public class ClientMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
 	private static final Logger logger = new Logger(ClientMachine.class);
@@ -113,14 +112,14 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	// Bind the clientMachine to the serverMachine to establish a connection. The
 	// clientMachine must send a subscription packet to the serverMachine
 	// The subscription packet is transferred and stored on the serverMachine.
-	public int bindServerMachine(ServerMachine ServerMachine) {
+	public BasePacket bindServerMachine(ServerMachine ServerMachine) {
 		this.ServerMachine = ServerMachine;
 		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
 		// ServerMachine, the Object must be stored after transfer.
 		BasePacket bindPacket = new DataPacket("Data", 1, true).setShouldStore(true);
 		// Execute the packet transfer from the ClientMachine to the ServerMachine
 		PacketHandler.sendPacket(this, ServerMachine, bindPacket);
-		return NumberOfPackets;
+		return bindPacket;
 
 	}
 
@@ -148,8 +147,12 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	// This can be achieved by utilising the connection created between the
 	// clientMachine and the serverMachine.
 	// A data packet or routing packet is transferred from the clientMachine.
-	public int sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
-			BasePacket packet) {
+	// Once the packet is successfully transferred, the ServerMachine must produce a
+	// notification of having received the data packet. The notification should
+	// display the packet size and the time of arrival. The absence of the absence
+	// of this notification should alert the ClientMachine that the data packet was
+	// not successfully transferred.
+	public int sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine, BasePacket packet) {
 		// ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine,
 		// ServerMachine, packet);
 		Scenarioo.logMessage(hashCode() + " Server is not responding, let's wait!");
