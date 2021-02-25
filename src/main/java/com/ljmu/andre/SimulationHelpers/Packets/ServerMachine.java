@@ -17,18 +17,21 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public class ServerMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
 	private static final Logger logger = new Logger(ServerMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
-	private String ServerMachineId;
-	PhysicalMachine ServerMachine;
+	private String Id;
+	//protected PhysicalMachine ServerMachine;
 	
-	private ClientMachine ClientMachine;
-	
+	protected PhysicalMachine ClientMachine;
+	private boolean shouldStore = true;
 	private static int totalPackets = 0;
 	private static int successfulPackets = 0;
 	private static int failedPackets = 0;
+	private static Repository localDisk;
 	//private DataPacket datapacket;
 	 Repository repository;
 	private BasePacket packet;
 	private List<String> Packet = new ArrayList<String>();
+	private PhysicalMachine ServerMachine;
+	//private ConsumptionEvent PhysicalMachine;
 
 	/**
 	 * 
@@ -46,19 +49,19 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 
 	// Create the constructor for the serverMachine
-	public ServerMachine(PhysicalMachine ServerMachine, BasePacket packet, ClientMachine ClientMachine,
-			Repository repository, String ServerMachineId) {
+	public ServerMachine(BasePacket packet, PhysicalMachine ServerMachine,
+			Repository repository, String Id) {
 		this.ServerMachine = ServerMachine;
 		this.packet = packet;
 		this.ClientMachine = ClientMachine;
-		this.ServerMachineId = ServerMachineId;
+		this.Id = Id;
 		this.repository = ServerMachine.localDisk;
 	}
 
 	// Get the PhysicalMachine call ServerMachine
-	public PhysicalMachine getPhysicalMachine() {
-		return ServerMachine;
-	}
+	//public PhysicalMachine getPhysicalMachine() {
+		//return ServerMachine;
+	//}
 	// Get the repository of the ServerMachine
 	@Override
 	public Repository getRepository() {
@@ -73,11 +76,8 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 		return getRepository().getName();
 	}
 	
-	public PhysicalMachine getConsumptionEvent() {
-		return ServerMachine;
-
-	}
-
+	
+	
 	
 	//Start the ServerMachine and subscribe it to the frequency
 	public void start() {
@@ -89,13 +89,23 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 	// Initial connection with the ClientMachine
 	@Override
-	public void connectionStarted(ConnectionEvent ClientMachine) {
+	public void connectionStarted(ConnectionEvent ServerMachine) {
 		// TODO Auto-generated method stub
-		logger.log("Received connection init: " + ClientMachine.getRepository().getName());
+		logger.log("Received connection init: " + ServerMachine.getRepository().getName());
+	
+	
+		handleConnectionStarted(ServerMachine);
 	}
 	
+	
+	
+public ConnectionEvent handleConnectionStarted(ConnectionEvent ServerMachine) {
+	return ServerMachine;
+	}
+	
+	
 	// Bind the ClientMachine to the ServerMachine
-	public void bindClientMachine(ClientMachine ClientMachine) {
+	public void bindClientMachine(PhysicalMachine ClientMachine) {
 		this.ClientMachine = ClientMachine;
 
 	}
@@ -109,15 +119,32 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 	}
 
-	/**
-	 * public void receivePacket(final ClientMachine fromTheClientMachine) { final
-	 * long reqStart = Timed.getFireCount(); Scenarioo.logMessage(hashCode() + "
-	 * Server is not responding, let's wait!"); //if (ServerMachine.getState().e)
-	 * 
-	 * 
-	 * 
-	 * }
-	 **/
+	public ConsumptionEvent getConsumptionEvent(final ConsumptionEvent ServerMachine,final ConnectionEvent ClientMachine,
+			 final BasePacket packet) {
+		return ServerMachine;
+	}
+	
+	
+	private static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket packet) {
+        if (ServerMachine.getRepository().lookup(packet.id) == null) {
+            logger.log("Registering packet: " + packet);
+            return ServerMachine.getRepository().registerObject(packet);
+        }
+
+        return true;
+    }
+ 
+	
+	
+	
+	
+	//public ConsumptionEvent consumptionEvent() {
+	//	return PhysicalMachine;
+		// TODO Auto-generated method stub
+
+//	}
+	
+	
 	/*
 	 * Subscribe this device with a frequency of {@link this#SUBSCRIBE_FREQ}
 	 */
@@ -132,7 +159,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	@Override
 	public void conComplete() {
 		// TODO Auto-generated method stub
-		logger.log("Packet[" + packet.id + "] successfully sent");
+		logger.log("Packet[" + packet.id + "] successfully received");
 
 		// source.connectionFinished(source, State.SUCCESS, packet);
 		// ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, packet);
@@ -159,41 +186,38 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	 * @param packet          - The Packet that was sent
 	 */
 
-// close connection and print storage metrics
+	 
 	@Override
-	public void connectionFinished(ConnectionEvent ClientMachine, State connectionState, BasePacket packet) {
+	public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
 		// TODO Auto-generated method stub
+		if (connectionState == State.FAILED)
+            getRepository().deregisterObject(packet.id);
 
-		// Check if the packet is a RoutingPacket and if the connection has failed \\
-		if (packet instanceof RoutingPacket && connectionState != State.FAILED) {
-			RoutingPacket routingPacket = (RoutingPacket) packet;
+        System.out.println("ClientMachine connection finished: " + connectionState);
+        printStorageMetrics();
 
-			// Get the Device this packet should move to next and remove it from the queue
-			// \\
-			ConnectionEvent target = routingPacket.getRoute().poll();
+        if (connectionState == State.SUCCESS)
+            handleSuccess(packet);
+    }
 
-			// If the target is Null or the TargetID is that of this Device \\
-			// Unbox the Payload and recurse this method again with the payload \\
-			if (target == null || target.getId().equals(this.getId())) {
-				logger.log("Found Destination [Null? %s]", target == null);
-				this.connectionFinished(routingPacket.getSource(), connectionState, routingPacket.getPayload());
-				// } else {
-				// Otherwise, forward the packet to the next target \\
-				// logger.log("Forwarding!");
-				// PacketHandler.sendPacket(this, target, routingPacket);
-			}
-			// } else {
-			packetTransaction(connectionState == State.SUCCESS);
-
-			// If the packet is not a RoutingPacket or the connection FAILED \\
-			// Signal the outer class that a full connection cycle has finished \\
-			connectionFinished(ClientMachine, connectionState, packet);
-			logger.log("Connection finished: " + connectionState);
-			printStorageMetrics();
-
-		}
+	 private void handleSuccess(BasePacket packet) {
+	        if (packet.getShouldStore()) {
+	            System.out.println("packet Stored after transfer");
+	            getRepository().deregisterObject(packet.id);
+	            return;
+	        }
+	 }
+	 
+	
+	private ConsumptionEvent ConsumptionEvent(ConnectionEvent ClientMachine, ConnectionEvent ServerMachine,
+			BasePacket packet) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
+	
+	
+	
+	
 	public static void packetTransaction(boolean successful) {
 		if (successful)
 			successfulPackets++;
@@ -219,10 +243,8 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	}
 
 	
+	
 
-	public void consumptionEvent() {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 }

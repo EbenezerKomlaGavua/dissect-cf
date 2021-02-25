@@ -4,6 +4,7 @@ import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent.State;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -25,7 +26,7 @@ public class PacketHandler {
     //TODO Change limit to something a little more elegant
     private static final int limit = 10;
 
-    /*public static ArrayList<BasePacket> sendPackets(final ConnectionEvent source, final ConnectionEvent target,
+    public static ArrayList<BasePacket> sendPackets(final ConnectionEvent source, final ConnectionEvent target,
                                                     final ArrayList<BasePacket> packetList) {
         logger.log("Attempting to send: " + packetList.size() + " packets");
         ArrayList<BasePacket> failedPackets = new ArrayList<BasePacket>();
@@ -40,7 +41,7 @@ public class PacketHandler {
             logger.log("Failed packets: " + failedPackets.size());
 
         return failedPackets;
-    }*/
+    }
 
     /**
      * Send a packet to an unresolved device if directly connected or attempts to find a route

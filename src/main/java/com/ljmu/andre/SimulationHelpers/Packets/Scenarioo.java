@@ -5,6 +5,7 @@ import java.io.RandomAccessFile;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 
 public class Scenarioo extends Timed {
 	private static final Logger logger = new Logger(Scenarioo.class);
@@ -12,7 +13,7 @@ public class Scenarioo extends Timed {
 	// public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
 	private static final BasePacket Packet = null;
-	private ClientMachine ClientMachine;
+	private  ClientMachine ClientMachine;
 	private ServerMachine ServerMachine;
 	private Cloud cloud;
 
@@ -47,16 +48,16 @@ public class Scenarioo extends Timed {
 		cloud.start();
 		
 		//Bind ClientMachine to ServerMachine
-		ClientMachine.bindServerMachine(ServerMachine);
+		//ClientMachine.bindServerMachine(ServerMachine);
 		
-		ServerMachine.bindClientMachine(ClientMachine);
+		//ServerMachine.bindClientMachine(ClientMachine);
 		//Bind   Cloud to ClientMachine
-		cloud.bindClientMachine(ClientMachine);
+		//cloud.bindClientMachine(ClientMachine);
 
 		
 		
 		// Send packet from ClientMachine to ServerMachine
-		//ClientMachine.sendPacket(ClientMachine, Servermachine, Packet);
+		ClientMachine.sendPacket(ClientMachine, ServerMachine, Packet);
 		
 		//Receive packet from the ServerMachine
 		ServerMachine.receivePacket(ServerMachine, ClientMachine, Packet);

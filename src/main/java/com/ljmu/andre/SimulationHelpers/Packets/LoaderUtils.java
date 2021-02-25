@@ -14,9 +14,13 @@ public class LoaderUtils {
 	 private static final Logger logger = new Logger(LoaderUtils.class);
 	//private static final String Address = null;
 	//private static final int Port = 0;
-	private static DataPacket datapacket;
-	private static ClientMachine ClientMachine;
-	 
+	//private static DataPacket datapacket;
+	private static BasePacket packet;
+	protected ClientMachine ClientMachine;
+	protected  ServerMachine ServerMachine;
+    static Repository repository;
+	static String Id;
+	private Repository localDisk;
 
 	
 	
@@ -29,11 +33,11 @@ public class LoaderUtils {
 	         throw new NullPointerException("ServerMachine not found");
 
 
-	     	DataPacket NewdataPacket= datapacket;
+	     	//DataPacket NewdataPacket= datapacket;
 	    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
 
 	             
-		return new ServerMachine(ServerMachine,  datapacket, ClientMachine, null, null);
+		return new ServerMachine(packet,  ServerMachine, repository, Id);
 		
 	 }	
 	
@@ -46,7 +50,7 @@ public class LoaderUtils {
 
          throw new NullPointerException("ClientMachine not found");
      
-     DataPacket NewdataPacket= datapacket;
+    // DataPacket NewdataPacket= datapacket;
 
    // TraceFileReaderFoundation traceFileReader = new TraceFileReader(
 
@@ -61,13 +65,16 @@ public class LoaderUtils {
      
              
      
-    // ServerMachine ServerMachine = null;
+  
+	// ServerMachine ServerMachine = null;
 	//int port = 0;
 	//String id = null;
 	//Repository repository = null;
-	return new ClientMachine(ClientMachine,  null, datapacket, null, null);
+	return new ClientMachine(ClientMachine,packet,repository,Id);
      
-     
+	//public ClientMachine(PhysicalMachine ServerMachine, BasePacket packet,
+		//	Repository repository, String Id) {
+
  
 }
 
