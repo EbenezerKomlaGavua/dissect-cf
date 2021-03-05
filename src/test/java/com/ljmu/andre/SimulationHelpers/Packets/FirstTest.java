@@ -9,6 +9,7 @@ public class FirstTest {
 
 	int[] preload = { 1, 2, 3, 4, 10, 20, -1, 5 };
 
+	
 	// Tests if both constructors are there
 	// This is just here so we get compile time errors before the fixes are done
 	@Test

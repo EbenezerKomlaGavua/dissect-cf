@@ -237,8 +237,7 @@ public class ClientMachineTest extends Timed {
 	
 	
 	
-	
-	
+		
 	@Test(timeout = 100)
 	//ClientMachine clientMachine;
 	public void CheckClientMachineON() throws NetworkException, ParserConfigurationException, SAXException, IOException, NoSuchMethodException  {

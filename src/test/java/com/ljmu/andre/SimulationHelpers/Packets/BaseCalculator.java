@@ -23,8 +23,7 @@ public class BaseCalculator {
 		this.preload = preload;
 	}
    
-	
-	public void setFirst(int preload) {
+		public void setFirst(int preload) {
 		 this.preload[i] = preload;
 		
 	}
