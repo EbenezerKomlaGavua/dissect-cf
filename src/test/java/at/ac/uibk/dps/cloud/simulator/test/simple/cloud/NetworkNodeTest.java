@@ -84,7 +84,7 @@ public class NetworkNodeTest extends PMRelatedFoundation {
 		Assert.assertEquals("Already used some bandwidth without requesting transfers", 0,
 				source.inbws.getTotalProcessed() + source.outbws.getTotalProcessed(), 0);
 	}
-
+	
 	@Test(timeout = 100)
 	public void checkConnectivity() {
 		// Node source tests:

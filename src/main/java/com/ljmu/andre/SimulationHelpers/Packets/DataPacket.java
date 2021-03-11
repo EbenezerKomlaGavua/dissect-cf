@@ -9,4 +9,6 @@ public class DataPacket extends BasePacket {
 	public DataPacket(String myid, long mysize, boolean vary) {
         super(myid, mysize, vary);
     }
+	
+	
 }

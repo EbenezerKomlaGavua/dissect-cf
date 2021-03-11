@@ -17,20 +17,21 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public class ServerMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
 	private static final Logger logger = new Logger(ServerMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
-	private String Id;
+    String Id;
 	//protected PhysicalMachine ServerMachine;
 	
-	protected PhysicalMachine ClientMachine;
+	protected ClientMachine ClientMachine;
 	private boolean shouldStore = true;
 	private static int totalPackets = 0;
 	private static int successfulPackets = 0;
 	private static int failedPackets = 0;
-	private static Repository localDisk;
+	//private static Repository localDisk;
 	//private DataPacket datapacket;
 	 Repository repository;
 	private BasePacket packet;
 	private List<String> Packet = new ArrayList<String>();
 	private PhysicalMachine ServerMachine;
+	private PhysicalMachine PhysicalMachine;
 	//private ConsumptionEvent PhysicalMachine;
 
 	/**
@@ -49,13 +50,12 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 
 	// Create the constructor for the serverMachine
-	public ServerMachine(BasePacket packet, PhysicalMachine ServerMachine,
-			Repository repository, String Id) {
-		this.ServerMachine = ServerMachine;
-		this.packet = packet;
-		this.ClientMachine = ClientMachine;
+	public ServerMachine(PhysicalMachine ServerMachine,	Repository repository, String Id) {
+		this.PhysicalMachine = ServerMachine;
+		//this.packet = packet;
+		//this.PhysicalMachine = ClientMachine;
 		this.Id = Id;
-		this.repository = ServerMachine.localDisk;
+		this.repository = repository;
 	}
 
 	// Get the PhysicalMachine call ServerMachine
@@ -63,18 +63,39 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 		//return ServerMachine;
 	//}
 	// Get the repository of the ServerMachine
-	@Override
-	public Repository getRepository() {
-		// TODO Auto-generated method stub
-		return ServerMachine.localDisk;
+		
+	public void setPhysicalMachine(PhysicalMachine  ServerMachine) {
+		this.PhysicalMachine =  ServerMachine;
 	}
 	
-	// Get the Id of the ServerMachine
+	public PhysicalMachine getServerMachine() {
+		return  ServerMachine;
+		
+	}
+	
+		
+	public void setId(String Id) {
+		this.Id = Id;
+	}
+	
 	@Override
 	public String getId() {
 		// TODO Auto-generated method stub
 		return getRepository().getName();
 	}
+	
+	public void setRepository(Repository repository) {
+		this.repository= repository;
+	}
+	
+	@Override
+	public Repository getRepository() {
+		// TODO Auto-generated method stub
+		return PhysicalMachine.localDisk;
+	}
+	
+	// Get the Id of the ServerMachine
+	
 	
 	
 	
@@ -89,26 +110,34 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 	// Initial connection with the ClientMachine
 	@Override
-	public void connectionStarted(ConnectionEvent ServerMachine) {
+	public void connectionStarted(ConnectionEvent ClientMachine) {
 		// TODO Auto-generated method stub
-		logger.log("Received connection init: " + ServerMachine.getRepository().getName());
+		logger.log("Received connection init: " + ClientMachine.getRepository().getName());
 	
-	
-		handleConnectionStarted(ServerMachine);
+	handleConnectionStarted(ClientMachine);
 	}
 	
-	
-	
-public ConnectionEvent handleConnectionStarted(ConnectionEvent ServerMachine) {
-	return ServerMachine;
+		
+public ConnectionEvent handleConnectionStarted(ConnectionEvent ClientMachine) {
+	if(isSubscribed())
+	return ClientMachine;
+	else
+		return null;
 	}
 	
-	
-	// Bind the ClientMachine to the ServerMachine
-	public void bindClientMachine(PhysicalMachine ClientMachine) {
-		this.ClientMachine = ClientMachine;
 
-	}
+public void stop() {
+		
+	logger.log("Stopped: " + unsubscribe());
+}
+
+	
+
+	// Bind the ClientMachine to the ServerMachine
+	//public void bindClientMachine(PhysicalMachine ClientMachine) {
+		///this.ClientMachine = ClientMachine;
+
+	//}
 	
 	// Receive packets sent from the clientMachine
 	public void receivePacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
@@ -208,8 +237,7 @@ public ConnectionEvent handleConnectionStarted(ConnectionEvent ServerMachine) {
 	        }
 	 }
 	 
-	
-	private ConsumptionEvent ConsumptionEvent(ConnectionEvent ClientMachine, ConnectionEvent ServerMachine,
+		private ConsumptionEvent ConsumptionEvent(ConnectionEvent ClientMachine, ConnectionEvent ServerMachine,
 			BasePacket packet) {
 		// TODO Auto-generated method stub
 		return null;

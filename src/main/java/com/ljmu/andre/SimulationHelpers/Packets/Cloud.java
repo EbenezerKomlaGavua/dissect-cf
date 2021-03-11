@@ -9,13 +9,21 @@ import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.helpers.job.Job;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption;
+import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
-public class Cloud extends Timed implements ConnectionEvent{
+public class Cloud extends Timed implements ConsumptionEvent, ConnectionEvent {
 	private static final Logger logger = new Logger(Cloud.class);
 	
-	private ClientMachine ClientMachine;
-	 private PhysicalMachine CloudMachine;
+	protected Cloud cloud;
+	// private PhysicalMachine CloudMachine;
+
+	private PhysicalMachine PhysicalMachine;
+    String Id;
+	private Repository repository;
+
+	private Repository localdisk;
 
 	 
 	 
@@ -27,11 +35,76 @@ public class Cloud extends Timed implements ConnectionEvent{
 			// TODO Auto-generated constructor stub
 		}
 
-//Bind the cloud to the clientMachine
-	   public void bindClientMachine(ClientMachine ClientMachine) {
-	        this.ClientMachine = ClientMachine;
+		public Cloud(PhysicalMachine cloud,Repository repository, String Id) {
+			this.PhysicalMachine = cloud;
+			//this.PhysicalMachine = ServerMachine;
+			this.repository = repository;
+			this.Id = Id;
+		}
 
-	    } 
+		
+		public void setPhysicalMachine(PhysicalMachine cloud) {
+			this.PhysicalMachine = cloud;
+		}
+		
+		public PhysicalMachine getCloudMachine() {
+			return PhysicalMachine;
+			
+		}
+		
+					
+		public void setId(String Id) {
+			this.Id= Id;
+		}
+		
+		@Override
+		public String getId() {
+			// TODO Auto-generated method stub
+			return  Id;
+		}
+	   
+	   
+		
+		
+		public void setRepository(Repository repository) {
+			this.repository= repository;
+		}  
+	   
+	   		
+		@Override
+		public Repository getRepository() {
+			// TODO Auto-generated method stub
+			//return CloudMachine.localDisk;
+			return repository;
+			
+		}
+
+		
+		
+		
+		@Override
+		public List<ConnectionEvent> getConnectedDevices() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+//Bind the cloud to the clientMachine
+	  // public void bindClientMachine(ClientMachine ClientMachine) {
+	      //  this.ClientMachine = ClientMachine;
+
+	 ///   } 
 	    
 	    @Override
 		public void tick(long fires) {
@@ -53,6 +126,7 @@ public class Cloud extends Timed implements ConnectionEvent{
 	    	    }
 	 **/
 	    }
+	    
 	    
 	    // Start and and subscribe the cloud
 	    public void start() {
@@ -78,22 +152,18 @@ public class Cloud extends Timed implements ConnectionEvent{
 	}
       
 	// Return the repository of the cloud
+	
+
 	@Override
-	public Repository getRepository() {
+	public void conComplete() {
 		// TODO Auto-generated method stub
-		return CloudMachine.localDisk;
+		
 	}
 
 	@Override
-	public List<ConnectionEvent> getConnectedDevices() {
+	public void conCancelled(ResourceConsumption problematic) {
 		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public String getId() {
-		// TODO Auto-generated method stub
-		return null;
+		
 	}
 
 	

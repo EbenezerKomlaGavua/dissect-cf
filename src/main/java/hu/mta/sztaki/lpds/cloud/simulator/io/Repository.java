@@ -96,7 +96,7 @@ public class Repository extends NetworkNode {
 			Map<String, PowerState> networkPowerTransitions) {
 		super(id, maxInBW, maxOutBW, diskBW, latencyMap, diskPowerTransitions, networkPowerTransitions);
 		maxStorageCapacity = capacity;
-	}
+	} 
 
 	/**
 	 * This function is designed to initially set up the repository contents. It

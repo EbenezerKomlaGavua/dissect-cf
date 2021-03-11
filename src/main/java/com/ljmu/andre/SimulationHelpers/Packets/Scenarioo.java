@@ -1,6 +1,7 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
@@ -12,15 +13,20 @@ public class Scenarioo extends Timed {
 	private static final String USER_DIR = System.getProperty("user.dir");
 	// public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
-	private static final BasePacket Packet = null;
+	private BasePacket packet;
 	private  ClientMachine ClientMachine;
 	private ServerMachine ServerMachine;
 	private Cloud cloud;
-
+	private SubscriptionPacket packett;
+	
+	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	// The gap between packet transfer
 	/// public static int timeIncrement = 5;
 	public static int timeIncrement = 100;
 
+	
+	
+	
 	public static void logMessage(String message) {
 		System.out.println("@ T+" + Timed.getFireCount() + "ms " + message);
 	}
@@ -47,29 +53,32 @@ public class Scenarioo extends Timed {
 		ServerMachine.start();
 		cloud.start();
 		
+		
+		
+		
 		//Bind ClientMachine to ServerMachine
-		//ClientMachine.bindServerMachine(ServerMachine);
+		//ClientMachine.bindServerMachine(ServerMachine, ClientMachine,  packett);
 		
 		//ServerMachine.bindClientMachine(ClientMachine);
 		//Bind   Cloud to ClientMachine
 		//cloud.bindClientMachine(ClientMachine);
-
 		
 		
 		// Send packet from ClientMachine to ServerMachine
-		ClientMachine.sendPacket(ClientMachine, ServerMachine, Packet);
+		ClientMachine.sendPacketArray(ClientMachine, ServerMachine, PacketArray);
 		
 		//Receive packet from the ServerMachine
-		ServerMachine.receivePacket(ServerMachine, ClientMachine, Packet);
-		// subscribe(1000);
+		//ServerMachine.receivePacket(ServerMachine, ClientMachine, packet);
+		 subscribe(1000);
+		 ClientMachine.stop();
+		 Timed.simulateUntil(100);
 
-		// simulateUntilLastEvent();
+		//simulateUntilLastEvent();
 		
 		 // Subscribe and simulate
 		subscribe(1);
 
-		Timed.simulateUntil(100000);
-
+		
 		// Timed.simulateUntilLastEvent();
 	}
 

@@ -16,8 +16,8 @@ public class LoaderUtils {
 	//private static final int Port = 0;
 	//private static DataPacket datapacket;
 	private static BasePacket packet;
-	protected ClientMachine ClientMachine;
-	protected  ServerMachine ServerMachine;
+	static PhysicalMachine ClientMachine;
+	static PhysicalMachine ServerMachine;
     static Repository repository;
 	static String Id;
 	private Repository localDisk;
@@ -37,7 +37,7 @@ public class LoaderUtils {
 	    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
 
 	             
-		return new ServerMachine(packet,  ServerMachine, repository, Id);
+		return new ServerMachine(ServerMachine, repository, Id);
 		
 	 }	
 	
@@ -54,32 +54,17 @@ public class LoaderUtils {
 
    // TraceFileReaderFoundation traceFileReader = new TraceFileReader(
 
-     // "NetworkIN",
-
-    //  NETWORK_IN_CSV,
-
-    // 0, Integer.MAX_VALUE, true,
-
-    //  NetworkJob.class);
-    
-     
-             
-     
-  
-	// ServerMachine ServerMachine = null;
-	//int port = 0;
-	//String id = null;
-	//Repository repository = null;
-	return new ClientMachine(ClientMachine,packet,repository,Id);
+                  
+      
+	
+	return new ClientMachine(ClientMachine,repository,Id);
      
 	//public ClientMachine(PhysicalMachine ServerMachine, BasePacket packet,
 		//	Repository repository, String Id) {
-
  
 }
 
 
-	
 	 static Cloud getCloud() throws NoSuchMethodException {
 
 	    /// FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
