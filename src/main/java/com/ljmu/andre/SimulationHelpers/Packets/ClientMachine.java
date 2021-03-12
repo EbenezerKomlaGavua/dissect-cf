@@ -14,6 +14,7 @@ import hu.mta.sztaki.lpds.cloud.simulator.Timed;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.PhysicalMachine;
 ///import com.ljmu.andre.SimulationHelpers.Packets.DataPacket2;
 //import com.ljmu.andre.SimulationHelpers.Packets.RoutingPacket1;
+import com.ljmu.andre.SimulationHelpers.Packets.SubscriptionPacket;
 
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption;
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
@@ -44,7 +45,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	private static int totalPackets = 0;
 	private int NumberOfPackets = 1;
 	private int PacketsCount = 5;
-	private int BindPacket=1;
+	//private BasePacket BindPacket=1;
 	private PhysicalMachine PhysicalMachine;
 	//private RoutingPacket packets;
 	private boolean shouldStore = true;
@@ -249,7 +250,8 @@ class RoutePacket{
 
 
 
-public ArrayList<DataPacket> sendPacketArray (final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,final ArrayList<DataPacket> PacketArray){
+public ArrayList<DataPacket> sendPacketArray (final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
+		final ArrayList<DataPacket> PacketArray){
 	
 	 logger.log("Attempting to send: " +  PacketArray.size() + " packets");
 
@@ -268,32 +270,32 @@ return   PacketArray;
 
 
 
-public static boolean sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine, BasePacket packet) {
+public  boolean sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine, BasePacket P1) {
     try {
         logger.log("Sending [From: %s][To: %s]", ClientMachine.getId(), ServerMachine.getId());
 
         
-
+/*
         // If the packet is a RoutingPacket and the route is empty, unbox the payload \\
         if (packet instanceof RoutingPacket &&
                 ((RoutingPacket) packet).getRoute().isEmpty()) {
             logger.log("Route is empty, assuming destination achieved... Unboxing");
             packet = ((RoutingPacket) packet).getPayload();
         }
-
+*/
         // Signal the target that an incoming connection is being made \\
         ServerMachine.connectionStarted(ClientMachine);
 
         // Build an appropriate consumption event \\
-        ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine, ServerMachine, packet);
+        ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine, ServerMachine, P1);
 
         // Determine whether the packet should be saved to disk \\
-        if (packet.getShouldStore()) {
+        if (P1.getShouldStore()) {
             // Register the packet to the source \\
-            if(!registerPacketIfNotExist(ClientMachine, packet)) {
+            if(!registerPacketIfNotExist(ClientMachine, P1)) {
                 logger.err("No more drive space left on [Device: %s]", ClientMachine.getId());
 
-                ServerMachine.connectionFinished(ClientMachine, State.FAILED, packet);
+                ServerMachine.connectionFinished(ClientMachine, State.FAILED,P1);
                 return false;
             }
 
@@ -301,17 +303,18 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
 
             boolean hasDelivered = ClientMachine.getRepository()
                     .requestContentDelivery(
-                            packet.id,
+                    		P1.id,
                             ServerMachine.getRepository(),
                             consumptionEvent) != null;
 
             if(!hasDelivered) {
-            	ServerMachine.connectionFinished(ClientMachine, State.FAILED, packet);
+            	ServerMachine.connectionFinished(ClientMachine, State.FAILED, P1);
                 logger.err("Could not deliver packet [Source: %s] [Target: %s]",
                 		ClientMachine.getId(), ServerMachine.getId());
             }
 
             return hasDelivered;
+            /*
         } else {
             // Attempt to transfer the packet accross the network \\
             NetworkNode.initTransfer(
@@ -324,39 +327,32 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
             // If the initTransfer passed, a connection was able to be established \\
             return true;
         }
+        */
+            
+        }
     } catch (NetworkException e) {
-        logger.err("Failed to send packet [ID: %s]", packet.id);
+        logger.err("Failed to send packet [ID: %s]",P1.id);
         e.printStackTrace();
 
         // Check if the packet was registered before we tried to send it
-        boolean packetIsRegistered = ClientMachine.getRepository().lookup(packet.id) != null;
+        boolean packetIsRegistered = ClientMachine.getRepository().lookup(P1.id) != null;
 
         // If it was not already registered, we can assume it was not intended to stay
         // Register the object so that we can grab it to send again later
         // Force the packet to deregister from the source once successfully transferred
         if (!packetIsRegistered &&
-        		ClientMachine.getRepository().registerObject(packet))
-            packet.addDeregisterObject(ClientMachine);
+        		ClientMachine.getRepository().registerObject(P1))
+        	P1.addDeregisterObject(ClientMachine);
 
     }
 
     // Alert the source that the packet failed
-    ClientMachine.connectionFinished(ClientMachine, State.FAILED, packet);
+    ClientMachine.connectionFinished(ClientMachine, State.FAILED, P1);
     return false;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-public void bindServerMachine(final ConnectionEvent ServerMachine) {
+public String bindServerMachine(final ConnectionEvent ServerMachine) {
 		
 		
 		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
@@ -369,13 +365,29 @@ public void bindServerMachine(final ConnectionEvent ServerMachine) {
 		// Execute the packet transfer from the ClientMachine to the ServerMachine
 		//PacketHandler.sendPacket(this, ServerMachine, bindPacket);
 	    PacketHandler.sendPacket(this, ServerMachine, bindingPacket);
-		System.out.println("Binding");
-		return ;
+	    logger.log("Attempting to Subscribe ClientMachine to ServerMachine with the: " +   " bindingPacket");
+		System.out.println("Binding successful with :  " +    bindingPacket.id );
+		System.out.println(bindingPacket.id);
+		return bindingPacket.id ;
 		
 
 	}
 
-	// In order to ensure that connected devices utilises the appropriate system
+//Used to check if the packet has been delivered
+		public static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket  P1) {
+	        if (ServerMachine.getRepository().lookup(P1.id) == null) {
+	            logger.log("Registering packet: " +  P1);
+	            return ServerMachine.getRepository().registerObject(P1);
+	        }
+
+	        return true;
+	    }
+
+
+
+
+
+// In order to ensure that connected devices utilises the appropriate system
 	// resources, the consumptionEvent method is called.
 	// This ensures the systems resources are availed before packet transfer
 	// commences.
@@ -497,7 +509,10 @@ public void bindServerMachine(final ConnectionEvent ServerMachine) {
 	// Its main work is to assess if the packets were accurately delivered with the
 	// contents intact.
 	// close connection and print storage metrics
-		@Override
+		
+	
+	/*
+	@Override
 		public void connectionFinished(ConnectionEvent ClientMachine, State connectionState, BasePacket packet) {
 			// TODO Auto-generated method stub
 
@@ -532,15 +547,29 @@ public void bindServerMachine(final ConnectionEvent ServerMachine) {
 			}
 		}
 
-		//Used to check if the packet has beed delivered
-		private static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket packet) {
-	        if (ServerMachine.getRepository().lookup(packet.id) == null) {
-	            logger.log("Registering packet: " + packet);
-	            return ServerMachine.getRepository().registerObject(packet);
-	        }
+		*/
+	
+	@Override
+	public void connectionFinished(ConnectionEvent ServerMachine, State connectionState, BasePacket P1) {
+		// TODO Auto-generated method stub
+		if (connectionState == State.FAILED)
+            getRepository().deregisterObject(packet.id);
 
-	        return true;
-	    }
+        System.out.println("ClientMachine connection finished: " + connectionState);
+        printStorageMetrics();
+
+        if (connectionState == State.SUCCESS)
+            handleSuccess(ServerMachine, P1);
+    }
+
+	 public BasePacket handleSuccess(ConnectionEvent ServerMachine,BasePacket BindingPacket) {
+	        if (BindingPacket instanceof SubscriptionPacket) {
+	            System.out.println("packet Stored after transfer");
+	            getRepository().deregisterObject(BindingPacket.id);
+	            return BindingPacket;
+	        }
+			return BindingPacket;
+	 }
 		
 				
 		// When the data transfer is completed.
@@ -561,7 +590,7 @@ public void bindServerMachine(final ConnectionEvent ServerMachine) {
 	// of packet transferred. That is the essence of this method.
 	// Since either dataPacket or subscriptionPacket can be employed, the actual
 	// type stored must be ascertained.
-	
+	/*
 	private void handleSuccess(ConnectionEvent ServerMachine, BasePacket packet) {
 		if (packet instanceof SubscriptionPacket) {
 			SubscriptionPacket  packett = (SubscriptionPacket) packet;
@@ -573,6 +602,7 @@ public void bindServerMachine(final ConnectionEvent ServerMachine) {
 
 		}
 	}
+	*/
 
 	// When the transfer of data packets is completed, the number of packets
 	// transferred successfully or failed must be determined.

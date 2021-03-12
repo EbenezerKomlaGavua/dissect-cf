@@ -62,7 +62,7 @@ public class ClientMachineTest extends Timed {
 	 private static int BindPacket=2;
 	private PhysicalMachine PhysicalMachine1,PhysicalMachine2;
 	BasePacket bindingPacket;
-	
+	DataPacket P1 = new  DataPacket("one", 3, true);
 	 	 
 	 public final static int data =1;
 	
@@ -75,33 +75,7 @@ public class ClientMachineTest extends Timed {
 		print storage metrics
 		registerPacketIfNotExist
 		ConnectionFinished
-	
-			 /*
-			 
-			 final ArrayList<BasePacket>  packets)throws NetworkException {
-				BasePacket sendPacket = new DataPacket("Data", 1, true);
-			PacketHandler.sendPacket(ClientMachine, ServerMachine, sendPacket);
-			System.out.println("Packet Transfer");
-			return packets;
-			
 		
-
-	private static int bindServerMachine(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
-			final SubscriptionPacket  packett)throws NetworkException {
-			BasePacket bindingPacket = new SubscriptionPacket(true).setShouldStore(true);
-               PacketHandler.sendPacket(ClientMachine, ServerMachine, bindingPacket);
-	      System.out.println("Binding");
-	     return BindPacket;
-	}
-		
-	private static boolean registerPacketIfNotExist(final ConnectionEvent ServerMachine, BasePacket packets) {
-        if (ServerMachine.getRepository().lookup(packets.id) == null) {
-            logger.log("Registering packet: " + packets);
-            return ServerMachine.getRepository().registerObject(packets);
-        }
-
-        return true;
-    }
 	
 	*/
 	
@@ -136,57 +110,8 @@ public class ClientMachineTest extends Timed {
 	}
    		
 	
-	@Test(timeout=100)
-	public void StartClientTest() {
-		//ClientMachine clientMachine = new ClientMachine(PhysicalMachine1,  repository1, Id1);
-		 //assertEquals("ClientMachine is not ON", ClientMachine, clientMachine.start());
-		
-	}
-	
-	
-	/*
-	//Check the availability of a repository of ClientMachine
-	 @Test
-	  	public void CheckRepoCreation() {
-		// ClientMachine clientMachine = new ClientMachine(PhysicalMachine1,  repository1, Id1);
-		// ServerMachine server   = new ServerMachine(PhysicalMachine2, repository2, Id2);
-			//Check the availability of a repository size of ServerMachine
-		
-			//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
-			assertEquals("The local disks is not available",ServerMachine.repository, ClientMachine.getRepository());
-	}
-*/
-	//Check the availability of a repository of ClientMachine
-		 @Test
-		  	public void CheckClientRepoCreation() throws NetworkException {
-				//Check the availability of a repository size of ServerMachine
-			
-				//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
-				assertEquals("The local disks is not available", ServerMachine.repository, ClientMachine.getRepository());
-		}
-	 
-	 
-		//Check the availability of a repository of ClientMachine
-		 @Test
-		  	public void CheckServerRepoCreation()throws NetworkException {
-			//Check the availability of a repository size of ServerMachine
-			
-				//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
-				assertEquals("The local disks is not available", ClientMachine.repository, ServerMachine.getRepository());
-		}
-	  
 	
 		
-		 
-		 
-		 
-		 
-		 
-		 // @Test
-		// public CheckPhsicalMachineName
-		 
-	 
-		 
 	 
 	//Check the availability of an Id of ClientMachine
 	 @Test
@@ -251,78 +176,121 @@ public class ClientMachineTest extends Timed {
 				//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
 			
 				assertEquals("The local disks is not available",cloud.getCloudMachine(), cloud.getRepository());
-
-		 
+ 
 		 }
 		 
-		 		 		 
-		 
-		 @Test(timeout = 1000)
-			public void CheckConnectionStartedTest_ON() throws NetworkException, ParserConfigurationException, SAXException, IOException, NoSuchMethodException  {
-			cloud.start();
-			ClientMachine.start();
-			 ServerMachine.start();
-			 assertEquals("No connection between machines", ServerMachine, ClientMachine.handleConnectionStarted(ServerMachine));
-			 ClientMachine.stop();
-		
-		}
-		
-		// Check to see if the ServerMachine is still reachable from the ClientMachine, when the clientMachine is turned off.
-		@Test(timeout=1000)
-			public void CheckConnectionStartedTest_OFF() throws NetworkException {
+		  @Test(timeout = 1000)
+		public void CheckConnectionStartedTest_ON() throws NetworkException, ParserConfigurationException, SAXException, IOException, NoSuchMethodException  {
+		cloud.start();
+		ClientMachine.start();
+		 ServerMachine.start();
+		 assertEquals("No connection between machines", ServerMachine, ClientMachine.handleConnectionStarted(ServerMachine));
 		 ClientMachine.stop();
-		 assertNotEquals("No connection between machines", ServerMachine, ClientMachine.handleConnectionStarted(ServerMachine));
-		     
-			}
-		 
-		 
+	
+	}
+	
+	// Check to see if the ServerMachine is still reachable from the ClientMachine, when the clientMachine is turned off.
+	@Test(timeout=1000)
+		public void CheckConnectionStartedTest_OFF() throws NetworkException {
+	 ClientMachine.stop();
+	 assertNotEquals("No connection between machines", ServerMachine, ClientMachine.handleConnectionStarted(ServerMachine));
+	     
+		}
+	
+	
+	// Check to see if the BasePackets are actually in the Array
+	@Test(timeout = 100)
+    public void CheckStatusOfArray() throws NetworkException {
+		ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
+		 assertNotNull("List shouldn't be null", PacketArray);
+		} 
 
-		
-		
-		
-		// Check to see if the BasePackets are actually in the Array
-					@Test(timeout = 100)
-				    public void CheckStatusOfArray() throws NetworkException {
-						ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
-						 assertNotNull("List shouldn't be null", PacketArray);
-						} 
-		 
-					// Check to see if the array size is correct
-					@Test(timeout = 100)
-					    public void CheckSizeOfArray() throws NetworkException {
-						//	ClientMachine clientMachine = new ClientMachine(PhysicalMachine1, repository1, Id1);;
-							ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
-							 assertEquals("wrong size", 3, PacketArray.size());
-					} 
-								
-					// Transfer array of packets from ClientMachine to serverMachine
+	// Check to see if the array size is correct
+	@Test(timeout = 100)
+	    public void CheckSizeOfArray() throws NetworkException {
+		//	ClientMachine clientMachine = new ClientMachine(PhysicalMachine1, repository1, Id1);;
+			ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
+			 assertEquals("wrong size", 3, PacketArray.size());
+	} 
+	
+	
+	// Transfer array of packets from ClientMachine to serverMachine
 
-					@Test(timeout = 1000)
-				    public void TranferPacketArray() throws NetworkException { 
-						//ClientMachine clientMachine = new ClientMachine(PhysicalMachine1,  repository1, Id1);
-						ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
-						assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPacketArray(ClientMachine, ServerMachine, PacketArray));
-						
-				} 		
+	@Test(timeout = 1000)
+    public void TranferPacketArray() throws NetworkException { 
+		//ClientMachine clientMachine = new ClientMachine(PhysicalMachine1,  repository1, Id1);
+		ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
+		assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPacketArray(ClientMachine, ServerMachine, PacketArray));
+		
+
+
+} 		
+	
+					 
+	// Checking if a packet can be sent and registered at a target			
+		@Test(timeout = 100)	
+		public void SendPacketTest() throws   NetworkException {
+			 assertEquals("Packet was not delivered", true, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
+			 }
 					
-	 
-					 @Test(timeout = 1000)
+		// Checking if a the method is not efficient.		
+					 @Test(timeout = 100)	
+					 public void SendPacketTest_NotWorking() throws   NetworkException {
+						 assertNotEquals("Packet was not delivered", false, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
+					 }
+	
+	
+	
+	//Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine
+					 @Test(timeout = 100)
 				       public void BindServerMachineTest()throws NetworkException  {
-				    	   
-				    	 //Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine	
-				    	   
-				    	//   assertEquals("ServerMachine is was not linked up",subscribe
-				    				//ClientMachine.bindServerMachine(ServerMachine));
-				    	   
-				         //  assertTrue
-				    	              
+				    	   assertEquals("ServerMachine is was not linked up","Subscribe",ClientMachine.bindServerMachine(ServerMachine));
+				    	         
 				}
+					 
 					
-					
-					
-					
-					/*	
+					 
+					 
+					 
+					 
+					 
+					 /*	
 
+	//Check the availability of a repository of ClientMachine
+	 @Test
+	  	public void CheckRepoCreation() {
+		// ClientMachine clientMachine = new ClientMachine(PhysicalMachine1,  repository1, Id1);
+		// ServerMachine server   = new ServerMachine(PhysicalMachine2, repository2, Id2);
+			//Check the availability of a repository size of ServerMachine
+		
+			//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
+			assertEquals("The local disks is not available",ServerMachine.repository, ClientMachine.getRepository());
+	}
+
+	
+	//Check the availability of a repository of ClientMachine
+		 @Test
+		  	public void CheckClientRepoCreation() throws NetworkException {
+				//Check the availability of a repository size of ServerMachine
+			
+				//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
+				assertEquals("The local disks is not available", ServerMachine.repository, ClientMachine.getRepository());
+		}
+	 
+	 
+		//Check the availability of a repository of ClientMachine
+		 @Test
+		  	public void CheckServerRepoCreation()throws NetworkException {
+			//Check the availability of a repository size of ServerMachine
+			
+				//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
+				assertEquals("The local disks is not available", ClientMachine.repository, ServerMachine.getRepository());
+		}
+	  
+	
+	
+	
+	
 	//Check the availability of a repository of ClientMachine
 		 @Test
 		  	public void CheckPhysicalMachineCreation() {
@@ -332,71 +300,7 @@ public class ClientMachineTest extends Timed {
 				//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
 				assertEquals("The local disks is not available",PhysicalMachine1, clientMachine.getClientMachine());
 		}
-		
-	 
-	
-	
-	*/
-	
-	
-	
-	
-	
-	
-	/*
-	@Test(timeout = 100)
-	public void TransferPacket() throws NetworkException {
-		ClientMachine clientMachine = new ClientMachine(PhysicalMachine, PhysicalMachine, repository, Id);
-		//RoutingPacket1 Packet = ClientMachine.
-	}
-	
-	*/
-	
-	
-	
-	
-	/*
-	@Test(timeout = 100)
-	public void CheckServerMachineConnectivity() throws NetworkException {
-		
-	     
-		 assertEquals("No connection between machines", ServerMachine, 
-				ServerMachine.handleConnectionStarted(ServerMachine));
- 	
-	}
-
-	
-	
-
-	
-	
-	
-
-	       @Test(timeout = 1000)
-       public void CheckBindingServerMachineToClientMachine()throws NetworkException  {
-    	   
-    	 //Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine	
-    	   try {
-    	   assertEquals("ServerMachine is was not linked up", 1, 
-    				ClientMachineTest.bindServerMachine(ClientMachine, ServerMachine, packett));
-    	   } catch (NetworkException ex) {
-      			fail("Internal connectivity between machines should always work");
-      		}
-        
-    	              
-}
-       
-	       
-       
-       
-       @Test(timeout = 100)	  
-       public void CheckPacketTransferSuccess() {
-    	   //assertTrue("Packet not successfully transferred", ClientMachineTest.registerPacketIfNotExist(ServerMachine, packet));
-    	  //fail("Internal connectivity between machines should always work");
-       }
-	
-      
-               
+	   
        @Test
    	  	public void CheckClientMachineCreation() {
    	   	
@@ -407,6 +311,16 @@ public class ClientMachineTest extends Timed {
 
    	}
    	
+   	
+   		@Test(timeout = 100)	
+				public void DeliveredPacketTest() throws NetworkException  {
+					assertTrue("Packet was not delivered", ClientMachine.registerPacketIfNotExist(ServerMachine, bindingPacket));
+			
+				
+				}
+					
+   	
+   	
 	
 	*/
 	
@@ -414,7 +328,7 @@ public class ClientMachineTest extends Timed {
 	
 	
 }
-//}
+
 	
 	
 	
