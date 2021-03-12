@@ -244,10 +244,20 @@ public class ClientMachineTest extends Timed {
 	//Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine
 					 @Test(timeout = 100)
 				       public void BindServerMachineTest()throws NetworkException  {
-				    	   assertEquals("ServerMachine is was not linked up","Subscribe",ClientMachine.bindServerMachine(ServerMachine));
-				    	         
-				}
+				    	   assertEquals("ServerMachine is was not linked up", true,ClientMachine.bindServerMachine(ServerMachine));
+				    	        
+									 
+					 }
 					 
+					 
+					//Checking if the method is efficient.
+					 @Test(timeout = 100)
+				       public void BindServerMachineTest_NotWorking()throws NetworkException  {
+				    	   assertNotEquals("ServerMachine is was not linked up", false,ClientMachine.bindServerMachine(ServerMachine));
+				    	        
+									 
+					 }
+			
 					
 					 
 					 

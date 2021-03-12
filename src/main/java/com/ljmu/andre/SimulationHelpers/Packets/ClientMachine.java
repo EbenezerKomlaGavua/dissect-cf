@@ -352,7 +352,7 @@ public  boolean sendPacket(final ConnectionEvent ClientMachine, final Connection
 }
 
 
-public String bindServerMachine(final ConnectionEvent ServerMachine) {
+public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 		
 		
 		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
@@ -368,7 +368,7 @@ public String bindServerMachine(final ConnectionEvent ServerMachine) {
 	    logger.log("Attempting to Subscribe ClientMachine to ServerMachine with the: " +   " bindingPacket");
 		System.out.println("Binding successful with :  " +    bindingPacket.id );
 		System.out.println(bindingPacket.id);
-		return bindingPacket.id ;
+		return true ;
 		
 
 	}
