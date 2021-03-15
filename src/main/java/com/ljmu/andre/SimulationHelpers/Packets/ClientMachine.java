@@ -559,16 +559,16 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
         printStorageMetrics();
 
         if (connectionState == State.SUCCESS)
-            handleSuccess(ServerMachine, P1);
+            handleSuccess(ServerMachine, packet);
     }
 
-	 public BasePacket handleSuccess(ConnectionEvent ServerMachine,BasePacket BindingPacket) {
-	        if (BindingPacket instanceof SubscriptionPacket) {
+	 public boolean handleSuccess(ConnectionEvent ServerMachine,BasePacket packet) {
+	        if (packet instanceof SubscriptionPacket) {
 	            System.out.println("packet Stored after transfer");
-	            getRepository().deregisterObject(BindingPacket.id);
-	            return BindingPacket;
+	            getRepository().deregisterObject(packet.id);
+	            return true;
 	        }
-			return BindingPacket;
+			return true;
 	 }
 		
 				
