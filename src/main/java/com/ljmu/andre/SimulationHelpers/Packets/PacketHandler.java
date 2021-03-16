@@ -132,7 +132,6 @@ public class PacketHandler {
                     target.connectionFinished(source, State.FAILED, packet);
                     return false;
                 }
-
                 // Attempt to send and save the packet on the target \\
 
                 boolean hasDelivered = source.getRepository()

@@ -260,6 +260,9 @@ public ArrayList<DataPacket> sendPacketArray (final ConnectionEvent ClientMachin
 for (BasePacket packet :  PacketArray) {
 logger.log("Sending packet: " + packet.id);
 
+//This is key to sending the packets
+//sendPacket(ClientMachine, ServerMachine, PacketArray); 
+
 }
 
 if (  PacketArray.size() > 0)
@@ -273,7 +276,6 @@ return   PacketArray;
 public  boolean sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine, BasePacket P1) {
     try {
         logger.log("Sending [From: %s][To: %s]", ClientMachine.getId(), ServerMachine.getId());
-
         
 /*
         // If the packet is a RoutingPacket and the route is empty, unbox the payload \\
@@ -353,25 +355,34 @@ public  boolean sendPacket(final ConnectionEvent ClientMachine, final Connection
 
 
 public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
-		
-		
+	
+		 
+		 logger.log("Attempting to Subscribe ClientMachine to ServerMachine with the: " +   " bindingPacket");
+		// ServerMachine.connectionStarted(ClientMachine);
+		 BasePacket bindingPacket = new SubscriptionPacket(true).setShouldStore(true);
+		 // ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine, ServerMachine, bindingPacket);
+		 		
+		 System.out.println("Binding successful with :  " +    bindingPacket.id );
+		 
 		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
-		// ServerMachine, the Object must be stored after transfer.
-			
-		//BasePacket bindPacket = new DataPacket("Data", 1, true).setShouldStore(true);
-			BasePacket bindingPacket = new SubscriptionPacket(true).setShouldStore(true);
-	               
 		
-		// Execute the packet transfer from the ClientMachine to the ServerMachine
-		//PacketHandler.sendPacket(this, ServerMachine, bindPacket);
-	    PacketHandler.sendPacket(this, ServerMachine, bindingPacket);
-	    logger.log("Attempting to Subscribe ClientMachine to ServerMachine with the: " +   " bindingPacket");
-		System.out.println("Binding successful with :  " +    bindingPacket.id );
-		System.out.println(bindingPacket.id);
-		return true ;
-		
+		  
+		  PacketHandler.sendPacket(this, ServerMachine, bindingPacket);
+			if (bindingPacket.getShouldStore()) {
+	            // Register the bindingPacket to the ServerMachine\\
+	            if(!subscribePacketIfNotExist(ServerMachine,  bindingPacket)) {
+	                logger.err("No more drive space left on [Device: %s]", ClientMachine.getId());
 
-	}
+	                ServerMachine.connectionFinished(ClientMachine, State.FAILED,bindingPacket);
+	                return false;
+	            }
+	          
+			}
+			return shouldStore;
+			
+}
+			
+	
 
 //Used to check if the packet has been delivered
 		public static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket  P1) {
@@ -383,7 +394,15 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 	        return true;
 	    }
 
-
+	//Register SubscriptionPacket to the ServerMachine	
+	public static boolean subscribePacketIfNotExist(ConnectionEvent ServerMachine, BasePacket  bindingPacket) {
+			if (bindingPacket instanceof SubscriptionPacket) {
+				logger.log("Registering packet: " +  bindingPacket);
+				 return ServerMachine.getRepository().registerObject(bindingPacket);
+		        }
+			return true;
+			
+		}
 
 
 
@@ -391,17 +410,51 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 	// resources, the consumptionEvent method is called.
 	// This ensures the systems resources are availed before packet transfer
 	// commences.
-	public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent  ClientMachine,
+	/*
+		public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent  ClientMachine,
 			final ConnectionEvent ServerMachine, final BasePacket packet) {
 		return ConsumptionEvent(ClientMachine,ServerMachine,packet);
 	}
+	*/
+	public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent ClientMachine,
+             final ConnectionEvent ServerMachine,
+             final BasePacket P1) {
+return new ConsumptionEvent() {
 
+@Override 
+public void conComplete() {
+logger.log("Packet[" + P1.id + "] successfully sent");
+
+//source.connectionFinished(source, State.SUCCESS, packet);
+ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
+
+// Packets that are not intended to stay after transfer are deregistered here
+// This allows for failed packets to be wiped
+if (P1.shouldDeregister(ClientMachine))
+	ClientMachine.getRepository().deregisterObject(P1);
+if (P1.shouldDeregister(ServerMachine))
+	ServerMachine.getRepository().deregisterObject(P1);
+}
+
+@Override 
+public void conCancelled(ResourceConsumption problematic) {
+	ClientMachine.connectionFinished(ClientMachine, State.FAILED, P1);
+logger.log("Cancelled: " + problematic.toString());
+}
+};
+}
+	
+	
+	
+	
+	
+/*	
 	private static ConsumptionEvent ConsumptionEvent(ConnectionEvent ClientMachine, ConnectionEvent ServerMachine,
 			BasePacket packet) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+*/
 	// when the clietMachine is bound to the ServerMachine, the connection between
 	// the two devices is established.
 	// However, in order to utilise a routing packet, the connectionRoute must be
@@ -479,17 +532,32 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 	@Override
 	public void conComplete() {
 		// TODO Auto-generated method stub
-		logger.log("Packet[" + packet.id + "] successfully sent");
-		//getConnectionRoute(ClientMachine, "Id");
-	}
+		logger.log("Packet[" +  P1.id + "] successfully sent");
+		
+		
+		//source.connectionFinished(source, State.SUCCESS, packet);
+		ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
+
+		// Packets that are not intended to stay after transfer are deregistered here
+		// This allows for failed packets to be wiped
+		if (P1.shouldDeregister(ClientMachine))
+			ClientMachine.getRepository().deregisterObject(P1);
+		if (P1.shouldDeregister(ServerMachine))
+			ServerMachine.getRepository().deregisterObject(P1);
+		}
+		
+
 
 	// When the transfers of data is incomplete, this method is called to notify the
 	// clientMachine.
 	// This usually happens when the target device has issues or the frequency isn't
 	// stable.
 	// The error generated is printed for analysis.
+	
 	@Override
 	public void conCancelled(ResourceConsumption problematic) {
+		ClientMachine.connectionFinished(ClientMachine, State.FAILED, P1);
+		
 		// TODO Auto-generated method stub
 		/// ClientMachine.connectionFinished(ClientMachine, State.FAILED, packet);
 		logger.log("Cancelled: " + problematic.toString());

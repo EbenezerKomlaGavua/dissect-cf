@@ -164,9 +164,6 @@ public void stop() {
     }
  
 	
-	
-	
-	
 	//public ConsumptionEvent consumptionEvent() {
 	//	return PhysicalMachine;
 		// TODO Auto-generated method stub
@@ -182,8 +179,6 @@ public void stop() {
 		// TODO Auto-generated method stub
 		logger.log("Tick: " + fires);
 	}
-
-	
 
 	@Override
 	public void conComplete() {
@@ -204,8 +199,6 @@ public void stop() {
 	// return Address;
 //	}
 
-	
-
 	/**
 	 * Signal that a packet has been transferred to this Device If the Packet is a
 	 * RoutingPacket and is not destined for this device, it is then forwarded
@@ -217,22 +210,22 @@ public void stop() {
 
 	 
 	@Override
-	public void connectionFinished(ConnectionEvent source, State connectionState, BasePacket packet) {
+	public void connectionFinished(ConnectionEvent CMachine, State connectionState, BasePacket bindingPacket) {
 		// TODO Auto-generated method stub
 		if (connectionState == State.FAILED)
-            getRepository().deregisterObject(packet.id);
+            getRepository().deregisterObject(bindingPacket.id);
 
         System.out.println("ClientMachine connection finished: " + connectionState);
         printStorageMetrics();
 
         if (connectionState == State.SUCCESS)
-            handleSuccess(packet);
+            handleSuccess(bindingPacket);
     }
 
-	 private void handleSuccess(BasePacket packet) {
-	        if (packet.getShouldStore()) {
+	 private void handleSuccess(BasePacket bindingPacket) {
+	        if (bindingPacket.getShouldStore()) {
 	            System.out.println("packet Stored after transfer");
-	            getRepository().deregisterObject(packet.id);
+	            getRepository().deregisterObject(bindingPacket.id);
 	            return;
 	        }
 	 }

@@ -23,10 +23,9 @@ public class Scenarioo extends Timed {
 	// The gap between packet transfer
 	/// public static int timeIncrement = 5;
 	public static int timeIncrement = 100;
-
+	DataPacket P1 = new  DataPacket("one", 3, true);
 	
-	
-	
+		
 	public static void logMessage(String message) {
 		System.out.println("@ T+" + Timed.getFireCount() + "ms " + message);
 	}
@@ -57,7 +56,7 @@ public class Scenarioo extends Timed {
 		
 		
 		//Bind ClientMachine to ServerMachine
-		//ClientMachine.bindServerMachine(ServerMachine, ClientMachine,  packett);
+		ClientMachine.bindServerMachine(ServerMachine);
 		
 		//ServerMachine.bindClientMachine(ClientMachine);
 		//Bind   Cloud to ClientMachine
@@ -66,7 +65,7 @@ public class Scenarioo extends Timed {
 		
 		// Send packet from ClientMachine to ServerMachine
 		ClientMachine.sendPacketArray(ClientMachine, ServerMachine, PacketArray);
-		
+		ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
 		//Receive packet from the ServerMachine
 		//ServerMachine.receivePacket(ServerMachine, ClientMachine, packet);
 		 subscribe(1000);

@@ -15,6 +15,7 @@ public class SubscriptionPacket extends BasePacket {
     public boolean getSubState() {
         return subState;
         }
+ 
     
     //I have setSubtate
     public SubscriptionPacket setSubState(boolean subState) {

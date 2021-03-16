@@ -226,7 +226,6 @@ public class ClientMachineTest extends Timed {
 		ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
 			 assertEquals("wrong size", 3, PacketArray.size());
 	} 
-	 
 	
 	// Transfer array of packets from ClientMachine to serverMachine
 
@@ -249,37 +248,30 @@ public class ClientMachineTest extends Timed {
 		 assertEquals("Packet was not delivered", true, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
 			 }
 					
-		
+
 		// Checking if a the method is not efficient.		
-					 @Test(timeout = 100)	
-					 public void SendPacketTest_NotWorking() throws   NetworkException {
-						 cloud.start();
-						 ClientMachine.start();
-						 ServerMachine.start();
-						 assertNotEquals("Packet was not delivered", false, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
-					 }
+		 @Test(timeout = 100)	
+		 public void SendPacketTest_NotWorking() throws   NetworkException {
+	     cloud.start();
+		 ClientMachine.start();
+		  ServerMachine.start();
+		 assertNotEquals("Packet was not delivered", false, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
+			}
 	
-	
+				 
+		//Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine
+	 @Test(timeout = 100)
+	    public void BindServerMachineTest()throws NetworkException  {
+	    cloud.start();
+		 ClientMachine.start();
+		ServerMachine.start();
+		assertEquals("ServerMachine is was not linked up", true,ClientMachine.bindServerMachine(ServerMachine));
+	}
 					 
-					 
-					 //Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine
-					 @Test(timeout = 100)
-				       public void BindServerMachineTest()throws NetworkException  {
-				       cloud.start();
-						 ClientMachine.start();
-						 ServerMachine.start();
-				    	   assertEquals("ServerMachine is was not linked up", true,ClientMachine.bindServerMachine(ServerMachine));
-				    	        
-									 
-					 }
-					 
-					 
-	
-					//Checking if the method is efficient.
-					 @Test(timeout = 100)
-					    
-				       public void BindServerMachineTest_NotWorking()throws NetworkException  {
-						 cloud.start();
+	//Checking if the method is efficient.
+		 @Test(timeout = 100)
+		 public void BindServerMachineTest_NotWorking()throws NetworkException  {
+			 cloud.start();
 						 ClientMachine.start();
 						 ServerMachine.start();
 				    	   assertNotEquals("ServerMachine is was not linked up", false,ClientMachine.bindServerMachine(ServerMachine));
