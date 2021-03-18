@@ -19,7 +19,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	private static final int SUBSCRIBE_FREQ = 5;
     String Id;
 	//protected PhysicalMachine ServerMachine;
-	
+    static final State connectionState = State.SUCCESS;
 	protected ClientMachine ClientMachine;
 	private boolean shouldStore = true;
 	private static int totalPackets = 0;
@@ -28,12 +28,27 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	//private static Repository localDisk;
 	//private DataPacket datapacket;
 	 Repository repository;
-	private BasePacket packet;
+	//private BasePacket packet;
 	private List<String> Packet = new ArrayList<String>();
-	private PhysicalMachine ServerMachine;
+	private ConnectionEvent ServerMachine;
 	private PhysicalMachine PhysicalMachine;
 	//private ConsumptionEvent PhysicalMachine;
 
+	public ArrayList<BasePacket>  PacketArray() { 
+		ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
+		PacketArray.add(P1);
+		PacketArray.add(P2);
+		PacketArray.add(P3);
+		PacketArray.add(P4);
+		return  PacketArray;
+		}
+
+	BasePacket P1 = new  BasePacket("one" ,3,true);
+	BasePacket P2 = new  BasePacket("two" ,4,true);
+	BasePacket P3 = new  BasePacket("three" ,5,true);
+	BasePacket P4 = new  BasePacket("four" ,6,true);
+
+	
 	/**
 	 * 
 	 * Call {@link this#connectDevice(ConnectionEvent)}
@@ -68,7 +83,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 		this.PhysicalMachine =  ServerMachine;
 	}
 	
-	public PhysicalMachine getServerMachine() {
+	public ConnectionEvent getServerMachine() {
 		return  ServerMachine;
 		
 	}
@@ -133,12 +148,8 @@ public void stop() {
 
 	
 
-	// Bind the ClientMachine to the ServerMachine
-	//public void bindClientMachine(PhysicalMachine ClientMachine) {
-		///this.ClientMachine = ClientMachine;
 
-	//}
-	
+/*
 	// Receive packets sent from the clientMachine
 	public void receivePacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
 			BasePacket packet) {
@@ -147,6 +158,7 @@ public void stop() {
 		// if (ServerMachine.getState().e)
 
 	}
+	*/
 
 	public ConsumptionEvent getConsumptionEvent(final ConsumptionEvent ServerMachine,final ConnectionEvent ClientMachine,
 			 final BasePacket packet) {
@@ -154,21 +166,25 @@ public void stop() {
 	}
 	
 	
-	private static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket packet) {
-        if (ServerMachine.getRepository().lookup(packet.id) == null) {
-            logger.log("Registering packet: " + packet);
-            return ServerMachine.getRepository().registerObject(packet);
+	private static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket P1) {
+        if (ServerMachine.getRepository().lookup(P1.id) == null) {
+            logger.log("Registering packet: " +P1);
+            return ServerMachine.getRepository().registerObject(P1);
         }
 
         return true;
     }
  
+	public static boolean subscribePacketIfNotExist(ConnectionEvent ServerMachine, BasePacket  bindingPacket) {
+		if (bindingPacket instanceof SubscriptionPacket) {
+			logger.log("Registering packet: " +  bindingPacket);
+			 return ServerMachine.getRepository().registerObject(bindingPacket);
+	        }
+		return true;
+		
+	}
 	
-	//public ConsumptionEvent consumptionEvent() {
-	//	return PhysicalMachine;
-		// TODO Auto-generated method stub
-
-//	}
+	
 	
 	
 	/*
@@ -180,23 +196,41 @@ public void stop() {
 		logger.log("Tick: " + fires);
 	}
 
-	@Override
-	public void conComplete() {
-		// TODO Auto-generated method stub
-		logger.log("Packet[" + packet.id + "] successfully received");
+	public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent ServerMachine,
+            final ConnectionEvent ClientMachine,
+            final BasePacket P1) {
+return new ConsumptionEvent() {
 
-		// source.connectionFinished(source, State.SUCCESS, packet);
-		// ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, packet);
-	}
+@Override 
+public void conComplete() {
+logger.log("Packet[" + P1.id + "] successfully sent");
 
-	@Override
-	public void conCancelled(ResourceConsumption problematic) {
-		// TODO Auto-generated method stub
+//source.connectionFinished(source, State.SUCCESS, packet);
+ClientMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
 
-	}
+//Packets that are not intended to stay after transfer are deregistered here
+//This allows for failed packets to be wiped
 
-	// public String getAddress() {
-	// return Address;
+if (P1.shouldDeregister(ServerMachine)) {
+	ServerMachine.getRepository().deregisterObject(P1);
+}
+else
+if (P1.shouldDeregister(ClientMachine)) {
+	ClientMachine.getRepository().deregisterObject(P1);
+}
+
+}
+
+@Override 
+public void conCancelled(ResourceConsumption problematic) {
+	ServerMachine.connectionFinished(ServerMachine, State.FAILED, P1);
+logger.log("Cancelled: " + problematic.toString());
+}
+};
+}
+	
+
+	
 //	}
 
 	/**
@@ -210,24 +244,34 @@ public void stop() {
 
 	 
 	@Override
-	public void connectionFinished(ConnectionEvent CMachine, State connectionState, BasePacket bindingPacket) {
+	public void connectionFinished(ConnectionEvent ClientMachine, State connectionState, BasePacket P1) {
 		// TODO Auto-generated method stub
-		if (connectionState == State.FAILED)
-            getRepository().deregisterObject(bindingPacket.id);
+		
+		//if (packet instanceof BasePacket && connectionState != State.FAILED)
+		//if (connectionState == State.FAILED)
+		if (connectionState == State.FAILED) {
+            getRepository().deregisterObject(P1.id);
 
         System.out.println("ClientMachine connection finished: " + connectionState);
         printStorageMetrics();
-
-        if (connectionState == State.SUCCESS)
-            handleSuccess(bindingPacket);
+		}
+		else
+        if (connectionState == State.SUCCESS) {
+            handleSuccess(ServerMachine, P1);
+            System.out.println("ClientMachine connection finished: " + connectionState);
+            printStorageMetrics();
+        }
     }
 
-	 private void handleSuccess(BasePacket bindingPacket) {
-	        if (bindingPacket.getShouldStore()) {
+	 public boolean handleSuccess(ConnectionEvent ServerMachine,BasePacket P1) {
+	        if (P1 instanceof BasePacket) {
 	            System.out.println("packet Stored after transfer");
-	            getRepository().deregisterObject(bindingPacket.id);
-	            return;
+	            getRepository().deregisterObject(P1.id);
+	            return true;
+	           
 	        }
+	        else
+			return false;
 	 }
 	 
 		private ConsumptionEvent ConsumptionEvent(ConnectionEvent ClientMachine, ConnectionEvent ServerMachine,
@@ -261,6 +305,18 @@ public void stop() {
 	public List<ConnectionEvent> getConnectedDevices() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void conComplete() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void conCancelled(ResourceConsumption problematic) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

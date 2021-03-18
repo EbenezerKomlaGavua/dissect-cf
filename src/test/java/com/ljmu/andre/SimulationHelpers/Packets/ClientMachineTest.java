@@ -1,8 +1,5 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,7 +47,7 @@ public class ClientMachineTest extends Timed {
 	Boolean condition = true;
  private final static long RepoCapacity  = 40000000000L;
 	Repository repository1,repository2;
-	private ArrayList<DataPacket>  PacketArray = new ArrayList<DataPacket>();
+	private ArrayList<BasePacket>  PacketArray = new ArrayList<BasePacket>();
 	private RoutingPacket Packet;
 	 private static final int limit = 10;
 	//private List<String> failedPacketIds = new ArrayList<String>();
@@ -110,6 +107,9 @@ public class ClientMachineTest extends Timed {
 	}
    		
 	
+	
+	
+   /*
 	
 	
 	//Check the availability of an Id of ClientMachine
@@ -227,46 +227,22 @@ public class ClientMachineTest extends Timed {
 			 assertEquals("wrong size", 3, PacketArray.size());
 	} 
 	
-	// Transfer array of packets from ClientMachine to serverMachine
-
-	@Test(timeout = 1000)
-    public void TranferPacketArray() throws NetworkException { 
-		cloud.start();
-		ClientMachine.start();
-		 ServerMachine.start();
-		ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
-		assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPacketArray(ClientMachine, ServerMachine, PacketArray));
-} 		
+	 	// Checking if a the method is not efficient.		
+			 @Test(timeout = 100)	
+			 public void SendPacketTest_NotWorking() throws   NetworkException {
+		     cloud.start();
+			 ClientMachine.start();
+			  ServerMachine.start();
+			 assertNotEquals("Packet was not delivered", false, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
+				}	
 		 
 				 
-	// Checking if a packet can be sent and registered at a target			
-		@Test(timeout = 100)	
-		public void SendPacketTest() throws   NetworkException {
-			cloud.start();
-		ClientMachine.start();
-		 ServerMachine.start();
-		 assertEquals("Packet was not delivered", true, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
-			 }
-					
+		
 
-		// Checking if a the method is not efficient.		
-		 @Test(timeout = 100)	
-		 public void SendPacketTest_NotWorking() throws   NetworkException {
-	     cloud.start();
-		 ClientMachine.start();
-		  ServerMachine.start();
-		 assertNotEquals("Packet was not delivered", false, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
-			}
+		
 	
 				 
-		//Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine
-	 @Test(timeout = 100)
-	    public void BindServerMachineTest()throws NetworkException  {
-	    cloud.start();
-		 ClientMachine.start();
-		ServerMachine.start();
-		assertEquals("ServerMachine is was not linked up", true,ClientMachine.bindServerMachine(ServerMachine));
-	}
+		
 					 
 	//Checking if the method is efficient.
 		 @Test(timeout = 100)
@@ -277,8 +253,64 @@ public class ClientMachineTest extends Timed {
 				    	   assertNotEquals("ServerMachine is was not linked up", false,ClientMachine.bindServerMachine(ServerMachine));
 				    				 
 					 }
-			
 					 
+					@Test(timeout = 1000)
+			public void conCompleteTest() throws NetworkException {
+				cloud.start();
+				ClientMachine.start();
+				 ServerMachine.start();
+				 assertEquals("Packet Transfer not completed", true, ServerMachine.handleSuccess(ServerMachine, P1));
+				
+			} 
+			
+		
+		//Checking if a subscription packet  can be sent to bind the ClientMachine and the ServerMachine
+			 @Test(timeout = 100)
+			    public void BindServerMachineTest()throws NetworkException  {
+			    cloud.start();
+				 ClientMachine.start();
+				ServerMachine.start();
+				assertEquals("ServerMachine is was not linked up", true,ClientMachine.bindServerMachine(ServerMachine));
+			}	
+			
+		
+				@Test(timeout = 1000)
+			    public void TranferPacketArray() throws NetworkException { 
+					cloud.start();
+					ClientMachine.start();
+					 ServerMachine.start();
+					ArrayList<BasePacket> PacketArray = ClientMachine.PacketArray();
+					assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray));
+			} 			 
+		
+				
+		 
+	
+	*/	
+	// Transfer array of packets from ClientMachine to serverMachine
+
+	@Test(timeout = 1000)
+    public void TranferPacketArray() throws NetworkException { 
+		cloud.start();
+		ClientMachine.start();
+		 ServerMachine.start();
+		ArrayList<BasePacket> PacketArray = ClientMachine.PacketArray();
+		assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray));
+} 	
+	
+			
+			
+			// Checking if a packet can be sent and registered at a target			
+				@Test(timeout = 100)	
+				public void SendPacketTest() throws   NetworkException {
+					cloud.start();
+				ClientMachine.start();
+				 ServerMachine.start();
+				 assertEquals("Packet was not delivered", true, ClientMachine.sendPacket(ClientMachine, ServerMachine, P1));
+					 }
+				
+				
+		    
 	/*				 	
 
 	//Check the availability of a repository of ClientMachine

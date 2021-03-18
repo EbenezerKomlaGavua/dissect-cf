@@ -133,7 +133,7 @@ public class Cloud extends Timed implements ConsumptionEvent, ConnectionEvent {
 	        logger.log("Started [Frequency: %s]", subscribe(0));
 	    }
 	    
-	 private void stop() {
+	    public void stop() {
 	        logger.log("Stopped: " + unsubscribe());
 	    }
 

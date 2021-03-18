@@ -19,17 +19,35 @@ public class Scenarioo extends Timed {
 	private Cloud cloud;
 	private SubscriptionPacket packett;
 	
-	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
+	ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
 	// The gap between packet transfer
 	/// public static int timeIncrement = 5;
 	public static int timeIncrement = 100;
-	DataPacket P1 = new  DataPacket("one", 3, true);
+	//DataPacket P1 = new  DataPacket("one", 3, true);
 	
 		
 	public static void logMessage(String message) {
 		System.out.println("@ T+" + Timed.getFireCount() + "ms " + message);
 	}
+	
+	public ArrayList<BasePacket>  PacketArray() { 
+		ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
+		PacketArray.add(P1);
+		PacketArray.add(P2);
+		PacketArray.add(P3);
+		PacketArray.add(P4);
+		return  PacketArray;
+		}
 
+	BasePacket P1 = new  BasePacket("one" ,3,true);
+	BasePacket P2 = new  BasePacket("two" ,4,true);
+	BasePacket P3 = new  BasePacket("three" ,5,true);
+	BasePacket P4 = new  BasePacket("four" ,6,true);
+
+
+	
+	
+	
 	Scenarioo() throws Exception {
 		// subscribe(1);
 		logger.log("Starting Scenario");
@@ -37,6 +55,11 @@ public class Scenarioo extends Timed {
 		RandomAccessFile raf = new RandomAccessFile(MACHINE_SOCKET_XML_PATH, "r");
 		System.out.println(raf.read());
 		raf.close();
+		
+		
+		
+		
+		
 		
 		// 	Initialise the machines with the xml file
 		MachineHandler_Socket.init(MACHINE_SOCKET_XML_PATH);
@@ -59,17 +82,23 @@ public class Scenarioo extends Timed {
 		ClientMachine.bindServerMachine(ServerMachine);
 		
 		//ServerMachine.bindClientMachine(ClientMachine);
-		//Bind   Cloud to ClientMachine
-		//cloud.bindClientMachine(ClientMachine);
 		
 		
-		// Send packet from ClientMachine to ServerMachine
-		ClientMachine.sendPacketArray(ClientMachine, ServerMachine, PacketArray);
-		ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
+		
+		
+		// Send packets from ClientMachine to ServerMachine
+		ArrayList<BasePacket> PacketArray = ClientMachine.PacketArray();
+		ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
+		
+		//ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
+		//ClientMachine.conComplete();
 		//Receive packet from the ServerMachine
-		//ServerMachine.receivePacket(ServerMachine, ClientMachine, packet);
+	
 		 subscribe(1000);
 		 ClientMachine.stop();
+		 ServerMachine.stop();
+		 cloud.stop();
+		 
 		 Timed.simulateUntil(100);
 
 		//simulateUntilLastEvent();
