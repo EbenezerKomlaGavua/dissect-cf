@@ -28,7 +28,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	private static final int SUBSCRIBE_FREQ = 5;
 	 static final State connectionState = State.SUCCESS;
 	protected ClientMachine ClientMachine;
-	private boolean activeSubscription = false;
+	//private boolean activeSubscription = false;
 	  
 	/// private int Port;
       String Id;
@@ -36,7 +36,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	protected ServerMachine ServerMachine;
 	//private List<String> failedPacketIds = new ArrayList<String>();
 	private RoutingPacket packet;
-	private SubscriptionPacket packett;
+	//private SubscriptionPacket packett;
 	ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
 	private static Queue<ConnectionEvent> ConnectionRoute;
 	private List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
@@ -254,7 +254,7 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
                 return false;
             }
             // Attempt to send and save the packet on the target \\
-///* 
+ 
             ResourceConsumption hasDelivered =  ClientMachine.getRepository()
                     .requestContentDelivery(
                     		P1.id,
@@ -265,10 +265,11 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
             	ServerMachine.connectionFinished( ClientMachine, State.FAILED, P1);
                 logger.err("Could not deliver packet [Source: %s] [Target: %s]",
                 		 ClientMachine.getId(), ServerMachine.getId());
+                return false;
             }
             else
             return true;
-          //  */
+        
         } else {
             // Attempt to transfer the packet accross the network \\
             NetworkNode.initTransfer(
@@ -318,7 +319,7 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
 		
 		  
-		  sendPacket(this, ServerMachine, bindingPacket);
+		sendPacket(this, ServerMachine, bindingPacket);
 			if (bindingPacket.getShouldStore()) {
 	            // Register the bindingPacket to the ServerMachine\\
 	            if(!subscribePacketIfNotExist(ServerMachine,  bindingPacket)) {

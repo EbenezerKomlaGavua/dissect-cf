@@ -134,19 +134,20 @@ public class PacketHandler {
                 }
                 // Attempt to send and save the packet on the target \\
 
-                boolean hasDelivered = source.getRepository()
+                ResourceConsumption  hasDelivered = source.getRepository()
                         .requestContentDelivery(
                                 packet.id,
                                 target.getRepository(),
-                                consumptionEvent) != null;
+                                consumptionEvent);
 
-                if(!hasDelivered) {
+                if(hasDelivered==null) {
                     target.connectionFinished(source, State.FAILED, packet);
                     logger.err("Could not deliver packet [Source: %s] [Target: %s]",
                             source.getId(), target.getId());
+                    return false;
                 }
-
-                return hasDelivered;
+                else
+                return true;
             } else {
                 // Attempt to transfer the packet accross the network \\
                 NetworkNode.initTransfer(

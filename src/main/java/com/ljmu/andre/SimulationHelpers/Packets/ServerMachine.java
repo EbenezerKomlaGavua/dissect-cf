@@ -260,6 +260,7 @@ logger.log("Cancelled: " + problematic.toString());
             handleSuccess(ServerMachine, P1);
             System.out.println("ClientMachine connection finished: " + connectionState);
             printStorageMetrics();
+            System.out.println(" Packet receieved: " + P1);
         }
     }
 

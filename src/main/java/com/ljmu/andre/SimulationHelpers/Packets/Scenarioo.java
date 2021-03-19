@@ -91,7 +91,7 @@ public class Scenarioo extends Timed {
 		ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
 		
 		//ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
-		//ClientMachine.conComplete();
+		
 		//Receive packet from the ServerMachine
 	
 		 subscribe(1000);

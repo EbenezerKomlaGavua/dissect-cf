@@ -103,8 +103,9 @@ public class ClientMachineTest extends Timed {
 		ServerMachine = LoaderUtils.getServerMachine();
 		cloud = LoaderUtils.getCloud();
 		     
-			
+		
 	}
+	/**
 	//Check the availability of an Id of ClientMachine
 	 @Test
 	  	public void StartClientMachineTest_ID() throws NetworkException {
@@ -236,7 +237,8 @@ public class ClientMachineTest extends Timed {
 				ServerMachine.start();
 				assertEquals("ServerMachine is was not linked up", true,ClientMachine.bindServerMachine(ServerMachine));
 			}	
-		
+
+		*/
 	// Transfer array of packets from ClientMachine to serverMachine
 
 	@Test(timeout = 1000)
@@ -247,7 +249,7 @@ public class ClientMachineTest extends Timed {
 		ArrayList<BasePacket> PacketArray = ClientMachine.PacketArray();
 		assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray));
 	} 	
-			
+	/*		
 	// Checking if a packet can be sent and registered at a target			
 		@Test(timeout = 100)	
 			public void SendPacketTest() throws   NetworkException {
@@ -258,7 +260,7 @@ public class ClientMachineTest extends Timed {
 				 }
 				
 		    
-	/*				 	
+					 	
 
 	//Check the availability of a repository of ClientMachine
 	 @Test
