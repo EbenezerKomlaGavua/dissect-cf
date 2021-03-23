@@ -2,6 +2,7 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
 
@@ -19,7 +20,7 @@ public class Scenarioo extends Timed {
 	private Cloud cloud;
 	private SubscriptionPacket packett;
 	
-	ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
+	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	// The gap between packet transfer
 	/// public static int timeIncrement = 5;
 	public static int timeIncrement = 100;
@@ -30,8 +31,8 @@ public class Scenarioo extends Timed {
 		System.out.println("@ T+" + Timed.getFireCount() + "ms " + message);
 	}
 	
-	public ArrayList<BasePacket>  PacketArray() { 
-		ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
+	public ArrayList<DataPacket>  PacketArray() { 
+		ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 		PacketArray.add(P1);
 		PacketArray.add(P2);
 		PacketArray.add(P3);
@@ -39,10 +40,10 @@ public class Scenarioo extends Timed {
 		return  PacketArray;
 		}
 
-	BasePacket P1 = new  BasePacket("one" ,3,true);
-	BasePacket P2 = new  BasePacket("two" ,4,true);
-	BasePacket P3 = new  BasePacket("three" ,5,true);
-	BasePacket P4 = new  BasePacket("four" ,6,true);
+	DataPacket P1 = new  DataPacket("one",32,true);
+	DataPacket P2 = new  DataPacket("two",32,true);
+	DataPacket P3 = new  DataPacket("three",32,true);
+	DataPacket P4 = new  DataPacket("four",32,true);
 
 
 	
@@ -79,18 +80,32 @@ public class Scenarioo extends Timed {
 		
 		
 		//Bind ClientMachine to ServerMachine
-		ClientMachine.bindServerMachine(ServerMachine);
+		//long beforeSimu1 = Calendar.getInstance().getTimeInMillis();
+		//ClientMachine.bindServerMachine(ServerMachine);
+		///long afterSimu = Calendar.getInstance().getTimeInMillis();
+		//long duration = afterSimu - beforeSimu1;
+		//System.out.println("Simulation terminated " + afterSimu + " (took " + duration + "ms in realtime)");
 		
+		
+		//Timed.getFireCount();
 		//ServerMachine.bindClientMachine(ClientMachine);
 		
 		
 		
 		
 		// Send packets from ClientMachine to ServerMachine
-		ArrayList<BasePacket> PacketArray = ClientMachine.PacketArray();
+		//ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
+		//ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
+		//long beforeSimu2 = Calendar.getInstance().getTimeInMillis();
+		//System.out.println("This simulation began at " + beforeSimu2 + "ms in realtime)");
+		// ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
+		ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
 		ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
-		
-		//ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
+		// long afterSimu2 = Calendar.getInstance().getTimeInMillis();
+		// System.out.println("This simulation ended at " + afterSimu2 + "ms in realtime)");
+		// long duration2 = afterSimu2 - beforeSimu2;
+		//  System.out.println("Simulation terminated " + afterSimu2 + " (took " + duration2 + "ms in realtime)");
+			
 		
 		//Receive packet from the ServerMachine
 	

@@ -1,6 +1,7 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Queue;
 
@@ -37,7 +38,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	//private List<String> failedPacketIds = new ArrayList<String>();
 	private RoutingPacket packet;
 	//private SubscriptionPacket packett;
-	ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
+private	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	private static Queue<ConnectionEvent> ConnectionRoute;
 	private List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
 	//private List<Packets> BasePacket = new ArrayList<Packets>();
@@ -53,6 +54,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	BasePacket bindingPacket;
 	//private ArrayList<DataPacket>  PacketArray = new ArrayList<DataPacket>();
          static final int limit = 10;
+         private String name;
 	/**
 	 * Call {@link this#connectDevice(ConnectionEvent)} if result is TRUE, update
 	 * the Repository's Latency Map
@@ -78,7 +80,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		this.PhysicalMachine = ClientMachine;
 		//this.PhysicalMachine = ServerMachine;
 		this.repository = repository;
-		this.Id = Id;
+		name = Id;
 	}
 
 	
@@ -91,10 +93,17 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 		
 	}
 	
+	public void setName(String Name) {
+		this.name = "193.6.5.176";
+	}
+	
+	public String getName() {
+		return name;
+	}
 	
 		
 	public void setId(String Id) {
-		this.Id= Id;
+		this.Id = Id;
 	}
 	
 	// The Id of the ClientMachine is activated by this method and made accessible
@@ -174,8 +183,8 @@ public void stop() {
 			//final BasePacket  packet) {
 
 
-public ArrayList<BasePacket>  PacketArray() { 
-	ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
+public ArrayList<DataPacket>  PacketArray() { 
+	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	PacketArray.add(P1);
 	PacketArray.add(P2);
 	PacketArray.add(P3);
@@ -183,30 +192,31 @@ public ArrayList<BasePacket>  PacketArray() {
 	return  PacketArray;
 	}
 
-BasePacket P1 = new  BasePacket("one",3,true);
-BasePacket P2 = new  BasePacket("two",3,true);
-BasePacket P3 = new  BasePacket("three",3,true);
-BasePacket P4 = new  BasePacket("four",3,true);
+DataPacket P1 = new  DataPacket("one",32,true);
+DataPacket P2 = new  DataPacket("two",32,true);
+DataPacket P3 = new  DataPacket("three",32,true);
+DataPacket P4 = new  DataPacket("four",32,true);
 
 
 
-public ArrayList<BasePacket> sendPackets(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
-		final ArrayList<BasePacket> PacketArray){
+public ArrayList<DataPacket> sendPackets(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
+		final ArrayList<DataPacket> PacketArray){
 	
-	 logger.log("Attempting to send: " +  PacketArray.size() + " packets");
+	 logger.log("Pinging 193.6.5.222 with 32 bytes of data: " +  PacketArray.size() + " packets");
 
 // ArrayList<BasePacket> PacketArray = new ArrayList<BasePacket>();
 
 for (BasePacket P1 :  PacketArray) {
 logger.log("Sending packet: " + P1.id);
-
+long beforeSimu = Calendar.getInstance().getTimeInMillis();
+System.out.println("This simulation began at " + beforeSimu + "ms in realtime)");
 //This is key to sending the packets
 sendPacket(ClientMachine, ServerMachine, P1); 
 
 }
 
 if (  PacketArray.size() > 0)
-logger.log(" packetList: " +   PacketArray.size());
+logger.log(" Packets: Sent = " +   PacketArray.size());
 
 return   PacketArray;
 }
@@ -225,7 +235,7 @@ return   PacketArray;
 
 public static boolean sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine, BasePacket P1) {
     try {
-        logger.log("Sending [From: %s][To: %s]",  ClientMachine.getId(), ServerMachine.getId());
+      //  logger.log("Sending [From: %s][To: %s]",  ClientMachine.getId(), ServerMachine.getId());
 
         // Check the connection between the Source and the Target - Return False if issues \\
         if (NetworkNode.checkConnectivity( ClientMachine.getRepository(), ServerMachine.getRepository()) < 0)
@@ -309,12 +319,12 @@ public boolean getShouldStore() {
 public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 	
 		 
-		 logger.log("Attempting to Subscribe ClientMachine to ServerMachine with the: " +   " bindingPacket");
+		// logger.log("Attempting to Subscribe ClientMachine to ServerMachine with the: " +   " bindingPacket");
 		// ServerMachine.connectionStarted(ClientMachine);
 		 BasePacket bindingPacket = new SubscriptionPacket(true).setShouldStore(true);
 		 // ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine, ServerMachine, bindingPacket);
 		 		
-		 System.out.println("Binding successful with :  " +    bindingPacket.id );
+		// System.out.println("Binding successful with :  " +    bindingPacket.id );
 		 
 		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
 		
@@ -606,15 +616,7 @@ logger.log("Cancelled: " + problematic.toString());
 	// transferred successfully or failed must be determined.
 	// Since there is probability for any of this success or failure to occur, the
 	// total number of packets must also determined.
-	public static void packetTransaction(boolean successful) {
-		if (successful)
-			successfulPackets++;
-
-		else
-			failedPackets++;
-
-		totalPackets++;
-	}
+	
 
 	
 	

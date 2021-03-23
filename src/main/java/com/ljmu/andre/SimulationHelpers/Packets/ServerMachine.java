@@ -1,6 +1,7 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.ljmu.andre.SimulationHelpers.Application;
@@ -29,9 +30,13 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	//private DataPacket datapacket;
 	 Repository repository;
 	//private BasePacket packet;
+	private List<String> SuccessfulPacketIds = new ArrayList<String>();
+	private List<String> FailedPacketIds = new ArrayList<String>();
 	private List<String> Packet = new ArrayList<String>();
 	private ConnectionEvent ServerMachine;
 	private PhysicalMachine PhysicalMachine;
+	private final String name;
+	
 	//private ConsumptionEvent PhysicalMachine;
 
 	public ArrayList<BasePacket>  PacketArray() { 
@@ -69,7 +74,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 		this.PhysicalMachine = ServerMachine;
 		//this.packet = packet;
 		//this.PhysicalMachine = ClientMachine;
-		this.Id = Id;
+		name = Id;
 		this.repository = repository;
 	}
 
@@ -90,7 +95,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	
 		
 	public void setId(String Id) {
-		this.Id = Id;
+		this.Id = "193.6.5.222";
 	}
 	
 	@Override
@@ -127,7 +132,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	@Override
 	public void connectionStarted(ConnectionEvent ClientMachine) {
 		// TODO Auto-generated method stub
-		logger.log("Received connection init: " + ClientMachine.getRepository().getName());
+		//logger.log("Received connection init: " + ClientMachine.getRepository().getName());
 	
 	handleConnectionStarted(ClientMachine);
 	}
@@ -164,26 +169,6 @@ public void stop() {
 			 final BasePacket packet) {
 		return ServerMachine;
 	}
-	
-	
-	private static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket P1) {
-        if (ServerMachine.getRepository().lookup(P1.id) == null) {
-            logger.log("Registering packet: " +P1);
-            return ServerMachine.getRepository().registerObject(P1);
-        }
-
-        return true;
-    }
- 
-	public static boolean subscribePacketIfNotExist(ConnectionEvent ServerMachine, BasePacket  bindingPacket) {
-		if (bindingPacket instanceof SubscriptionPacket) {
-			logger.log("Registering packet: " +  bindingPacket);
-			 return ServerMachine.getRepository().registerObject(bindingPacket);
-	        }
-		return true;
-		
-	}
-	
 	
 	
 	
@@ -248,19 +233,24 @@ logger.log("Cancelled: " + problematic.toString());
 		// TODO Auto-generated method stub
 		
 		//if (packet instanceof BasePacket && connectionState != State.FAILED)
-		//if (connectionState == State.FAILED)
+		
 		if (connectionState == State.FAILED) {
             getRepository().deregisterObject(P1.id);
+            FailedPacketIds.add(P1.id);
 
         System.out.println("ClientMachine connection finished: " + connectionState);
         printStorageMetrics();
 		}
 		else
         if (connectionState == State.SUCCESS) {
+        	
             handleSuccess(ServerMachine, P1);
             System.out.println("ClientMachine connection finished: " + connectionState);
             printStorageMetrics();
-            System.out.println(" Packet receieved: " + P1);
+           // System.out.println(" Packet receieved: " + P1);
+            packetTransaction(connectionState == State.SUCCESS);
+            long afterSimu = Calendar.getInstance().getTimeInMillis();
+    		System.out.println("This simulation ended at " + afterSimu + "ms in realtime)");
         }
     }
 
@@ -268,6 +258,10 @@ logger.log("Cancelled: " + problematic.toString());
 	        if (P1 instanceof BasePacket) {
 	            System.out.println("packet Stored after transfer");
 	            getRepository().deregisterObject(P1.id);
+	            SuccessfulPacketIds.add(P1.id);
+	            System.out.println("Packets received" + SuccessfulPacketIds);
+	            logger.log(" Packets: received = " +   SuccessfulPacketIds.size());
+	            logger.log(" Packets: Lost = " +   FailedPacketIds.size() + "(0% loss)"); //Check this out!!!
 	            return true;
 	           
 	        }
@@ -275,32 +269,43 @@ logger.log("Cancelled: " + problematic.toString());
 			return false;
 	 }
 	 
-		private ConsumptionEvent ConsumptionEvent(ConnectionEvent ClientMachine, ConnectionEvent ServerMachine,
-			BasePacket packet) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	
-	
+	 private void printStorageMetrics() {
+			long freeCap = getRepository().getFreeStorageCapacity();
+			long maxCap = getRepository().getMaxStorageCapacity();
+			logger.log("Disk: " + freeCap + "/" + maxCap);
+
+		}
+ 
+	 
+	 
+	 
+		
+		
+/*
+	When the transfer of data packets is completed, the number of packets
+	transferred successfully or failed must be determined.
+	Since there is probability for any of this success or failure to occur, the
+	total number of packets must also determined.
+		
+	*/
 	
 	public static void packetTransaction(boolean successful) {
-		if (successful)
+		if (successful) {
 			successfulPackets++;
+			 System.out.println("successful  " + successfulPackets++);
+		}
 		else
+		{
 			failedPackets++;
+			System.out.println("failed packets  " + failedPackets++);
+		}
 
 		totalPackets++;
+		System.out.println(" Total packets  " + totalPackets++);
 	}
 
 
-	private void printStorageMetrics() {
-		long freeCap = getRepository().getFreeStorageCapacity();
-		long maxCap = getRepository().getMaxStorageCapacity();
-		logger.log("Disk: " + freeCap + "/" + maxCap);
-
-	}
-
+	
 
 	@Override
 	public List<ConnectionEvent> getConnectedDevices() {

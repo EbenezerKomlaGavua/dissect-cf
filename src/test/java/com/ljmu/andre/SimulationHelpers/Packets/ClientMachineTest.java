@@ -59,7 +59,7 @@ public class ClientMachineTest extends Timed {
 	 private static int BindPacket=2;
 	private PhysicalMachine PhysicalMachine1,PhysicalMachine2;
 	BasePacket bindingPacket;
-	DataPacket P1 = new  DataPacket("one", 3, true);
+	//DataPacket P1 = new  DataPacket("one", 32, true);
 	 	 
 	 public final static int data =1;
 	
@@ -76,7 +76,19 @@ public class ClientMachineTest extends Timed {
 	
 	*/
 	
-	
+	 public ArrayList<DataPacket>  PacketArray() { 
+			ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
+			PacketArray.add(P1);
+			PacketArray.add(P2);
+			PacketArray.add(P3);
+			PacketArray.add(P4);
+			return  PacketArray;
+			}
+
+		DataPacket P1 = new  DataPacket("one",32,true);
+		DataPacket P2 = new  DataPacket("two",32,true);
+		DataPacket P3 = new  DataPacket("three",32,true);
+		DataPacket P4 = new  DataPacket("four",32,true);
 		
 
 	public void tick(long fires) {
@@ -105,7 +117,7 @@ public class ClientMachineTest extends Timed {
 		     
 		
 	}
-	/**
+	/*
 	//Check the availability of an Id of ClientMachine
 	 @Test
 	  	public void StartClientMachineTest_ID() throws NetworkException {
@@ -113,7 +125,7 @@ public class ClientMachineTest extends Timed {
 			ClientMachine.start();
 			ServerMachine.start();
 			assertEquals("The local disks is not available",ClientMachine.getRepository().getName(), ClientMachine.getId());
-			
+			System.out.println(ClientMachine.getRepository().getName());
 		}
 	  
 	//Cross-Check ClientMachine Id with ServerMachine Id
@@ -135,6 +147,7 @@ public class ClientMachineTest extends Timed {
 		        ServerMachine.start();		
 				//assertEquals("The local disks is not available",RepoCapacity, ServerMachine.getRepository().getMaxStorageCapacity());
 				assertEquals("The local disks is not available",ServerMachine.getRepository().getName(), ServerMachine.getId());
+				System.out.println(ServerMachine.getRepository().getName());
 		
 		}
 	 
@@ -188,7 +201,7 @@ public class ClientMachineTest extends Timed {
 	 assertNotEquals("No connection between machines", ServerMachine, ClientMachine.handleConnectionStarted(ServerMachine));
 	     
 		}
-	
+	*/
 	
 	// Check to see if the BasePackets are actually in the Array
 	@Test(timeout = 100)
@@ -196,10 +209,25 @@ public class ClientMachineTest extends Timed {
 		cloud.start();
 		ClientMachine.start();
 		 ServerMachine.start();
-		ArrayList<BasePacket> PacketArray = ClientMachine. PacketArray();
+		ArrayList<DataPacket> PacketArray = ClientMachine. PacketArray();
+		System.out.println(PacketArray());
+		Timed.getFireCount();
 		 assertNotNull("List shouldn't be null", PacketArray);
+		 
 		} 
 	
+	// Transfer array of packets from ClientMachine to serverMachine
+
+		@Test(timeout = 1000)
+	    public void TranferPacketArray() throws NetworkException { 
+			cloud.start();
+			ClientMachine.start();
+			 ServerMachine.start();
+			ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
+			assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray));
+		} 	
+	
+	/*
 	 	// Checking if a the method is not efficient.		
 			 @Test(timeout = 100)	
 			 public void SendPacketTest_NotWorking() throws   NetworkException {
@@ -238,18 +266,11 @@ public class ClientMachineTest extends Timed {
 				assertEquals("ServerMachine is was not linked up", true,ClientMachine.bindServerMachine(ServerMachine));
 			}	
 
-		*/
-	// Transfer array of packets from ClientMachine to serverMachine
-
-	@Test(timeout = 1000)
-    public void TranferPacketArray() throws NetworkException { 
-		cloud.start();
-		ClientMachine.start();
-		 ServerMachine.start();
-		ArrayList<BasePacket> PacketArray = ClientMachine.PacketArray();
-		assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray));
-	} 	
-	/*		
+		
+	
+	
+	
+			
 	// Checking if a packet can be sent and registered at a target			
 		@Test(timeout = 100)	
 			public void SendPacketTest() throws   NetworkException {

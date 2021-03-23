@@ -26,7 +26,7 @@ public class LoaderUtils {
 	
 	static ServerMachine getServerMachine() throws NoSuchMethodException {
 
-	     PhysicalMachine ServerMachine = MachineHandler_Socket.claimPM("ServerMachine");
+	     PhysicalMachine ServerMachine = MachineHandler_Socket.claimPM("193.6.5.222");
 
 	     if (ServerMachine == null)
 
@@ -44,7 +44,7 @@ public class LoaderUtils {
 	
 
 	static ClientMachine getClientMachine() throws NoSuchMethodException {
-     PhysicalMachine ClientMachine = MachineHandler_Socket.claimPM("ClientMachine");
+     PhysicalMachine ClientMachine = MachineHandler_Socket.claimPM("193.6.5.176");
 
      if (ClientMachine == null)
 
