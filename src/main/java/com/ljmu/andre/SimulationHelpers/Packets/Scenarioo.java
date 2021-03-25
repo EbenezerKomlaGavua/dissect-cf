@@ -96,27 +96,27 @@ public class Scenarioo extends Timed {
 		// Send packets from ClientMachine to ServerMachine
 		//ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
 		//ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
-		//long beforeSimu2 = Calendar.getInstance().getTimeInMillis();
-		//System.out.println("This simulation began at " + beforeSimu2 + "ms in realtime)");
+		long StartTime = Calendar.getInstance().getTimeInMillis();
+		//System.out.println("This simulation began at " + StartTime + "ms in realtime)");
 		// ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
 		ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
 		ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
-		// long afterSimu2 = Calendar.getInstance().getTimeInMillis();
-		// System.out.println("This simulation ended at " + afterSimu2 + "ms in realtime)");
-		// long duration2 = afterSimu2 - beforeSimu2;
-		//  System.out.println("Simulation terminated " + afterSimu2 + " (took " + duration2 + "ms in realtime)");
+		 long FinishTime = Calendar.getInstance().getTimeInMillis();
+	  //  System.out.println("This simulation ended at " + FinishTime + "ms in realtime)");
+		//long duration = StartTime - FinishTime;
+		//System.out.println("Data Transfer took " + duration + "ms in realtime)");
 			
 		
 		//Receive packet from the ServerMachine
 	
 		 subscribe(1000);
-		 ClientMachine.stop();
+		ClientMachine.stop();
 		 ServerMachine.stop();
 		 cloud.stop();
-		 
-		 Timed.simulateUntil(100);
-
-		//simulateUntilLastEvent();
+		//Timed.getFireCount();
+		Timed.simulateUntilLastEvent();
+		//Timed.simulateUntil(100);
+		///System.out.println("This simulation run for " +  Timed.getFireCount() + "ms in realtime)");
 		
 		 // Subscribe and simulate
 		subscribe(1);

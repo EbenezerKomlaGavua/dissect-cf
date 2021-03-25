@@ -3,6 +3,7 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -201,7 +202,7 @@ public class ClientMachineTest extends Timed {
 	 assertNotEquals("No connection between machines", ServerMachine, ClientMachine.handleConnectionStarted(ServerMachine));
 	     
 		}
-	*/
+	
 	
 	// Check to see if the BasePackets are actually in the Array
 	@Test(timeout = 100)
@@ -215,7 +216,7 @@ public class ClientMachineTest extends Timed {
 		 assertNotNull("List shouldn't be null", PacketArray);
 		 
 		} 
-	
+	*/
 	// Transfer array of packets from ClientMachine to serverMachine
 
 		@Test(timeout = 1000)
@@ -224,7 +225,22 @@ public class ClientMachineTest extends Timed {
 			ClientMachine.start();
 			 ServerMachine.start();
 			ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
+			long StartTime = Calendar.getInstance().getTimeInMillis();
+			long req= Timed.getFireCount();
+			//Timed.simulateUntil(1000);
+			System.out.println("This simulation began at " + StartTime + "ms in realtime)");
+			System.out.println("This simulation began at " + req + "ms in realtime)");
 			assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray));
+			ClientMachine.stop();
+			cloud.stop();
+			ServerMachine.stop();
+			long StopTime = Calendar.getInstance().getTimeInMillis();
+			long reb= Timed.getFireCount();
+			Timed.simulateUntil(1000);
+			System.out.println("This simulation ended at " + StopTime + "ms in realtime)");
+			System.out.println("This simulation ended at " + reb + "ms in realtime)");
+			long duration = StopTime - StartTime ;
+			System.out.println("This simulation took " + duration + "ms in realtime)");
 		} 	
 	
 	/*

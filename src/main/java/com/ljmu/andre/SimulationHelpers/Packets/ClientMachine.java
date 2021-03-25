@@ -2,6 +2,8 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Queue;
 
@@ -25,26 +27,27 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 import hu.mta.sztaki.lpds.cloud.simulator.io.NetworkNode.NetworkException;
 
 public class ClientMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
+	public static  HashMap<String,Long> Packetdetails= new HashMap<String, Long>();
 	private static final Logger logger = new Logger(ClientMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
 	 static final State connectionState = State.SUCCESS;
 	protected ClientMachine ClientMachine;
 	//private boolean activeSubscription = false;
-	  
+	public static int x;
 	/// private int Port;
-      String Id;
+    private String MachineId;
 	Repository repository;
 	protected ServerMachine ServerMachine;
 	//private List<String> failedPacketIds = new ArrayList<String>();
 	private RoutingPacket packet;
 	//private SubscriptionPacket packett;
-private	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
+public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	private static Queue<ConnectionEvent> ConnectionRoute;
 	private List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
 	//private List<Packets> BasePacket = new ArrayList<Packets>();
-	private static int successfulPackets;
-	private static int failedPackets;
-	private static int totalPackets = 0;
+	//private static int successfulPackets;
+	//private static int failedPackets;
+	//private static int totalPackets = 0;
 	private int NumberOfPackets = 1;
 	private int PacketsCount = 0;
 	//private BasePacket BindPacket=1;
@@ -76,11 +79,11 @@ private	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	// that can transfer packet to the ServerMachine
 	// The key attributes are the packet (data unit), repository (storage location)
 	// and the ID
-	public ClientMachine(PhysicalMachine ClientMachine,Repository repository, String Id) {
+	public ClientMachine(PhysicalMachine ClientMachine,Repository repository, String MachineId) {
 		this.PhysicalMachine = ClientMachine;
 		//this.PhysicalMachine = ServerMachine;
 		this.repository = repository;
-		name = Id;
+		name = MachineId;
 	}
 
 	
@@ -102,18 +105,25 @@ private	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	}
 	
 		
-	public void setId(String Id) {
-		this.Id = Id;
+	public void setMachineId(String MachineId) {
+		this.MachineId = MachineId;
 	}
 	
 	// The Id of the ClientMachine is activated by this method and made accessible
 		// to all devices on the frequency.
 		// The name of the device is easily obtained from the Id.
 		// * @param id - The ID of the Device
-		@Override
+	public String getMachineId() {
+		return MachineId;
+	}
+	
+	
+	
+	
+	@Override
 		public String getId() {
 			// TODO Auto-generated method stub
-			return getRepository().getName();
+			return P1.id;
 			
 		}
 	
@@ -132,8 +142,15 @@ private	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 		return PhysicalMachine.localDisk;
 	}
 
-	
+	public void setPacketdetails(String PacketID, Long StartTime) {
+		Packetdetails.put(P1.id, StartTime);
+	}
      
+	public String getPacketdetails() {
+		return P1.id;
+	}
+	
+	
 		
 	// The clientMachine must be started and subscribed for the simulation to
 	// commence.
@@ -170,6 +187,7 @@ public ConnectionEvent handleConnectionStarted(ConnectionEvent ServerMachine) {
 	}
 
 public void stop() {
+	//logger.log("Stopped: " + unsubscribe());
 	logger.log("Stopped: " + unsubscribe());
 }
 
@@ -192,10 +210,10 @@ public ArrayList<DataPacket>  PacketArray() {
 	return  PacketArray;
 	}
 
-DataPacket P1 = new  DataPacket("one",32,true);
-DataPacket P2 = new  DataPacket("two",32,true);
-DataPacket P3 = new  DataPacket("three",32,true);
-DataPacket P4 = new  DataPacket("four",32,true);
+DataPacket P1 = new  DataPacket("one",32,false);
+DataPacket P2 = new  DataPacket("two",32,false);
+DataPacket P3 = new  DataPacket("three",32,false);
+DataPacket P4 = new  DataPacket("four",32,false);
 
 
 
@@ -206,12 +224,17 @@ public ArrayList<DataPacket> sendPackets(final ConnectionEvent ClientMachine, fi
 
 // ArrayList<BasePacket> PacketArray = new ArrayList<BasePacket>();
 
-for (BasePacket P1 :  PacketArray) {
+for (DataPacket P1 :  PacketArray) {
 logger.log("Sending packet: " + P1.id);
-long beforeSimu = Calendar.getInstance().getTimeInMillis();
-System.out.println("This simulation began at " + beforeSimu + "ms in realtime)");
+long StartTime = Calendar.getInstance().getTimeInMillis();
+Packetdetails.put(P1.id, StartTime);
+///System.out.println("This simulation began at " + StartTime + "ms in realtime)");
 //This is key to sending the packets
+//P1 = Packetdetails;
+
 sendPacket(ClientMachine, ServerMachine, P1); 
+//final long reqStart = Timed.getFireCount();
+//System.out.println("This simulation began at " + reqStart + "ms in realtime)");
 
 }
 
@@ -313,9 +336,9 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
     return false;
 }
 
-public boolean getShouldStore() {
-    return shouldStore;
-}
+//public boolean getShouldStore() {
+    //return shouldStore;
+//}
 public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 	
 		 
@@ -349,7 +372,7 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 //Used to check if the packet has been delivered
 		public static boolean registerPacketIfNotExist(ConnectionEvent ServerMachine, BasePacket  P1) {
 	        if (ServerMachine.getRepository().lookup(P1.id) == null) {
-	            logger.log("Registering packet: " +  P1);
+	            //logger.log("Registering packet: " +  P1);
 	            return ServerMachine.getRepository().registerObject(P1);
 	        }
 
@@ -383,11 +406,12 @@ return new ConsumptionEvent() {
 
 @Override 
 public void conComplete() {
-logger.log("Packet[" + P1.id + "] successfully sent");
+//logger.log("Packet[" + P1.id + "] successfully sent");
 
 //source.connectionFinished(source, State.SUCCESS, packet);
 ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
-
+//final long reqEnd = Timed.getFireCount();
+//System.out.println("This simulation ended at " + reqEnd + "ms in realtime)");
 // Packets that are not intended to stay after transfer are deregistered here
 // This allows for failed packets to be wiped
 if (P1.shouldDeregister(ClientMachine)) {
@@ -441,7 +465,7 @@ logger.log("Cancelled: " + problematic.toString());
 			sendPackets(ClientMachine, ServerMachine, PacketArray);
 			// Displays the number of Packets transferred from the ClientMachine to the
 			// ServerMachine.
-			logger.log("Packet: " + NumberOfPackets);
+			logger.log("Packet: " + PacketArray.size());
 			PacketsCount++;
 
 		}

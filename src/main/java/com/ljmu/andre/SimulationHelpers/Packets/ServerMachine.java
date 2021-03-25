@@ -2,7 +2,9 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.ljmu.andre.SimulationHelpers.Application;
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
@@ -18,40 +20,29 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 public class ServerMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
 	private static final Logger logger = new Logger(ServerMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
-    String Id;
+    String MachineId;
+    
 	//protected PhysicalMachine ServerMachine;
     static final State connectionState = State.SUCCESS;
-	protected ClientMachine ClientMachine;
-	private boolean shouldStore = true;
-	private static int totalPackets = 0;
-	private static int successfulPackets = 0;
-	private static int failedPackets = 0;
+	//protected ClientMachine ClientMachine;
+	//private boolean shouldStore = true;
+     static int totalPackets = 0;
+	 static int successfulPackets = 0;
+	 static int failedPackets = 0;
 	//private static Repository localDisk;
 	//private DataPacket datapacket;
 	 Repository repository;
 	//private BasePacket packet;
 	private List<String> SuccessfulPacketIds = new ArrayList<String>();
 	private List<String> FailedPacketIds = new ArrayList<String>();
-	private List<String> Packet = new ArrayList<String>();
+
 	private ConnectionEvent ServerMachine;
 	private PhysicalMachine PhysicalMachine;
-	private final String name;
+     final String name;
 	
 	//private ConsumptionEvent PhysicalMachine;
 
-	public ArrayList<BasePacket>  PacketArray() { 
-		ArrayList<BasePacket> PacketArray = new ArrayList< BasePacket>();
-		PacketArray.add(P1);
-		PacketArray.add(P2);
-		PacketArray.add(P3);
-		PacketArray.add(P4);
-		return  PacketArray;
-		}
-
-	BasePacket P1 = new  BasePacket("one" ,3,true);
-	BasePacket P2 = new  BasePacket("two" ,4,true);
-	BasePacket P3 = new  BasePacket("three" ,5,true);
-	BasePacket P4 = new  BasePacket("four" ,6,true);
+	
 
 	
 	/**
@@ -70,11 +61,11 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 
 	// Create the constructor for the serverMachine
-	public ServerMachine(PhysicalMachine ServerMachine,	Repository repository, String Id) {
+	public ServerMachine(PhysicalMachine ServerMachine,	Repository repository, String MachineId) {
 		this.PhysicalMachine = ServerMachine;
 		//this.packet = packet;
 		//this.PhysicalMachine = ClientMachine;
-		name = Id;
+		name = MachineId;
 		this.repository = repository;
 	}
 
@@ -94,8 +85,8 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	}
 	
 		
-	public void setId(String Id) {
-		this.Id = "193.6.5.222";
+	public void setMachineId(String MachineId) {
+		this.MachineId = "193.6.5.222";
 	}
 	
 	@Override
@@ -229,7 +220,7 @@ logger.log("Cancelled: " + problematic.toString());
 
 	 
 	@Override
-	public void connectionFinished(ConnectionEvent ClientMachine, State connectionState, BasePacket P1) {
+	public void connectionFinished(ConnectionEvent clientMachine, State connectionState, BasePacket P1) {
 		// TODO Auto-generated method stub
 		
 		//if (packet instanceof BasePacket && connectionState != State.FAILED)
@@ -246,17 +237,42 @@ logger.log("Cancelled: " + problematic.toString());
         	
             handleSuccess(ServerMachine, P1);
             System.out.println("ClientMachine connection finished: " + connectionState);
-            printStorageMetrics();
-           // System.out.println(" Packet receieved: " + P1);
+             printStorageMetrics();
+           System.out.println(" Packet receieved: " + P1);
             packetTransaction(connectionState == State.SUCCESS);
-            long afterSimu = Calendar.getInstance().getTimeInMillis();
-    		System.out.println("This simulation ended at " + afterSimu + "ms in realtime)");
+            long CompleteTime = Calendar.getInstance().getTimeInMillis();
+         
+           if(ClientMachine.Packetdetails.containsKey(P1.id)) {
+        	 System.out.println("StartTime is " + " " + ClientMachine.Packetdetails.get(P1.id) + "ms in realtime");
+        	 System.out.println("StopTime is " + " " + CompleteTime + "ms in realtime");
+        	  
+        	 long duration= CompleteTime - ClientMachine.Packetdetails.get(P1.id);
+        	 
+        	 ClientMachine.Packetdetails.replace(P1.id, duration);
+        	  System.out.println("The duraton is " + P1.id  + " " +  ClientMachine.Packetdetails.get(P1.id) + "ms in realtime)");
+        	  System.out.println(" Reply from  193.6.5.222 : " + "bytes = 32" + " time < " +  ClientMachine.Packetdetails.get(P1.id) + "ms TTL=64");
+        	  
+        	  
+        	  
+        	  
+         }
+        	
+           Long maxValueInMap=(Collections.max(ClientMachine.Packetdetails.values()));
+           for(Entry<String,Long>entry : ClientMachine.Packetdetails.entrySet()){
+        	   if (entry.getValue()==maxValueInMap) {
+        		   System.out.println( "Maximum value is : "  + "" + entry.getKey());
+        	   }
+           
+           }
+        		  
+          }
+    		
         }
-    }
+    
 
 	 public boolean handleSuccess(ConnectionEvent ServerMachine,BasePacket P1) {
 	        if (P1 instanceof BasePacket) {
-	            System.out.println("packet Stored after transfer");
+	            //System.out.println("packet Stored after transfer");
 	            getRepository().deregisterObject(P1.id);
 	            SuccessfulPacketIds.add(P1.id);
 	            System.out.println("Packets received" + SuccessfulPacketIds);
@@ -272,7 +288,7 @@ logger.log("Cancelled: " + problematic.toString());
 	 private void printStorageMetrics() {
 			long freeCap = getRepository().getFreeStorageCapacity();
 			long maxCap = getRepository().getMaxStorageCapacity();
-			logger.log("Disk: " + freeCap + "/" + maxCap);
+			//logger.log("Disk: " + freeCap + "/" + maxCap);
 
 		}
  
@@ -292,16 +308,16 @@ logger.log("Cancelled: " + problematic.toString());
 	public static void packetTransaction(boolean successful) {
 		if (successful) {
 			successfulPackets++;
-			 System.out.println("successful  " + successfulPackets++);
+			// System.out.println("successful  " + successfulPackets++);
 		}
 		else
 		{
 			failedPackets++;
-			System.out.println("failed packets  " + failedPackets++);
+			//System.out.println("failed packets  " + failedPackets++);
 		}
 
 		totalPackets++;
-		System.out.println(" Total packets  " + totalPackets++);
+		//System.out.println(" Total packets  " + totalPackets++);
 	}
 
 
