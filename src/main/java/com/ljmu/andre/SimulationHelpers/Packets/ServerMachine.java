@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import com.ljmu.andre.SimulationHelpers.Application;
@@ -21,7 +22,10 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	private static final Logger logger = new Logger(ServerMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
     String MachineId;
-    
+    long maxValueInMap= 0;
+    long minValueInMap=Long.MAX_VALUE;
+    long average = 0;
+    int counter =0;
 	//protected PhysicalMachine ServerMachine;
     static final State connectionState = State.SUCCESS;
 	//protected ClientMachine ClientMachine;
@@ -236,40 +240,50 @@ logger.log("Cancelled: " + problematic.toString());
         if (connectionState == State.SUCCESS) {
         	
             handleSuccess(ServerMachine, P1);
-            System.out.println("ClientMachine connection finished: " + connectionState);
-             printStorageMetrics();
-           System.out.println(" Packet receieved: " + P1);
-            packetTransaction(connectionState == State.SUCCESS);
-            long CompleteTime = Calendar.getInstance().getTimeInMillis();
+           // System.out.println("ClientMachine connection finished: " + connectionState);
          
+           
+          // System.out.println(" Packet receieved: " + P1);
+            packetTransaction(connectionState == State.SUCCESS);
+           // long CompleteTime = Calendar.getInstance().getTimeInMillis();
+            long CompleteTime = System.currentTimeMillis();
+            ///System.out.println("StopTime is " + " " + CompleteTime0 + "ms in realtime");
+           // long CompleteTime = CompleteTime0 *1000;
+            //System.out.println("StopTime is " + " " + CompleteTime + "ms in realtime");
            if(ClientMachine.Packetdetails.containsKey(P1.id)) {
-        	 System.out.println("StartTime is " + " " + ClientMachine.Packetdetails.get(P1.id) + "ms in realtime");
-        	 System.out.println("StopTime is " + " " + CompleteTime + "ms in realtime");
+        	 //System.out.println("StartTime is " + " " + ClientMachine.Packetdetails.get(P1.id) + "ms in realtime");
+        	 //System.out.println("StopTime is " + " " + CompleteTime + "ms in realtime");
         	  
         	 long duration= CompleteTime - ClientMachine.Packetdetails.get(P1.id);
-        	 
+        	 if(maxValueInMap<duration) maxValueInMap=duration;
+        	 if(minValueInMap>duration) minValueInMap=duration;
+        	 average+=duration;
+        	double AvgValue = ((double) average/ClientMachine.Packetdetails.size());
+        //	 if (average > ClientMachine.Packetdetails.size(); counter++)
+        		 
+        		 
         	 ClientMachine.Packetdetails.replace(P1.id, duration);
-        	  System.out.println("The duraton is " + P1.id  + " " +  ClientMachine.Packetdetails.get(P1.id) + "ms in realtime)");
-        	  System.out.println(" Reply from  193.6.5.222 : " + "bytes = 32" + " time < " +  ClientMachine.Packetdetails.get(P1.id) + "ms TTL=64");
+        	 
+        	  System.out.println("The duration is " + P1.id  + " " +  ClientMachine.Packetdetails.get(P1.id) + "µs in realtime)");
+        	  System.out.println(" Reply from  193.6.5.222 : " + "bytes = 32" + " time < " +  ClientMachine.Packetdetails.get(P1.id) + "µs TTL=64");
         	  
-        	  
-        	  
+        	  System.out.println( "Maximum value is : "  + "" + maxValueInMap);  
+        	  System.out.println( "Minimum value is : "  + "" + minValueInMap); 
+        	  System.out.println( "average value is : "  + "" + AvgValue);
         	  
          }
         	
-           Long maxValueInMap=(Collections.max(ClientMachine.Packetdetails.values()));
-           for(Entry<String,Long>entry : ClientMachine.Packetdetails.entrySet()){
-        	   if (entry.getValue()==maxValueInMap) {
-        		   System.out.println( "Maximum value is : "  + "" + entry.getKey());
-        	   }
            
-           }
-        		  
+           
+          
           }
-    		
+	
         }
     
 
+	
+	
+	
 	 public boolean handleSuccess(ConnectionEvent ServerMachine,BasePacket P1) {
 	        if (P1 instanceof BasePacket) {
 	            //System.out.println("packet Stored after transfer");
@@ -277,7 +291,8 @@ logger.log("Cancelled: " + problematic.toString());
 	            SuccessfulPacketIds.add(P1.id);
 	            System.out.println("Packets received" + SuccessfulPacketIds);
 	            logger.log(" Packets: received = " +   SuccessfulPacketIds.size());
-	            logger.log(" Packets: Lost = " +   FailedPacketIds.size() + "(0% loss)"); //Check this out!!!
+	          //  logger.log(" Packets: Lost = " +   FailedPacketIds.size() + "(0% loss)"); //Check this out!!!
+	          //  printStatistics();
 	            return true;
 	           
 	        }

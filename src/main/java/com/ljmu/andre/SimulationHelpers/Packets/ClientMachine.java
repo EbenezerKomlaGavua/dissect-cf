@@ -226,7 +226,14 @@ public ArrayList<DataPacket> sendPackets(final ConnectionEvent ClientMachine, fi
 
 for (DataPacket P1 :  PacketArray) {
 logger.log("Sending packet: " + P1.id);
-long StartTime = Calendar.getInstance().getTimeInMillis();
+//long StartTime = Calendar.getInstance().getTimeInMillis();
+long StartTime = System.currentTimeMillis();
+
+//long StartTime0 = Calendar.getInstance().getTimeInMillis();
+//System.out.println("This simulation began at " + StartTime0 + "ms in realtime)");
+
+////long StartTime = StartTime0 /1000;
+//System.out.println("This simulation began at " + StartTime + "µs in realtime)");
 Packetdetails.put(P1.id, StartTime);
 ///System.out.println("This simulation began at " + StartTime + "ms in realtime)");
 //This is key to sending the packets

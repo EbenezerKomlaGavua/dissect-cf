@@ -13,7 +13,7 @@ public class Scenarioo extends Timed {
 	private static final Logger logger = new Logger(Scenarioo.class);
 	private static final String USER_DIR = System.getProperty("user.dir");
 	// public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
-	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
+	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket2.xml";
 	private BasePacket packet;
 	private  ClientMachine ClientMachine;
 	private ServerMachine ServerMachine;
@@ -96,23 +96,24 @@ public class Scenarioo extends Timed {
 		// Send packets from ClientMachine to ServerMachine
 		//ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
 		//ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
-		long StartTime = Calendar.getInstance().getTimeInMillis();
+		//long StartTime = Calendar.getInstance().getTimeInMillis();
 		//System.out.println("This simulation began at " + StartTime + "ms in realtime)");
 		// ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
 		ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
 		ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
-		 long FinishTime = Calendar.getInstance().getTimeInMillis();
+		// long FinishTime = Calendar.getInstance().getTimeInMillis();
 	  //  System.out.println("This simulation ended at " + FinishTime + "ms in realtime)");
 		//long duration = StartTime - FinishTime;
 		//System.out.println("Data Transfer took " + duration + "ms in realtime)");
 			
 		
 		//Receive packet from the ServerMachine
-	
+		
 		 subscribe(1000);
 		ClientMachine.stop();
 		 ServerMachine.stop();
 		 cloud.stop();
+		 
 		//Timed.getFireCount();
 		Timed.simulateUntilLastEvent();
 		//Timed.simulateUntil(100);
@@ -121,8 +122,7 @@ public class Scenarioo extends Timed {
 		 // Subscribe and simulate
 		subscribe(1);
 
-		
-		// Timed.simulateUntilLastEvent();
+	
 	}
 
 	@Override
