@@ -3,9 +3,13 @@ package com.ljmu.andre.SimulationHelpers.Packets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
+import java.util.Stack;
 
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 
@@ -31,19 +35,27 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	private static final Logger logger = new Logger(ClientMachine.class);
 	private static final int SUBSCRIBE_FREQ = 5;
 	 static final State connectionState = State.SUCCESS;
-	protected ClientMachine ClientMachine;
+	protected ClientMachine clientMachine;
 	//private boolean activeSubscription = false;
 	public static int x;
 	/// private int Port;
     private String MachineId;
-	Repository repository;
-	protected ServerMachine ServerMachine;
+    
+	static Repository repository;
+	 ServerMachine serverMachine;
+	 protected  ServerMachine2 serverMachine2;
+		protected  ServerMachine3 serverMachine3;
+	protected Router router;
+	static String Id;
 	//private List<String> failedPacketIds = new ArrayList<String>();
 	private RoutingPacket packet;
 	//private SubscriptionPacket packett;
-public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
-	private static Queue<ConnectionEvent> ConnectionRoute;
-	private List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
+   public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
+	public static Queue<ConnectionEvent> ConnectionRoute;
+	public static List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
+	public LinkedList<ConnectionEvent> Aroute = new LinkedList<ConnectionEvent>();
+	
+	//public Set<String> visited = new HashSet<String>();
 	//private List<Packets> BasePacket = new ArrayList<Packets>();
 	//private static int successfulPackets;
 	//private static int failedPackets;
@@ -51,13 +63,15 @@ public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	private int NumberOfPackets = 1;
 	private int PacketsCount = 0;
 	//private BasePacket BindPacket=1;
-	private PhysicalMachine PhysicalMachine;
+	private static PhysicalMachine PhysicalMachine;
 	//private RoutingPacket packets;
 	private boolean shouldStore = true;
 	BasePacket bindingPacket;
 	//private ArrayList<DataPacket>  PacketArray = new ArrayList<DataPacket>();
          static final int limit = 10;
          private String name;
+         String serverMachineId = "193.6.5.222";
+         String serverMachine2Id = "193.6.5.224";
 	/**
 	 * Call {@link this#connectDevice(ConnectionEvent)} if result is TRUE, update
 	 * the Repository's Latency Map
@@ -79,8 +93,8 @@ public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	// that can transfer packet to the ServerMachine
 	// The key attributes are the packet (data unit), repository (storage location)
 	// and the ID
-	public ClientMachine(PhysicalMachine ClientMachine,Repository repository, String MachineId) {
-		this.PhysicalMachine = ClientMachine;
+	public ClientMachine(PhysicalMachine clientMachine,Repository repository, String MachineId) {
+		this.PhysicalMachine = clientMachine;
 		//this.PhysicalMachine = ServerMachine;
 		this.repository = repository;
 		name = MachineId;
@@ -96,8 +110,8 @@ public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 		
 	}
 	
-	public void setName(String Name) {
-		this.name = "193.6.5.176";
+	public void setId(String Id) {
+		this.Id = name;
 	}
 	
 	public String getName() {
@@ -108,6 +122,7 @@ public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	public void setMachineId(String MachineId) {
 		this.MachineId = MachineId;
 	}
+	
 	
 	// The Id of the ClientMachine is activated by this method and made accessible
 		// to all devices on the frequency.
@@ -123,7 +138,7 @@ public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	@Override
 		public String getId() {
 			// TODO Auto-generated method stub
-			return P1.id;
+			return "193.6.5.176";
 			
 		}
 	
@@ -169,17 +184,17 @@ public	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 
 	/// @return True if successfully connected
 	@Override
-	public void connectionStarted(ConnectionEvent ServerMachine) {
-		logger.log("Received connection init: " + ServerMachine.getRepository().getName());
+	public void connectionStarted(ConnectionEvent router) {
+		logger.log("Received connection init: " + router.getRepository().getName());
 		
-		handleConnectionStarted(ServerMachine);
+		handleConnectionStarted(router);
 	}
 
-public ConnectionEvent handleConnectionStarted(ConnectionEvent ServerMachine) {
-	logger.log("Received connection init: " + ServerMachine.getRepository().getName());
+public ConnectionEvent handleConnectionStarted(ConnectionEvent router) {
+	logger.log("Received connection init: " + router.getRepository().getName());
 	if(isSubscribed())
 		
-		return ServerMachine;
+		return router;
 	else
 		
 		return null;
@@ -215,9 +230,9 @@ DataPacket P2 = new  DataPacket("two",32,false);
 DataPacket P3 = new  DataPacket("three",32,false);
 DataPacket P4 = new  DataPacket("four",32,false);
 
+RoutingPacket R1 = new RoutingPacket("FIVE", P1, clientMachine, Aroute);
 
-
-public ArrayList<DataPacket> sendPackets(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine,
+public ArrayList<DataPacket> sendPackets(final ConnectionEvent clientMachine, final ConnectionEvent serverMachine,
 		final ArrayList<DataPacket> PacketArray){
 	
 	 logger.log("Pinging 193.6.5.222 with 32 bytes of data: " +  PacketArray.size() + " packets");
@@ -226,22 +241,10 @@ public ArrayList<DataPacket> sendPackets(final ConnectionEvent ClientMachine, fi
 
 for (DataPacket P1 :  PacketArray) {
 logger.log("Sending packet: " + P1.id);
-//long StartTime = Calendar.getInstance().getTimeInMillis();
+
 long StartTime = System.currentTimeMillis();
-
-//long StartTime0 = Calendar.getInstance().getTimeInMillis();
-//System.out.println("This simulation began at " + StartTime0 + "ms in realtime)");
-
-////long StartTime = StartTime0 /1000;
-//System.out.println("This simulation began at " + StartTime + "µs in realtime)");
 Packetdetails.put(P1.id, StartTime);
-///System.out.println("This simulation began at " + StartTime + "ms in realtime)");
-//This is key to sending the packets
-//P1 = Packetdetails;
-
-sendPacket(ClientMachine, ServerMachine, P1); 
-//final long reqStart = Timed.getFireCount();
-//System.out.println("This simulation began at " + reqStart + "ms in realtime)");
+sendPacket(clientMachine, serverMachine, P1); 
 
 }
 
@@ -263,48 +266,48 @@ return   PacketArray;
 	// not successfully transferred.
 	
 
-public static boolean sendPacket(final ConnectionEvent ClientMachine, final ConnectionEvent ServerMachine, BasePacket P1) {
+public static boolean sendPacket(final ConnectionEvent clientMachine, final ConnectionEvent serverMachine, BasePacket P1) {
     try {
       //  logger.log("Sending [From: %s][To: %s]",  ClientMachine.getId(), ServerMachine.getId());
 
         // Check the connection between the Source and the Target - Return False if issues \\
-        if (NetworkNode.checkConnectivity( ClientMachine.getRepository(), ServerMachine.getRepository()) < 0)
+        if (NetworkNode.checkConnectivity( clientMachine.getRepository(), serverMachine.getRepository()) < 0) 
             return false;
-/*
+        
         // If the packet is a RoutingPacket and the route is empty, unbox the payload \\
-        if P1 instanceof RoutingPacket &&
+        if (P1 instanceof RoutingPacket &&
                 ((RoutingPacket) P1).getRoute().isEmpty()) {
             logger.log("Route is empty, assuming destination achieved... Unboxing");
             P1 = ((RoutingPacket) P1).getPayload();
         }
-*/
+
         // Signal the target that an incoming connection is being made \\
-        ServerMachine.connectionStarted( ClientMachine);
+        serverMachine.connectionStarted( clientMachine);
 
         // Build an appropriate consumption event \\
-        ConsumptionEvent consumptionEvent = getConsumptionEvent( ClientMachine,ServerMachine, P1);
+        ConsumptionEvent consumptionEvent = getConsumptionEvent( clientMachine,serverMachine, P1);
 
         // Determine whether the packet should be saved to disk \\
         if (P1.getShouldStore()) {
             // Register the packet to the source \\
-            if(!registerPacketIfNotExist( ClientMachine, P1)) {
-                logger.err("No more drive space left on [Device: %s]",  ClientMachine.getId());
+            if(!registerPacketIfNotExist( clientMachine, P1)) {
+                logger.err("No more drive space left on [Device: %s]",  clientMachine.getId());
 
-                ServerMachine.connectionFinished( ClientMachine, State.FAILED, P1);
+                serverMachine.connectionFinished( clientMachine, State.FAILED, P1);
                 return false;
             }
             // Attempt to send and save the packet on the target \\
  
-            ResourceConsumption hasDelivered =  ClientMachine.getRepository()
+            ResourceConsumption hasDelivered =  clientMachine.getRepository()
                     .requestContentDelivery(
                     		P1.id,
-                            ServerMachine.getRepository(),
+                            serverMachine.getRepository(),
                             consumptionEvent);
 
             if(hasDelivered==null) {
-            	ServerMachine.connectionFinished( ClientMachine, State.FAILED, P1);
+            	serverMachine.connectionFinished( clientMachine, State.FAILED, P1);
                 logger.err("Could not deliver packet [Source: %s] [Target: %s]",
-                		 ClientMachine.getId(), ServerMachine.getId());
+                		 clientMachine.getId(), serverMachine.getId());
                 return false;
             }
             else
@@ -315,8 +318,8 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
             NetworkNode.initTransfer(
             		P1.size,
                     10,
-                    ClientMachine.getRepository(),
-                    ServerMachine.getRepository(),
+                    clientMachine.getRepository(),
+                    serverMachine.getRepository(),
                     consumptionEvent);
 
             // If the initTransfer passed, a connection was able to be established \\
@@ -327,19 +330,19 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
         e.printStackTrace();
 
         // Check if the packet was registered before we tried to send it
-        boolean packetIsRegistered = ServerMachine.getRepository().lookup("ONE") != null;
+        boolean packetIsRegistered = serverMachine.getRepository().lookup("ONE") != null;
 
         // If it was not already registered, we can assume it was not intended to stay
         // Register the object so that we can grab it to send again later
         // Force the packet to deregister from the source once successfully transferred
         if (!packetIsRegistered &&
-        		ServerMachine.getRepository().registerObject(P1))
-        	P1.addDeregisterObject( ServerMachine);
+        		serverMachine.getRepository().registerObject(P1))
+        	P1.addDeregisterObject( serverMachine);
 
     }
 
     // Alert the source that the packet failed
-    ServerMachine.connectionFinished( ClientMachine, State.FAILED, P1);
+    serverMachine.connectionFinished( clientMachine, State.FAILED, P1);
     return false;
 }
 
@@ -347,25 +350,14 @@ public static boolean sendPacket(final ConnectionEvent ClientMachine, final Conn
     //return shouldStore;
 //}
 public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
-	
-		 
-		// logger.log("Attempting to Subscribe ClientMachine to ServerMachine with the: " +   " bindingPacket");
-		// ServerMachine.connectionStarted(ClientMachine);
-		 BasePacket bindingPacket = new SubscriptionPacket(true).setShouldStore(true);
-		 // ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine, ServerMachine, bindingPacket);
-		 		
-		// System.out.println("Binding successful with :  " +    bindingPacket.id );
-		 
-		// Create a bindPacket Object DataPacket for binding the ClientMachine to the
-		
-		  
-		sendPacket(this, ServerMachine, bindingPacket);
+			 BasePacket bindingPacket = new SubscriptionPacket(true).setShouldStore(true);
+			sendPacket(this, ServerMachine, bindingPacket);
 			if (bindingPacket.getShouldStore()) {
 	            // Register the bindingPacket to the ServerMachine\\
 	            if(!subscribePacketIfNotExist(ServerMachine,  bindingPacket)) {
-	                logger.err("No more drive space left on [Device: %s]", ClientMachine.getId());
+	                logger.err("No more drive space left on [Device: %s]", clientMachine.getId());
 
-	                ServerMachine.connectionFinished(ClientMachine, State.FAILED,bindingPacket);
+	                ServerMachine.connectionFinished(clientMachine, State.FAILED,bindingPacket);
 	                return false;
 	            }
 	          
@@ -373,7 +365,6 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 			return true;
 	
 }
-			
 	
 
 //Used to check if the packet has been delivered
@@ -400,58 +391,234 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 	// resources, the consumptionEvent method is called.
 	// This ensures the systems resources are availed before packet transfer
 	// commences.
-	/*
-		public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent  ClientMachine,
-			final ConnectionEvent ServerMachine, final BasePacket packet) {
-		return ConsumptionEvent(ClientMachine,ServerMachine,packet);
-	}
-	*/
+	
 	public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent ClientMachine,
              final ConnectionEvent ServerMachine,
              final BasePacket P1) {
-return new ConsumptionEvent() {
+		return new ConsumptionEvent() {
 
-@Override 
-public void conComplete() {
+	@Override 
+	public void conComplete() {
 //logger.log("Packet[" + P1.id + "] successfully sent");
 
 //source.connectionFinished(source, State.SUCCESS, packet);
-ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
+		ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
 //final long reqEnd = Timed.getFireCount();
 //System.out.println("This simulation ended at " + reqEnd + "ms in realtime)");
 // Packets that are not intended to stay after transfer are deregistered here
 // This allows for failed packets to be wiped
-if (P1.shouldDeregister(ClientMachine)) {
-	ClientMachine.getRepository().deregisterObject(P1);
-}
-else
-if (P1.shouldDeregister(ServerMachine)) {
-	ServerMachine.getRepository().deregisterObject(P1);
-}
-}
+		if (P1.shouldDeregister(ClientMachine)) {
+			ClientMachine.getRepository().deregisterObject(P1);
+		}
+		else
+			if (P1.shouldDeregister(ServerMachine)) {
+				ServerMachine.getRepository().deregisterObject(P1);
+			}
+	}
 
-@Override 
-public void conCancelled(ResourceConsumption problematic) {
+	@Override 
+	public void conCancelled(ResourceConsumption problematic) {
 	ClientMachine.connectionFinished(ClientMachine, State.FAILED, P1);
-logger.log("Cancelled: " + problematic.toString());
-}
-};
-}
+	logger.log("Cancelled: " + problematic.toString());
+	}
+		};
+	}
 	
 	
-	
-	
-	
+
+		
 	// when the clietMachine is bound to the ServerMachine, the connection between
 	// the two devices is established.
 	// However, in order to utilise a routing packet, the connectionRoute must be
 	// determined,
 	// This method ensures that the connectionRoute is obtained.
-	public static Queue<ConnectionEvent> getConnectionRoute(PhysicalMachine ClientMachine, String ServerMachineId) {
+ 
+	
+	
+	 public static boolean sendRoutingPacket(final ConnectionEvent clientMachine, final String serverMachineId, final BasePacket P1) {
+// Check if the device is directly connected to the source \\
+		 for (ConnectionEvent serverMachine : clientMachine.getConnectedDevices()) {
+			 logger.log("Checking Device: " + serverMachine .getId());
 
-		return ConnectionRoute;
+// If directly connected, send the packet \\
+			 if (serverMachine .getId().equals(serverMachineId))
+				 return PacketHandler.sendPacket(clientMachine, serverMachine , P1);
+}
+
+// Attempt to find a route between the connected devices
+		 Queue<ConnectionEvent> Aroute = getConnectionRoute(clientMachine, serverMachineId);
+	
+// If the route could not be found, return false and alert the Source \\
+		 if (Aroute == null || Aroute.isEmpty()) {
+			 logger.log("Couldn't find route between [Source:%s][Target:%s]",
+					 clientMachine.getId(),
+					 serverMachineId);
+
+			 clientMachine.connectionFinished(clientMachine, State.FAILED, P1);
+			 return false;
+}
+
+// Check if the first node in the Route is the Source - If so, remove it
+		 if (Aroute.peek().equals(clientMachine))
+			 Aroute.remove();
+
+		 logger.log("PathSize: " + Aroute.size());
+
+// Box the packet in a RoutingPacket, attaching the Route Queue to it \\
+		 RoutingPacket routingPacket = new RoutingPacket("Routing", P1, clientMachine, Aroute);
+
+// Determine the next target and if it exists, forward the routing packet to it
+		 ConnectionEvent nextTarget = routingPacket.getRoute().poll();
+		 return nextTarget != null &&
+				 sendPacket(routingPacket.getSource(), nextTarget, routingPacket);
+}
+
+	 public  Stack<ConnectionEvent> getroute (){
+		 Stack<ConnectionEvent> route = new Stack<ConnectionEvent>();
+		ConnectionEvent serverMachine2 = new ServerMachine2(PhysicalMachine, repository, Id);
+		ConnectionEvent serverMachine3 = new ServerMachine3(PhysicalMachine, repository, Id);
+		ConnectionEvent clientMachine = new ClientMachine(PhysicalMachine, repository, Id);
+		ConnectionEvent router = new Router(PhysicalMachine, repository, Id);
+		 
+		 route.add(serverMachine2);
+		// route.add(serverMachine);
+		 route.add(serverMachine3);
+		 route.add(router);
+		 route.add(clientMachine);
+		
+		return route;
+		
 	}
+	 
+		  public static Queue<ConnectionEvent> getConnectionRoute(ConnectionEvent clientMachine, String serverMachineId) {
+	        
+			  LinkedList<ConnectionEvent> Aroute = new LinkedList<ConnectionEvent>();
+			  Stack<ConnectionEvent> route = new Stack<ConnectionEvent>();
+	 
+	      
+	        ConnectionEvent serverMachine2 = new ClientMachine(PhysicalMachine, repository, Id);
+			ConnectionEvent serverMachine3 = new ClientMachine(PhysicalMachine, repository, Id);
+			//ConnectionEvent router = new Router(PhysicalMachine, repository, Id);
+			route.push(serverMachine2);
+			route.push(serverMachine3);
+			//route.push(router);
+			  
+			
+			Set<String> visited = new HashSet<String>();
+			  visited.add("router");
+		         visited.add("serverMachine2");
+		        visited.add("serverMachine3");
+		      
+			  
+	        // Add the source to the stack and mark as visited \\
+	        route.push(clientMachine);
+	    
+	        visited.add(clientMachine.getId());
+	      
+	        // Iterate through the stack until empty \\
+	     //  while (!route.isEmpty()) {
+	    	 
+	            // Get the current node to be advanced from \\
+	            ConnectionEvent  router = route.peek();
+	
+	            
+	        
+	            // Using the current node, check if there are any unvisited branches \\
+	            ConnectionEvent serverMachine = getUnvisited(router , visited);
+	    
+	            // If the current node has any unvisited branches, add it to the stack to be processed next \\
+	            // Otherwise, pop the stack and check the previous node for more branches \\
+	            if (serverMachine != null) {
+	                // Mark the child as visited so that it's not checked again \\
+	                visited.add(serverMachine.getId());
+	                //System.out.println( visited);
+	                route.push(serverMachine);
+	                logger.log("Route Node: " + serverMachine.getId());
+	             //System.out.println( route);
+	                // If the target is reached, return the Stack as a Queue \\
+	                while (!route.isEmpty()) {
+	                if (serverMachine.getId().equals(serverMachineId)) {
+	                	Aroute.addAll(route);
+	                	  System.out.println( route);
+	                    return new LinkedList<ConnectionEvent>(Aroute);
+	                    
+	                    
+	                }
+	                
+	            }
+	        }
+	  
+	     
+	        // Return Null if no Route could be established \\
+	        return null;
+	    } 
+	  
+		 public static ConnectionEvent getUnvisited(ConnectionEvent serverMachine2, Set<String> visited) {
+				
+		        logger.log("Checking [Node: %s] for unvisited children [Potential: %s]",
+		        		serverMachine2.getId(),
+		        		serverMachine2.getConnectedDevices().size());
+	                       //System.out.println();
+	     // Iterate through all of the node's children \\
+		        for (ConnectionEvent serverMachine : serverMachine2.getConnectedDevices()) {
 
+		            // If the Set does not contain the child, it has not been visited \\
+		            if (!visited.contains(serverMachine.getId())) {
+		                logger.log("Found unvisited child [ID: %s]", serverMachine.getId());
+		                return serverMachine;
+		            }
+		        }
+
+		        logger.log("No unvisited children");
+		        return null;
+		  }
+		    
+	  
+	 
+	  
+	  public static boolean connectDevice(ConnectionEvent router, ConnectionEvent serverMachine,ConnectionEvent serverMachine2,ConnectionEvent serverMachine3) {
+	        boolean success = connectedDevices.add( router);
+	        boolean success1 = connectedDevices.add(serverMachine);
+	        boolean success2 = connectedDevices.add(serverMachine2);
+	        boolean success3 = connectedDevices.add(serverMachine3);
+ 	        if (!success) {
+	            logger.log("router was already connected: " + router.getId());  }
+ 	        if(!success1) {
+ 	        	logger.log("router was already connected: " + serverMachine.getId());
+ 	        }
+ 	       if (!success2) {
+	            logger.log("router was already connected: " + router.getId());
+	        }
+	        if(!success3) {
+	        	logger.log("router was already connected: " + serverMachine.getId());
+	        }
+ 	        return success;
+	   }
+	
+	 public Set<String> getvisited() { 
+	Set<String> visited = new HashSet<String>() ;
+		        visited.add("router");
+		       // visited.add("serverMachine");
+		        visited.add("serverMachine2");
+		        visited.add("serverMachine3");
+		       // visited.add("clientMachine");
+		        return visited;
+			}
+
+	
+	 
+	
+	@Override
+	public List<ConnectionEvent> getConnectedDevices() {
+		// TODO Auto-generated method stub
+	
+		return connectedDevices;
+	} 
+  	
+
+
+	  
+	
 	
 	/*
 	
@@ -468,8 +635,8 @@ logger.log("Cancelled: " + problematic.toString());
 		// TODO Auto-generated method stub
 
 		while (PacketArray.size() > PacketsCount) {
-			ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine, ServerMachine,P1);
-			sendPackets(ClientMachine, ServerMachine, PacketArray);
+			ConsumptionEvent consumptionEvent = getConsumptionEvent(clientMachine, serverMachine,P1);
+			sendPackets(clientMachine, serverMachine, PacketArray);
 			// Displays the number of Packets transferred from the ClientMachine to the
 			// ServerMachine.
 			logger.log("Packet: " + PacketArray.size());
@@ -480,8 +647,8 @@ logger.log("Cancelled: " + problematic.toString());
 		// the connection must closed
 		// but not before the transfer is checked to ascertain the success of the
 		// transfer. This is certified by the connectionState.
-		connectionFinished(ServerMachine, connectionState, P1);
-		handleSuccess(ServerMachine, P1);
+		connectionFinished(serverMachine, connectionState, P1);
+		handleSuccess(serverMachine, P1);
 		printStorageMetrics();
 		stop();
 	}
@@ -503,15 +670,15 @@ logger.log("Cancelled: " + problematic.toString());
 		
 		
 		//source.connectionFinished(source, State.SUCCESS, packet);
-		ServerMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
+		serverMachine.connectionFinished(clientMachine, State.SUCCESS, P1);
 
 		// Packets that are not intended to stay after transfer are deregistered here
 		// This allows for failed packets to be wiped
-		if (P1.shouldDeregister(ClientMachine)) {
-			ClientMachine.getRepository().deregisterObject(P1);
+		if (P1.shouldDeregister(clientMachine)) {
+			clientMachine.getRepository().deregisterObject(P1);
 		}
-		if (P1.shouldDeregister(ServerMachine)) {
-			ServerMachine.getRepository().deregisterObject(P1);
+		if (P1.shouldDeregister(serverMachine)) {
+			serverMachine.getRepository().deregisterObject(P1);
 		}
 		}
 		
@@ -525,7 +692,7 @@ logger.log("Cancelled: " + problematic.toString());
 	
 	@Override
 	public void conCancelled(ResourceConsumption problematic) {
-		ServerMachine.connectionFinished(ClientMachine, State.FAILED, P1);
+		serverMachine.connectionFinished(clientMachine, State.FAILED, P1);
 		
 		// TODO Auto-generated method stub
 		/// ClientMachine.connectionFinished(ClientMachine, State.FAILED, packet);
@@ -535,11 +702,7 @@ logger.log("Cancelled: " + problematic.toString());
 	// The devices to be used for the experiment (ClientMachine and ServerMachine)
 	// must be availed as a connectionEvent.
 	// This ensures that they can transfer packets and receive them as well.
-	//@Override
-	public List<ConnectionEvent> getConnectedDevices() {
-		// TODO Auto-generated method stub
-		return connectedDevices;
-	}
+	
 
 	// When the packets are transferred from the clientMachine to the ServerMachine,
 	// this method is called to close up the connection.
@@ -649,6 +812,13 @@ logger.log("Cancelled: " + problematic.toString());
 	// total number of packets must also determined.
 	
 
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

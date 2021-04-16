@@ -19,6 +19,10 @@ public class LoaderUtils {
 	static PhysicalMachine ClientMachine;
 	static PhysicalMachine ServerMachine;
     static Repository repository;
+    
+    protected  PhysicalMachine serverMachine2;
+	protected  PhysicalMachine serverMachine3;
+      protected PhysicalMachine router;
 	static String Id;
 	private Repository localDisk;
 
@@ -41,6 +45,61 @@ public class LoaderUtils {
 		
 	 }	
 	
+	static ServerMachine2 getServerMachine2() throws NoSuchMethodException {
+
+	     PhysicalMachine ServerMachine2 = MachineHandler_Socket.claimPM("193.6.5.224");
+
+	     if (ServerMachine2 == null)
+
+	         throw new NullPointerException("ServerMachine2 not found");
+
+
+	     	//DataPacket NewdataPacket= datapacket;
+	    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
+
+	             
+		return new ServerMachine2(ServerMachine2, repository, Id);
+		
+	 }	
+	static ServerMachine3 getServerMachine3() throws NoSuchMethodException {
+
+	     PhysicalMachine ServerMachine3 = MachineHandler_Socket.claimPM("193.6.5.225");
+
+	     if (ServerMachine3 == null)
+
+	         throw new NullPointerException("ServerMachine3 not found");
+
+
+	     	//DataPacket NewdataPacket= datapacket;
+	    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
+
+	             
+		return new ServerMachine3(ServerMachine3, repository, Id);
+		
+	 }	
+	
+	
+	static Router getRouter() throws NoSuchMethodException {
+	     PhysicalMachine Router = MachineHandler_Socket.claimPM("193.6.5.223");
+
+	     if (Router == null)
+
+	         throw new NullPointerException("Router not found");
+	     
+	    // DataPacket NewdataPacket= datapacket;
+
+	   // TraceFileReaderFoundation traceFileReader = new TraceFileReader(
+
+	                  
+	      
+		
+		return new Router(Router,repository,Id);
+	     
+		//public ClientMachine(PhysicalMachine ServerMachine, BasePacket packet,
+			//	Repository repository, String Id) {
+	 
+	}
+
 	
 
 	static ClientMachine getClientMachine() throws NoSuchMethodException {
@@ -79,7 +138,7 @@ public class LoaderUtils {
 
 	     return new Cloud(MachineHandler_Socket.claimPM("Cloud"));
 
-	// }
+	
 
  }
  }

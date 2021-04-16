@@ -1,15 +1,10 @@
 package com.ljmu.andre.SimulationHelpers.Packets;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 
-import com.ljmu.andre.SimulationHelpers.Application;
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent;
 import com.ljmu.andre.SimulationHelpers.ConnectionEvent.State;
 import com.ljmu.andre.SimulationHelpers.Utils.Logger;
@@ -20,15 +15,15 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
-public class ServerMachine extends Timed implements ConsumptionEvent, ConnectionEvent {
-	private static final Logger logger = new Logger(ServerMachine.class);
+public class ServerMachine3 extends Timed implements ConsumptionEvent, ConnectionEvent {
+
+	private static final Logger logger = new Logger(ServerMachine3.class);
 	private static final int SUBSCRIBE_FREQ = 5;
-    //String serverMachineId;
+    String serverMachine3Id;
     long maxValueInMap= 0;
     long minValueInMap=Long.MAX_VALUE;
     long average = 0;
     int counter =0;
-    protected Router router;
 	//protected PhysicalMachine ServerMachine;
     static final State connectionState = State.SUCCESS;
 	//protected ClientMachine ClientMachine;
@@ -43,10 +38,9 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	private List<String> SuccessfulPacketIds = new ArrayList<String>();
 	private List<String> FailedPacketIds = new ArrayList<String>();
 	public List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
-	private ConnectionEvent serverMachine;
+	private ConnectionEvent serverMachine3;
 	private PhysicalMachine PhysicalMachine;
-    // final String name;
-    String serverMachineId;
+     final String name;
 	
 	//private ConsumptionEvent PhysicalMachine;
 
@@ -69,9 +63,9 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 
 
 	// Create the constructor for the serverMachine
-	public ServerMachine(PhysicalMachine serverMachine,	Repository repository, String serverMachineId) {
-		this.PhysicalMachine = serverMachine;
-		this.serverMachineId = serverMachineId;
+	public ServerMachine3(PhysicalMachine serverMachine3,	Repository repository, String serverMachine3Id) {
+		this.PhysicalMachine = serverMachine3;
+		name = serverMachine3Id;
 		this.repository = repository;
 	}
 
@@ -81,24 +75,24 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	//}
 	// Get the repository of the ServerMachine
 		
-	public void setPhysicalMachine(PhysicalMachine  serverMachine) {
-		this.PhysicalMachine =  serverMachine;
+	public void setPhysicalMachine(PhysicalMachine  serverMachine3) {
+		this.PhysicalMachine =  serverMachine3;
 	}
 	
-	public ConnectionEvent getServerMachine() {
-		return  serverMachine;
+	public ConnectionEvent getServerMachine3() {
+		return  serverMachine3;
 		
 	}
 	
 		
-	public void setMachineId(String serverMachineId) {
-		this.serverMachineId = "193.6.5.222";
+	public void setMachine3Id(String serverMachine3Id) {
+		this.serverMachine3Id = "193.6.5.225";
 	}
 	
 	@Override
 	public String getId() {
 		// TODO Auto-generated method stub
-		return "193.6.5.222";
+		return getRepository().getName();
 	}
 	
 	public void setRepository(Repository repository) {
@@ -118,35 +112,35 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	
 	
 	//Start the ServerMachine and subscribe it to the frequency
-	public void start() {
-		
-		logger.log("Started [Frequency: %s]", subscribe(SUBSCRIBE_FREQ));
-		// logger.log("Started [ID: %s] [Success: %s]", getRepository().getName(),
-				// subscribe(SUBSCRIBE_FREQ));
-	}
+		public void start() {
+			
+			logger.log("Started [Frequency: %s]", subscribe(SUBSCRIBE_FREQ));
+			// logger.log("Started [ID: %s] [Success: %s]", getRepository().getName(),
+					// subscribe(SUBSCRIBE_FREQ));
+		}
 
-	// Initial connection with the ClientMachine
-	@Override
-	public void connectionStarted(ConnectionEvent clientMachine) {
-		// TODO Auto-generated method stub
-		//logger.log("Received connection init: " + ClientMachine.getRepository().getName());
-	
-	handleConnectionStarted(clientMachine);
-	}
-	
+		// Initial connection with the ClientMachine
+		@Override
+		public void connectionStarted(ConnectionEvent clientMachine) {
+			// TODO Auto-generated method stub
+			//logger.log("Received connection init: " + ClientMachine.getRepository().getName());
 		
-public ConnectionEvent handleConnectionStarted(ConnectionEvent clientMachine) {
-	if(isSubscribed())
-	return clientMachine;
-	else
-		return null;
-	}
-	
+		handleConnectionStarted(clientMachine);
+		}
+		
+			
+	public ConnectionEvent handleConnectionStarted(ConnectionEvent clientMachine) {
+		if(isSubscribed())
+		return clientMachine;
+		else
+			return null;
+		}
+		
 
-public void stop() {
-		
-	logger.log("Stopped: " + unsubscribe());
-}
+	public void stop() {
+			
+		logger.log("Stopped: " + unsubscribe());
+	}
 
 	
 
@@ -178,8 +172,8 @@ public void stop() {
 		logger.log("Tick: " + fires);
 	}
 
-	public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent ServerMachine,
-            final ConnectionEvent ClientMachine,
+	public static ConsumptionEvent getConsumptionEvent(final ConnectionEvent serverMachine3,
+            final ConnectionEvent clientMachine,
             final BasePacket P1) {
 return new ConsumptionEvent() {
 
@@ -188,24 +182,24 @@ public void conComplete() {
 logger.log("Packet[" + P1.id + "] successfully sent");
 
 //source.connectionFinished(source, State.SUCCESS, packet);
-ClientMachine.connectionFinished(ClientMachine, State.SUCCESS, P1);
+clientMachine.connectionFinished(clientMachine, State.SUCCESS, P1);
 
 //Packets that are not intended to stay after transfer are deregistered here
 //This allows for failed packets to be wiped
 
-if (P1.shouldDeregister(ServerMachine)) {
-	ServerMachine.getRepository().deregisterObject(P1);
+if (P1.shouldDeregister(serverMachine3)) {
+	serverMachine3.getRepository().deregisterObject(P1);
 }
 else
-if (P1.shouldDeregister(ClientMachine)) {
-	ClientMachine.getRepository().deregisterObject(P1);
+if (P1.shouldDeregister(clientMachine)) {
+	clientMachine.getRepository().deregisterObject(P1);
 }
 
 }
 
 @Override 
 public void conCancelled(ResourceConsumption problematic) {
-	ServerMachine.connectionFinished(ServerMachine, State.FAILED, P1);
+	serverMachine3.connectionFinished(serverMachine3, State.FAILED, P1);
 logger.log("Cancelled: " + problematic.toString());
 }
 };
@@ -241,7 +235,7 @@ logger.log("Cancelled: " + problematic.toString());
 		else
         if (connectionState == State.SUCCESS) {
         	
-            handleSuccess(serverMachine, P1);
+            handleSuccess(serverMachine3, P1);
            // System.out.println("ClientMachine connection finished: " + connectionState);
          
            
@@ -339,11 +333,12 @@ logger.log("Cancelled: " + problematic.toString());
 
 
 	
-	 public boolean connectDevice(ConnectionEvent clientMachine, ConnectionEvent router,ConnectionEvent serverMachine2,ConnectionEvent serverMachine3) {
+	
+	 public boolean connectDevice(ConnectionEvent clientMachine, ConnectionEvent router,ConnectionEvent serverMachine2,ConnectionEvent serverMachine) {
 	        boolean success = connectedDevices.add(  clientMachine);
 	        boolean success1 = connectedDevices.add(router);
 	        boolean success2 = connectedDevices.add(serverMachine2);
-	        boolean success3 = connectedDevices.add(serverMachine3);
+	        boolean success3 = connectedDevices.add(serverMachine);
 	        if (!success) {
 	            logger.log("clientMachine was already connected: " +  clientMachine.getId());
 	        }
@@ -355,7 +350,7 @@ logger.log("Cancelled: " + problematic.toString());
 	            logger.log("serverMachine2 was already connected: " + serverMachine2.getId());
 	        }
 	        if(!success3) {
-	        	logger.log("serverMachine3 was already connected: " + serverMachine3.getId());
+	        	logger.log("serverMachine was already connected: " + serverMachine.getId());
 	         
 	        }
 	      
@@ -367,9 +362,9 @@ logger.log("Cancelled: " + problematic.toString());
 	 public Set<String> getvisited() { 
 			Set<String> visited = new HashSet<String>() ;
 				        visited.add("router");
-				      //visited.add("serverMachine");
+				       visited.add("serverMachine");
 				        visited.add("serverMachine2");
-				        visited.add("serverMachine3");
+				      //  visited.add("serverMachine3");
 				        visited.add("clientMachine");
 				        
 				        return visited;
@@ -381,7 +376,12 @@ logger.log("Cancelled: " + problematic.toString());
 					return connectedDevices;
 			
 	}
-
+	
+	
+	
+	
+	
+	
 	
 	
 	

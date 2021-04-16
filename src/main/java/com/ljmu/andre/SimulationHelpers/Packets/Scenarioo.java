@@ -13,12 +13,19 @@ public class Scenarioo extends Timed {
 	private static final Logger logger = new Logger(Scenarioo.class);
 	private static final String USER_DIR = System.getProperty("user.dir");
 	// public static final String NETWORK_IN_CSV = USER_DIR + "/network_in_new.csv";
-	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket2.xml";
+	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket3.xml";
 	private BasePacket packet;
-	private  ClientMachine ClientMachine;
-	private ServerMachine ServerMachine;
+	private  ClientMachine clientMachine;
+	private ServerMachine serverMachine;
+	protected  ServerMachine2 serverMachine2;
+	protected  ServerMachine3 serverMachine3;
+	protected Router router;
 	private Cloud cloud;
 	private SubscriptionPacket packett;
+	 String serverMachineId = "193.6.5.222";
+     String serverMachine2Id = "193.6.5.224";
+	
+	
 	
 	ArrayList<DataPacket> PacketArray = new ArrayList< DataPacket>();
 	// The gap between packet transfer
@@ -65,17 +72,23 @@ public class Scenarioo extends Timed {
 		// 	Initialise the machines with the xml file
 		MachineHandler_Socket.init(MACHINE_SOCKET_XML_PATH);
 		//load the Server machine with LoaderUtils 
-		ServerMachine = LoaderUtils.getServerMachine();
+		serverMachine = LoaderUtils.getServerMachine();
 		//load the ClientMachine machine with LoaderUtils 
-		ClientMachine = LoaderUtils.getClientMachine();
+		clientMachine = LoaderUtils.getClientMachine();
 		//load the Cloud machine with LoaderUtils 
 		cloud = LoaderUtils.getCloud();
-
+		serverMachine2 = LoaderUtils.getServerMachine2();
+		serverMachine3 = LoaderUtils.getServerMachine3();
+		router = LoaderUtils.getRouter();
 		//Start the machines clientMachine, ServiceMachine and the Cloud
-		ClientMachine.start();
-		ServerMachine.start();
-		cloud.start();
 		
+		
+		clientMachine.start();
+		serverMachine.start();
+		cloud.start();
+		router.start();
+		 serverMachine2.start();
+		 serverMachine3.start();
 		
 		
 		
@@ -99,8 +112,10 @@ public class Scenarioo extends Timed {
 		//long StartTime = Calendar.getInstance().getTimeInMillis();
 		//System.out.println("This simulation began at " + StartTime + "ms in realtime)");
 		// ClientMachine.sendPacket(ClientMachine, ServerMachine, P1);
-		ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
-		ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray);
+		//ArrayList<DataPacket> PacketArray = clientMachine.PacketArray();
+		//clientMachine.sendPackets(clientMachine, serverMachine, PacketArray);
+		clientMachine.sendRoutingPacket(clientMachine, serverMachineId, P1);
+		//clientMachine.sendRoutingPacket(clientMachine, serverMachineId, P1);
 		// long FinishTime = Calendar.getInstance().getTimeInMillis();
 	  //  System.out.println("This simulation ended at " + FinishTime + "ms in realtime)");
 		//long duration = StartTime - FinishTime;
@@ -110,8 +125,8 @@ public class Scenarioo extends Timed {
 		//Receive packet from the ServerMachine
 		
 		 subscribe(1000);
-		ClientMachine.stop();
-		 ServerMachine.stop();
+		clientMachine.stop();
+		 serverMachine.stop();
 		 cloud.stop();
 		 
 		//Timed.getFireCount();
@@ -129,7 +144,7 @@ public class Scenarioo extends Timed {
 	public void tick(long fires) {
 		// TODO Auto-generated method stub
 
-		if (!ServerMachine.isSubscribed() && !ClientMachine.isSubscribed()) {
+		if (!serverMachine.isSubscribed() && !clientMachine.isSubscribed()) {
 			unsubscribe();
 			logger.log("No more subscribers... ENDING");
 			// System.exit(5);

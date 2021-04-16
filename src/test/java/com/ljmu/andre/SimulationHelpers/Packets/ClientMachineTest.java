@@ -4,7 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.Stack;
 
 import static org.junit.Assert.*;
 import javax.xml.parsers.ParserConfigurationException;
@@ -33,14 +37,20 @@ import junit.framework.Assert;
 
 public class ClientMachineTest extends Timed {
 	private static final String USER_DIR = System.getProperty("user.dir");
-	private ClientMachine ClientMachine;
+	ClientMachine clientMachine;
+	
 	private static final Logger logger = new Logger(ClientMachineTest.class);
 	private int PacketsCount = 5;
-	protected  ServerMachine ServerMachine;
+	protected  ServerMachine serverMachine;
+	protected  ServerMachine2 serverMachine2;
+	protected  ServerMachine3 serverMachine3;
+	String serverMachineId = "193.6.5.222";
+	String serverMachine2Id = "193.6.5.224";
 	private Cloud cloud;
+	protected Router router;
 	private static final int SUBSCRIBE_FREQ = 10;
 	final static long expectedFires = 5;
-	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket1.xml";
+	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket3.xml";
 		// TODO Auto-generated constructor stub
 	private BasePacket packet;
     String message = "The PhysicalMachine is TurnON";
@@ -49,6 +59,9 @@ public class ClientMachineTest extends Timed {
  private final static long RepoCapacity  = 40000000000L;
 	Repository repository1,repository2;
 	private ArrayList<BasePacket>  PacketArray = new ArrayList<BasePacket>();
+	public List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();
+	ArrayList<ConnectionEvent> Devices = new ArrayList< ConnectionEvent>();
+	LinkedList<ConnectionEvent> Aroute = new LinkedList<ConnectionEvent>();
 	private RoutingPacket Packet;
 	 private static final int limit = 10;
 	//private List<String> failedPacketIds = new ArrayList<String>();
@@ -58,13 +71,13 @@ public class ClientMachineTest extends Timed {
 	 private SubscriptionPacket packett;
 	 State connectionState;
 	 private static int BindPacket=2;
-	private PhysicalMachine PhysicalMachine1,PhysicalMachine2;
+	private PhysicalMachine PhysicalMachine;
 	BasePacket bindingPacket;
 	//DataPacket P1 = new  DataPacket("one", 32, true);
-	 	 
+	 	 boolean success;
 	 public final static int data =1;
 	
-	 
+	 //public Set<String> visited = new HashSet<String>();
 	 
 	 
 	 /*
@@ -86,18 +99,23 @@ public class ClientMachineTest extends Timed {
 			return  PacketArray;
 			}
 
-		DataPacket P1 = new  DataPacket("one",32,true);
-		DataPacket P2 = new  DataPacket("two",32,true);
-		DataPacket P3 = new  DataPacket("three",32,true);
-		DataPacket P4 = new  DataPacket("four",32,true);
+		DataPacket P1 = new  DataPacket("one",32,false);
+		DataPacket P2 = new  DataPacket("two",32,false);
+		DataPacket P3 = new  DataPacket("three",32,false);
+		DataPacket P4 = new  DataPacket("four",32,false);
 		
+		RoutingPacket R1 = new RoutingPacket("FIVE", P1, clientMachine, Aroute);	
 
+		
+		
+		
+		
 	public void tick(long fires) {
 		// TODO Auto-generated method stub
 
 		while (NumberOfPackets < PacketsCount) {
 			//ConsumptionEvent consumptionEvent = getConsumptionEvent(ClientMachine, ServerMachine, packet);
-			PacketHandler.sendPacket(ClientMachine, ServerMachine, new DataPacket("Data", 10, true));
+			PacketHandler.sendPacket(clientMachine, serverMachine, new DataPacket("Data", 10, true));
 			// Displays the number of Packets transferred from the ClientMachine to the
 			// ServerMachine.
 			logger.log("Packet: " + NumberOfPackets);
@@ -112,22 +130,18 @@ public class ClientMachineTest extends Timed {
 	public  void StartMachinetest() throws NetworkException, ParserConfigurationException, SAXException, IOException, NoSuchMethodException {
 		
 		MachineHandler_Socket.init(MACHINE_SOCKET_XML_PATH);
-		ClientMachine = LoaderUtils.getClientMachine();
-		ServerMachine = LoaderUtils.getServerMachine();
+		clientMachine = LoaderUtils.getClientMachine();
+		serverMachine = LoaderUtils.getServerMachine();
+		serverMachine2 = LoaderUtils.getServerMachine2();
+		serverMachine3 = LoaderUtils.getServerMachine3();
 		cloud = LoaderUtils.getCloud();
+		router = LoaderUtils.getRouter();
 		     
 		
 	}
 	/*
-	//Check the availability of an Id of ClientMachine
-	 @Test
-	  	public void StartClientMachineTest_ID() throws NetworkException {
-		    cloud.start();
-			ClientMachine.start();
-			ServerMachine.start();
-			assertEquals("The local disks is not available",ClientMachine.getRepository().getName(), ClientMachine.getId());
-			System.out.println(ClientMachine.getRepository().getName());
-		}
+	 * 
+	
 	  
 	//Cross-Check ClientMachine Id with ServerMachine Id
 		 @Test
@@ -216,24 +230,344 @@ public class ClientMachineTest extends Timed {
 		 assertNotNull("List shouldn't be null", PacketArray);
 		 
 		} 
-	*/
-	// Transfer array of packets from ClientMachine to serverMachine
+	
+	
+	//Check the availability of an Id of ClientMachine
+		 @Test
+		  	public void StartClientMachineTest_ID() throws NetworkException {
+			    cloud.start();
+				clientMachine.start();
+				serverMachine.start();
+				router.start();
+				assertEquals("The local disks is not available",clientMachine.getRepository().getName(), clientMachine.getId());
+				System.out.println(clientMachine.getRepository().getName());
+			}
+	
+	
+		  //Check the availability of an Id of ClientMachine
+		 @Test
+		  	public void CheckRoouterIdCreation() throws NetworkException {
+				cloud.start();
+		        clientMachine.start();
+		        serverMachine.start();
+		        router.start();
+				assertEquals("The local disks is not available",router.getRepository().getName(), router.getId());
+		 
+		 }
+		 
+		 @Test(timeout = 1000)
+				public void CheckConnectionStartedTest_ON() throws NetworkException, ParserConfigurationException, SAXException, IOException, NoSuchMethodException  {
+				cloud.start();
+				clientMachine.start();
+				 serverMachine.start();
+				 router.start();
+				 assertEquals("No connection between machines", serverMachine, clientMachine.handleConnectionStarted(serverMachine));
+				// ClientMachine.stop();
+			
+			}
+				
+		 
+		 
+		 
+		 
+		 
+		
+		 
+		 
+	
+		
+		
+			// Check to see if the BasePackets are actually in the Array
+						@Test(timeout = 100)
+					    public void CheckConnectedDevicesArray() throws NetworkException {
+							cloud.start();
+							clientMachine.start();
+							 serverMachine.start();
+							 router.start();
+							 clientMachine.handleConnectionStarted(router);
+							List<ConnectionEvent> connectedDevices = clientMachine.getConnectedDevices();
+							System.out.println(connectedDevices);
+							//Timed.getFireCount();
+							// assertNotNull("List shouldn't be null", connectedDevices);
+							 //assertEquals("No connection between machines",router, clientMachine.handleConnectionStarted(router));
+							assertEquals("No connection between machines",2, connectedDevices.size());
+								
+						} 	   
+			
+			 
+			
+			
+			
+			
+			
+			
+			@Test
+			 public void CheckConnectedDevices() throws NetworkException{
+				 
+				 cloud.start();
+			        clientMachine.start();
+			        serverMachine.start();
+			        router.start();
+			        clientMachine.handleConnectionStarted(router);
+			        System.out.println("see somthing" +" "+ clientMachine.disconnectDevice(router));
+			        assertEquals("There are no connected devices", success, clientMachine.disconnectDevice(router));
+			        
+			   
+			 }
+			
+	
+	
+	@Test
+	 public void CheckConnectedDevicesFrom_ClientMachineTo_Router() throws NetworkException{
+		 
+		 cloud.start();
+	        clientMachine.start();
+	        serverMachine.start();
+	        router.start();
+	        serverMachine2.start();
+			 serverMachine3.start();
+			 clientMachine.handleConnectionStarted(router);
+	       // System.out.println("see somthing" +" "+ clientMachine.connectDevice(router));
+	       
+	      //  assertTrue("clientMachine is not connected to the router",clientMachine.connectDevice(router));
+	        
+	   
+	 }
+	
+	
+	// Check to see if the BasePackets are actually in the Array
+				@Test(timeout = 100)
+			    public void CheckStatusOfArray() throws NetworkException {
+					cloud.start();
+					clientMachine.start();
+					 serverMachine.start();
+					 serverMachine2.start();
+					 serverMachine3.start();
+					 router.start();
+					 clientMachine.handleConnectionStarted(router);
+					 ClientMachine clientMachine = new ClientMachine(PhysicalMachine, repository1, Id1);
+					 clientMachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+					List<ConnectionEvent> connectedDevices = clientMachine.getConnectedDevices();
+					System.out.println(connectedDevices);
+					assertEquals("No connection between machines",4, clientMachine.getConnectedDevices().size());
+						
+				}
+				
+				 	
+			
+			 @Test(timeout = 100)
+		public void ChildrenVisitedTest() throws NetworkException {
+			
+			
+			cloud.start();
+			clientMachine.start();
+			 serverMachine.start();
+			 router.start();
+			 serverMachine2.start();
+			 serverMachine3.start();
+			 router.handleConnectionStarted(clientMachine);
+			 clientMachine.handleConnectionStarted(router);
+			 serverMachine.handleConnectionStarted(clientMachine);
+			/// ClientMachine clientMachine = new ClientMachine(PhysicalMachine, repository1, Id1);
+			 //clientMachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+			//ClientMachine clientmachine = new ClientMachine(PhysicalMachine, repository1, Id1);
+			//clientmachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+			//Router router = new Router(PhysicalMachine, repository1, Id1);
+			//router.connectDevice(clientMachine, serverMachine, serverMachine2, serverMachine3);
+			ServerMachine2 serverMachine2 = new ServerMachine2(PhysicalMachine, repository1, Id1);
+			serverMachine2.connectDevice(clientMachine, serverMachine3, router, serverMachine);
+			 	//List<ConnectionEvent> connectedDevices = router.getConnectedDevices();
+			 	List<ConnectionEvent> connectedDevices = serverMachine2.getConnectedDevices();
+			 	
+			 	System.out.println(connectedDevices);
+			 	Set<String> visited = clientMachine.getvisited();
+		           System.out.println(visited);
+		           
+		          // assertEquals("No connection between machines",3, clientmachine.getvisited().size());
+				assertEquals("There are no children",clientMachine, clientMachine.getUnvisited(serverMachine2, visited));
+		}
+					
+	            
+	*/				
+	
+	
+	
+	@Test(timeout = 1000)
+	public void GetConnectionRouteTest() throws NetworkException {
+		
+		
+		cloud.start();
+		clientMachine.start();
+		 serverMachine.start(); 
+		 router.start();
+		 serverMachine2.start();
+		 serverMachine3.start();
+		 router.handleConnectionStarted(clientMachine);
+		 clientMachine.handleConnectionStarted(router);
+		 serverMachine2.handleConnectionStarted(clientMachine);
+		 ClientMachine clientMachine = new ClientMachine(PhysicalMachine, repository1, Id1);
+		 clientMachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+		//ClientMachine clientmachine = new ClientMachine(PhysicalMachine, repository1, Id1);
+		//clientmachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+		Router router = new Router(PhysicalMachine, repository1, Id1);
+		router.connectDevice(clientMachine, serverMachine, serverMachine2, serverMachine3);
+		ServerMachine2 serverMachine2 = new ServerMachine2(PhysicalMachine, repository1, Id1);
+		serverMachine2.connectDevice(clientMachine, serverMachine3, router, serverMachine);
+		 	List<ConnectionEvent> connectedDevices = clientMachine.getConnectedDevices();
+		 	///System.out.println(connectedDevices);
+		 	Set<String> visited = clientMachine.getvisited();
+	         ///  System.out.println(visited);
+	           //clientMachine.getUnvisited(router, visited);
+	           Stack<ConnectionEvent> route =  clientMachine.getroute();
+	         // System.out.println (clientMachine.getUnvisited(router, visited));
+	         // System.out.println(route);
+	         //  LinkedList<ConnectionEvent> Aroute = clientMachine.Aroute();
+	           
+	           
+	           
+			//assertEquals("There are no children", route, clientMachine.getConnectionRoute(serverMachine2, serverMachineId) );
+	}
+	
+	
+	
+	@Test(timeout = 1000)
+	public void SendRoutingPacketTest() throws NetworkException {
+		
+		
+		cloud.start();
+		clientMachine.start();
+		 serverMachine.start(); 
+		 router.start();
+		 serverMachine2.start();
+		 serverMachine3.start();
+		 router.handleConnectionStarted(clientMachine);
+		 clientMachine.handleConnectionStarted(router);
+		 serverMachine2.handleConnectionStarted(clientMachine);
+		 ClientMachine clientMachine = new ClientMachine(PhysicalMachine, repository1, Id1);
+		 clientMachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+		//ClientMachine clientmachine = new ClientMachine(PhysicalMachine, repository1, Id1);
+		//clientmachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+		Router router = new Router(PhysicalMachine, repository1, Id1);
+		router.connectDevice(clientMachine, serverMachine, serverMachine2, serverMachine3);
+		ServerMachine2 serverMachine2 = new ServerMachine2(PhysicalMachine, repository1, Id1);
+		serverMachine2.connectDevice(clientMachine, serverMachine3, router, serverMachine);
+		 	List<ConnectionEvent> connectedDevices = clientMachine.getConnectedDevices();
+		 	///System.out.println(connectedDevices);
+		 	Set<String> visited = clientMachine.getvisited();
+	         ///  System.out.println(visited);
+	           //clientMachine.getUnvisited(router, visited);
+	           Stack<ConnectionEvent> route =  clientMachine.getroute();
+	         // System.out.println (clientMachine.getUnvisited(router, visited));
+	         // System.out.println(route);
+	         //  LinkedList<ConnectionEvent> Aroute = clientMachine.Aroute();
+	           
+	           
+	           
+			assertEquals("There are no children", true, clientMachine.sendRoutingPacket(clientMachine, serverMachineId, R1) );
+	}
+	
+	
+	
+	
+	
+	
+	
+	/*
+	
+	
+			@Test
+			 public void CheckDisconnectedDevices1() throws NetworkException{
+				 
+				 cloud.start();
+			        clientMachine.start();
+			        serverMachine.start();
+			        router.start();
+			        clientMachine.handleConnectionStarted(router);
+			        System.out.println("see somthing" +" "+ clientMachine.disconnectDevice(router));
+			       // assertTrue( clientMachine.connectDevice(router));
+			        assertEquals("I expected positive answer ", success, clientMachine.disconnectDevice(router));
+			        
+			   
+			 }
+				
+			
+			
+			@Test
+			 public void CheckConnectedDevicesFrom_ClientMachineTo_Router() throws NetworkException{
+				 
+				 cloud.start();
+			        clientMachine.start();
+			        serverMachine.start();
+			        router.start();
+			        clientMachine.handleConnectionStarted(router);
+			       // System.out.println("see somthing" +" "+ clientMachine.connectDevice(router));
+			       
+			        assertTrue(clientMachine.connectDevice(router));
+			        
+			   
+			 }
+				
+		
+			
+			/* 
+			
+			@Test(timeout = 1000)
+			public void ConnectedDevicesTest() throws NetworkException, ParserConfigurationException, SAXException, IOException, NoSuchMethodException  {
+			cloud.start();
+			clientMachine.start();
+			 serverMachine.start();
+			 router.start();
+			 clientMachine.handleConnectionStarted(router);
+		       List<ConnectionEvent> connectedDevices = router.getConnectedDevices();
+			 assertEquals("No connection between machines", connectedDevices, router.getConnectedDevices());
+			// ClientMachine.stop();
+		
+		}
+		 
+			/*
+			 * 
+			 * 
+			
+		// Check to see if the BasePackets are actually in the Array
+			@Test(timeout = 100)
+		    public void CheckStatusOfArray1() throws NetworkException {
+				cloud.start();
+				clientMachine.start();
+				 serverMachine.start();
+				 
+				ArrayList<DataPacket> PacketArray = clientMachine.PacketArray();
+				System.out.println(PacketArray());
+				//Timed.getFireCount();
+				 assertNotNull("List shouldn't be null", PacketArray);
+				 
+				} 
+			
+		 @Test(timeout = 1000)
+			public void CheckConnectionStartedTest_ON() throws NetworkException, ParserConfigurationException, SAXException, IOException, NoSuchMethodException  {
+			cloud.start();
+			clientMachine.start();
+			 serverMachine.start();
+			 assertEquals("No connection between machines", router, clientMachine.handleConnectionStarted(router));
+			// ClientMachine.stop();
+		
+		} 
+		// Transfer array of packets from ClientMachine to serverMachine
 
 		@Test(timeout = 1000)
 	    public void TranferPacketArray() throws NetworkException { 
 			cloud.start();
-			ClientMachine.start();
-			 ServerMachine.start();
-			ArrayList<DataPacket> PacketArray = ClientMachine.PacketArray();
+			clientMachine.start();
+			 serverMachine.start();
+			ArrayList<DataPacket> PacketArray = clientMachine.PacketArray();
 			long StartTime = Calendar.getInstance().getTimeInMillis();
 			long req= Timed.getFireCount();
 			//Timed.simulateUntil(1000);
 			System.out.println("This simulation began at " + StartTime + "ms in realtime)");
 			System.out.println("This simulation began at " + req + "ms in realtime)");
-			assertEquals("Packet should not be transferrable", PacketArray, ClientMachine.sendPackets(ClientMachine, ServerMachine, PacketArray));
-			ClientMachine.stop();
+			assertEquals("Packet should not be transferrable", PacketArray, clientMachine.sendPackets(clientMachine, serverMachine, PacketArray));
+			clientMachine.stop();
 			cloud.stop();
-			ServerMachine.stop();
+			serverMachine.stop();
 			long StopTime = Calendar.getInstance().getTimeInMillis();
 			long reb= Timed.getFireCount();
 			Timed.simulateUntil(1000);
@@ -243,7 +577,7 @@ public class ClientMachineTest extends Timed {
 			System.out.println("This simulation took " + duration + "ms in realtime)");
 		} 	
 	
-	/*
+	
 	 	// Checking if a the method is not efficient.		
 			 @Test(timeout = 100)	
 			 public void SendPacketTest_NotWorking() throws   NetworkException {

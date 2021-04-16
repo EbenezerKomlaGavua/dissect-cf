@@ -43,7 +43,7 @@ public class PacketHandler {
         return failedPackets;
     }
 
-    /**
+    /** 
      * Send a packet to an unresolved device if directly connected or attempts to find a route
      * through connected nodes and boxes the packet in a {@link RoutingPacket}
      *
@@ -117,6 +117,7 @@ public class PacketHandler {
                 packet = ((RoutingPacket) packet).getPayload();
             }
 
+            
             // Signal the target that an incoming connection is being made \\
             target.connectionStarted(source);
 
@@ -263,7 +264,7 @@ public class PacketHandler {
      */
     private static boolean registerPacketIfNotExist(ConnectionEvent source, BasePacket packet) {
         if (source.getRepository().lookup(packet.id) == null) {
-            logger.log("Registering packet: " + packet);
+            logger.log("Registering packet: " + packet); 
             return source.getRepository().registerObject(packet);
         }
 
