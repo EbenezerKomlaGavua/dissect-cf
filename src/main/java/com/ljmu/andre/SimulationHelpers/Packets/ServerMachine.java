@@ -28,7 +28,7 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
     long minValueInMap=Long.MAX_VALUE;
     long average = 0;
     int counter =0;
-    protected Router router;
+    protected Router1 router1;
 	//protected PhysicalMachine ServerMachine;
     static final State connectionState = State.SUCCESS;
 	//protected ClientMachine ClientMachine;
@@ -92,13 +92,13 @@ public class ServerMachine extends Timed implements ConsumptionEvent, Connection
 	
 		
 	public void setMachineId(String serverMachineId) {
-		this.serverMachineId = "193.6.5.222";
+		this.serverMachineId = "10.10.10.2";
 	}
 	
 	@Override
 	public String getId() {
 		// TODO Auto-generated method stub
-		return "193.6.5.222";
+		return "10.10.10.2";
 	}
 	
 	public void setRepository(Repository repository) {

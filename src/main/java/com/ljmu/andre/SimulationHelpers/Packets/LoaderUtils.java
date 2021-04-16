@@ -20,7 +20,7 @@ public class LoaderUtils {
 	static PhysicalMachine ServerMachine;
     static Repository repository;
     
-    protected  PhysicalMachine serverMachine2;
+    protected  PhysicalMachine router2;
 	protected  PhysicalMachine serverMachine3;
       protected PhysicalMachine router;
 	static String Id;
@@ -30,7 +30,7 @@ public class LoaderUtils {
 	
 	static ServerMachine getServerMachine() throws NoSuchMethodException {
 
-	     PhysicalMachine ServerMachine = MachineHandler_Socket.claimPM("193.6.5.222");
+	     PhysicalMachine ServerMachine = MachineHandler_Socket.claimPM("10.10.10.2");
 
 	     if (ServerMachine == null)
 
@@ -45,25 +45,25 @@ public class LoaderUtils {
 		
 	 }	
 	
-	static ServerMachine2 getServerMachine2() throws NoSuchMethodException {
+	static Router2 getRouter2() throws NoSuchMethodException {
 
-	     PhysicalMachine ServerMachine2 = MachineHandler_Socket.claimPM("193.6.5.224");
+	     PhysicalMachine Router2 = MachineHandler_Socket.claimPM("10.10.10.1");
 
-	     if (ServerMachine2 == null)
+	     if (Router2 == null)
 
-	         throw new NullPointerException("ServerMachine2 not found");
+	         throw new NullPointerException("Router2 not found");
 
 
 	     	//DataPacket NewdataPacket= datapacket;
 	    // FitbitTraceFileReader traceFileReader = new FitbitTraceFileReader(
 
 	             
-		return new ServerMachine2(ServerMachine2, repository, Id);
+		return new Router2(Router2, repository, Id);
 		
 	 }	
 	static ServerMachine3 getServerMachine3() throws NoSuchMethodException {
 
-	     PhysicalMachine ServerMachine3 = MachineHandler_Socket.claimPM("193.6.5.225");
+	     PhysicalMachine ServerMachine3 = MachineHandler_Socket.claimPM("10.10.10.3");
 
 	     if (ServerMachine3 == null)
 
@@ -79,12 +79,12 @@ public class LoaderUtils {
 	 }	
 	
 	
-	static Router getRouter() throws NoSuchMethodException {
-	     PhysicalMachine Router = MachineHandler_Socket.claimPM("193.6.5.223");
+	static Router1 getRouter1() throws NoSuchMethodException {
+	     PhysicalMachine Router1 = MachineHandler_Socket.claimPM("193.168.1.1");
 
-	     if (Router == null)
+	     if (Router1 == null)
 
-	         throw new NullPointerException("Router not found");
+	         throw new NullPointerException("Router1 not found");
 	     
 	    // DataPacket NewdataPacket= datapacket;
 
@@ -93,7 +93,7 @@ public class LoaderUtils {
 	                  
 	      
 		
-		return new Router(Router,repository,Id);
+		return new Router1(Router1,repository,Id);
 	     
 		//public ClientMachine(PhysicalMachine ServerMachine, BasePacket packet,
 			//	Repository repository, String Id) {
@@ -103,7 +103,7 @@ public class LoaderUtils {
 	
 
 	static ClientMachine getClientMachine() throws NoSuchMethodException {
-     PhysicalMachine ClientMachine = MachineHandler_Socket.claimPM("193.6.5.176");
+     PhysicalMachine ClientMachine = MachineHandler_Socket.claimPM("193.168.1.2");
 
      if (ClientMachine == null)
 

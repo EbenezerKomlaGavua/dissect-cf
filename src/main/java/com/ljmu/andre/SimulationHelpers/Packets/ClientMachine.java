@@ -43,9 +43,9 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
     
 	static Repository repository;
 	 ServerMachine serverMachine;
-	 protected  ServerMachine2 serverMachine2;
+	 protected  Router2 serverMachine2;
 		protected  ServerMachine3 serverMachine3;
-	protected Router router;
+	protected Router1 router;
 	static String Id;
 	//private List<String> failedPacketIds = new ArrayList<String>();
 	private RoutingPacket packet;
@@ -71,7 +71,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
          static final int limit = 10;
          private String name;
          String serverMachineId = "193.6.5.222";
-         String serverMachine2Id = "193.6.5.224";
+         String router2Id = "10.10.10.1";
 	/**
 	 * Call {@link this#connectDevice(ConnectionEvent)} if result is TRUE, update
 	 * the Repository's Latency Map
@@ -138,7 +138,7 @@ public class ClientMachine extends Timed implements ConsumptionEvent, Connection
 	@Override
 		public String getId() {
 			// TODO Auto-generated method stub
-			return "193.6.5.176";
+			return "193.168.1.2";
 			
 		}
 	
@@ -266,7 +266,7 @@ return   PacketArray;
 	// not successfully transferred.
 	
 
-public static boolean sendPacket(final ConnectionEvent clientMachine, final ConnectionEvent serverMachine, BasePacket P1) {
+public static boolean sendPacket(final ConnectionEvent clientMachine, final ConnectionEvent serverMachine, BasePacket R1) {
     try {
       //  logger.log("Sending [From: %s][To: %s]",  ClientMachine.getId(), ServerMachine.getId());
 
@@ -275,37 +275,37 @@ public static boolean sendPacket(final ConnectionEvent clientMachine, final Conn
             return false;
         
         // If the packet is a RoutingPacket and the route is empty, unbox the payload \\
-        if (P1 instanceof RoutingPacket &&
-                ((RoutingPacket) P1).getRoute().isEmpty()) {
+        if (R1 instanceof RoutingPacket &&
+                ((RoutingPacket) R1).getRoute().isEmpty()) {
             logger.log("Route is empty, assuming destination achieved... Unboxing");
-            P1 = ((RoutingPacket) P1).getPayload();
+            R1 = ((RoutingPacket) R1).getPayload();
         }
 
         // Signal the target that an incoming connection is being made \\
         serverMachine.connectionStarted( clientMachine);
 
         // Build an appropriate consumption event \\
-        ConsumptionEvent consumptionEvent = getConsumptionEvent( clientMachine,serverMachine, P1);
+        ConsumptionEvent consumptionEvent = getConsumptionEvent( clientMachine,serverMachine,R1);
 
         // Determine whether the packet should be saved to disk \\
-        if (P1.getShouldStore()) {
+        if (R1.getShouldStore()) {
             // Register the packet to the source \\
-            if(!registerPacketIfNotExist( clientMachine, P1)) {
+            if(!registerPacketIfNotExist( clientMachine, R1)) {
                 logger.err("No more drive space left on [Device: %s]",  clientMachine.getId());
 
-                serverMachine.connectionFinished( clientMachine, State.FAILED, P1);
+                serverMachine.connectionFinished( clientMachine, State.FAILED, R1);
                 return false;
             }
             // Attempt to send and save the packet on the target \\
  
             ResourceConsumption hasDelivered =  clientMachine.getRepository()
                     .requestContentDelivery(
-                    		P1.id,
+                    		R1.id,
                             serverMachine.getRepository(),
                             consumptionEvent);
 
             if(hasDelivered==null) {
-            	serverMachine.connectionFinished( clientMachine, State.FAILED, P1);
+            	serverMachine.connectionFinished( clientMachine, State.FAILED, R1);
                 logger.err("Could not deliver packet [Source: %s] [Target: %s]",
                 		 clientMachine.getId(), serverMachine.getId());
                 return false;
@@ -316,7 +316,7 @@ public static boolean sendPacket(final ConnectionEvent clientMachine, final Conn
         } else {
             // Attempt to transfer the packet accross the network \\
             NetworkNode.initTransfer(
-            		P1.size,
+            		R1.size,
                     10,
                     clientMachine.getRepository(),
                     serverMachine.getRepository(),
@@ -336,13 +336,13 @@ public static boolean sendPacket(final ConnectionEvent clientMachine, final Conn
         // Register the object so that we can grab it to send again later
         // Force the packet to deregister from the source once successfully transferred
         if (!packetIsRegistered &&
-        		serverMachine.getRepository().registerObject(P1))
-        	P1.addDeregisterObject( serverMachine);
+        		serverMachine.getRepository().registerObject(R1))
+        	R1.addDeregisterObject( serverMachine);
 
     }
 
     // Alert the source that the packet failed
-    serverMachine.connectionFinished( clientMachine, State.FAILED, P1);
+    serverMachine.connectionFinished( clientMachine, State.FAILED, R1);
     return false;
 }
 
@@ -435,14 +435,14 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
  
 	
 	
-	 public static boolean sendRoutingPacket(final ConnectionEvent clientMachine, final String serverMachineId, final BasePacket P1) {
+	 public static boolean sendRoutingPacket(final ConnectionEvent clientMachine, final String serverMachineId, final BasePacket R1) {
 // Check if the device is directly connected to the source \\
 		 for (ConnectionEvent serverMachine : clientMachine.getConnectedDevices()) {
 			 logger.log("Checking Device: " + serverMachine .getId());
 
 // If directly connected, send the packet \\
 			 if (serverMachine .getId().equals(serverMachineId))
-				 return PacketHandler.sendPacket(clientMachine, serverMachine , P1);
+				 return sendPacket(clientMachine, serverMachine , R1);
 }
 
 // Attempt to find a route between the connected devices
@@ -454,7 +454,7 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 					 clientMachine.getId(),
 					 serverMachineId);
 
-			 clientMachine.connectionFinished(clientMachine, State.FAILED, P1);
+			 clientMachine.connectionFinished(clientMachine, State.FAILED, R1);
 			 return false;
 }
 
@@ -465,7 +465,7 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 		 logger.log("PathSize: " + Aroute.size());
 
 // Box the packet in a RoutingPacket, attaching the Route Queue to it \\
-		 RoutingPacket routingPacket = new RoutingPacket("Routing", P1, clientMachine, Aroute);
+		 RoutingPacket routingPacket = new RoutingPacket("Routing", R1, clientMachine, Aroute);
 
 // Determine the next target and if it exists, forward the routing packet to it
 		 ConnectionEvent nextTarget = routingPacket.getRoute().poll();
@@ -475,10 +475,10 @@ public boolean bindServerMachine(final ConnectionEvent ServerMachine) {
 
 	 public  Stack<ConnectionEvent> getroute (){
 		 Stack<ConnectionEvent> route = new Stack<ConnectionEvent>();
-		ConnectionEvent serverMachine2 = new ServerMachine2(PhysicalMachine, repository, Id);
+		ConnectionEvent router2 = new Router2(PhysicalMachine, repository, Id);
 		ConnectionEvent serverMachine3 = new ServerMachine3(PhysicalMachine, repository, Id);
 		ConnectionEvent clientMachine = new ClientMachine(PhysicalMachine, repository, Id);
-		ConnectionEvent router = new Router(PhysicalMachine, repository, Id);
+		ConnectionEvent router = new Router1(PhysicalMachine, repository, Id);
 		 
 		 route.add(serverMachine2);
 		// route.add(serverMachine);

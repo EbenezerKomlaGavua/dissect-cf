@@ -15,9 +15,9 @@ import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption
 import hu.mta.sztaki.lpds.cloud.simulator.iaas.resourcemodel.ResourceConsumption.ConsumptionEvent;
 import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
-public class ServerMachine2  extends Timed implements ConsumptionEvent, ConnectionEvent {
+public class Router2  extends Timed implements ConsumptionEvent, ConnectionEvent {
 
-	private static final Logger logger = new Logger(ServerMachine2.class);
+	private static final Logger logger = new Logger(Router2.class);
 	private static final int SUBSCRIBE_FREQ = 5;
     String serverMachine2Id;
     long maxValueInMap= 0;
@@ -38,15 +38,15 @@ public class ServerMachine2  extends Timed implements ConsumptionEvent, Connecti
 	private List<String> SuccessfulPacketIds = new ArrayList<String>();
 	private List<String> FailedPacketIds = new ArrayList<String>();
 	
-	private ConnectionEvent serverMachine2;
+	private ConnectionEvent router2;
 	private PhysicalMachine PhysicalMachine;
-     final String name;
+     String name;
 	
 	//private ConsumptionEvent PhysicalMachine;
 
      protected ClientMachine clientMachine;
  	protected  ServerMachine serverMachine;
- 	protected  Router router;
+ 	protected  Router1 router1;
  	protected  ServerMachine3 serverMachine3;
  	public List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();	
 	Set<Integer> visited = new HashSet<Integer>();
@@ -69,9 +69,9 @@ public class ServerMachine2  extends Timed implements ConsumptionEvent, Connecti
 
 
 	// Create the constructor for the serverMachine
-	public ServerMachine2(PhysicalMachine serverMachine2,	Repository repository, String serverMachine2Id) {
-		this.PhysicalMachine = serverMachine2;
-		name = serverMachine2Id;
+	public Router2(PhysicalMachine router2,	Repository repository, String router2Id) {
+		this.PhysicalMachine = router2;
+		name = router2Id;
 		this.repository = repository;
 	}
 
@@ -81,24 +81,24 @@ public class ServerMachine2  extends Timed implements ConsumptionEvent, Connecti
 	//}
 	// Get the repository of the ServerMachine
 		
-	public void setPhysicalMachine(PhysicalMachine  serverMachine2) {
-		this.PhysicalMachine =  serverMachine2;
+	public void setPhysicalMachine(PhysicalMachine  router2) {
+		this.PhysicalMachine =  router2;
 	}
 	
-	public ConnectionEvent getServerMachine2() {
-		return  serverMachine2;
+	public ConnectionEvent getRouter2() {
+		return  router2;
 		
 	}
 	
 		
-	public void setMachine2Id(String serverMachine2Id) {
-		this.serverMachine2Id = "193.6.5.224";
+	public void setRouter2Id(String router2Id) {
+		this.name = "10.10.10.2";
 	}
 	
 	@Override
 	public String getId() {
 		// TODO Auto-generated method stub
-		return  "193.6.5.224";
+		return  "10.10.10.1";
 	}
 	
 	public void setRepository(Repository repository) {
@@ -241,7 +241,7 @@ logger.log("Cancelled: " + problematic.toString());
 		else
         if (connectionState == State.SUCCESS) {
         	
-            handleSuccess(serverMachine2, P1);
+            handleSuccess(router2, P1);
            // System.out.println("ClientMachine connection finished: " + connectionState);
          
            

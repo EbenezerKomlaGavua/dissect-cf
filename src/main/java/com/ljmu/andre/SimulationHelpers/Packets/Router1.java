@@ -16,8 +16,8 @@ import hu.mta.sztaki.lpds.cloud.simulator.io.Repository;
 
 
 
-public class Router extends Timed implements ConsumptionEvent, ConnectionEvent{
-	private static final Logger logger = new Logger(Router.class);
+public class Router1 extends Timed implements ConsumptionEvent, ConnectionEvent{
+	private static final Logger logger = new Logger(Router1.class);
 	private static final int SUBSCRIBE_FREQ = 5;
 	private ConnectionEvent router;
 	private PhysicalMachine PhysicalMachine;
@@ -29,15 +29,15 @@ public class Router extends Timed implements ConsumptionEvent, ConnectionEvent{
 	//private ConnectionEvent serverMachine;
 	protected ClientMachine clientMachine;
 	protected  ServerMachine serverMachine;
-	protected  ServerMachine2 serverMachine2;
+	protected  Router2 router2;
 	protected  ServerMachine3 serverMachine3;
 	
 	public List<ConnectionEvent> connectedDevices = new ArrayList<ConnectionEvent>();	
 	Set<Integer> visited = new HashSet<Integer>();
 	
 	
-public Router(PhysicalMachine router, Repository repository, String routerId) {
-			this.PhysicalMachine = router;
+public Router1(PhysicalMachine router1, Repository repository, String routerId) {
+			this.PhysicalMachine = router1;
 			name = routerId;
 			this.repository = repository;
 		}
@@ -55,13 +55,13 @@ public Router(PhysicalMachine router, Repository repository, String routerId) {
 		@Override
 		public String getId() {
 			// TODO Auto-generated method stub
-			return "193.6.5.223";
+			return "193.168.10.1";
 		}
 		
 		
 			
 		public void setMachineId(String routerId) { 
-			this.routerId = "193.6.5.223";
+			this.routerId = "193.168.1.1";
 		}
 		
 		
@@ -106,10 +106,10 @@ public Router(PhysicalMachine router, Repository repository, String routerId) {
 	}
 
 
-	 public boolean connectDevice(ConnectionEvent clientMachine, ConnectionEvent serverMachine,ConnectionEvent serverMachine2,ConnectionEvent serverMachine3) {
+	 public boolean connectDevice(ConnectionEvent clientMachine, ConnectionEvent serverMachine,ConnectionEvent router2,ConnectionEvent serverMachine3) {
 	        boolean success = connectedDevices.add( serverMachine);
 	        boolean success1 = connectedDevices.add(clientMachine);
-	        boolean success2 = connectedDevices.add(serverMachine2);
+	        boolean success2 = connectedDevices.add(router2);
 	        boolean success3 = connectedDevices.add(serverMachine3);
 	        if (!success) {
 	            logger.log("router was already connected: " +  serverMachine.getId());
@@ -119,7 +119,7 @@ public Router(PhysicalMachine router, Repository repository, String routerId) {
 	         
 	        }
 	       if (!success2) {
-	            logger.log("serverMachine2 was already connected: " + serverMachine2.getId());
+	            logger.log("serverMachine2 was already connected: " + router2.getId());
 	        }
 	        if(!success3) {
 	        	logger.log("serverMachine3 was already connected: " + serverMachine3.getId());
@@ -155,7 +155,7 @@ public Router(PhysicalMachine router, Repository repository, String routerId) {
 			Set<String> visited = new HashSet<String>() ;
 				        
 				       // visited.add("serverMachine");
-				        visited.add("serverMachine2");
+				        visited.add("router2");
 				        visited.add("serverMachine3");
 				       // visited.add("clientMachine");
 				        

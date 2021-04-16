@@ -42,12 +42,12 @@ public class ClientMachineTest extends Timed {
 	private static final Logger logger = new Logger(ClientMachineTest.class);
 	private int PacketsCount = 5;
 	protected  ServerMachine serverMachine;
-	protected  ServerMachine2 serverMachine2;
+	protected  Router2 router2;
 	protected  ServerMachine3 serverMachine3;
-	String serverMachineId = "193.6.5.222";
-	String serverMachine2Id = "193.6.5.224";
+	String serverMachineId = "10.10.10.2";
+	String router2Id = "10.10.10.1";
 	private Cloud cloud;
-	protected Router router;
+	protected Router1 router1;
 	private static final int SUBSCRIBE_FREQ = 10;
 	final static long expectedFires = 5;
 	private static final String MACHINE_SOCKET_XML_PATH = USER_DIR + "/Machine_Socket3.xml";
@@ -132,10 +132,10 @@ public class ClientMachineTest extends Timed {
 		MachineHandler_Socket.init(MACHINE_SOCKET_XML_PATH);
 		clientMachine = LoaderUtils.getClientMachine();
 		serverMachine = LoaderUtils.getServerMachine();
-		serverMachine2 = LoaderUtils.getServerMachine2();
+		router2 = LoaderUtils.getRouter2();
 		serverMachine3 = LoaderUtils.getServerMachine3();
 		cloud = LoaderUtils.getCloud();
-		router = LoaderUtils.getRouter();
+		router1 = LoaderUtils.getRouter1();
 		     
 		
 	}
@@ -388,7 +388,7 @@ public class ClientMachineTest extends Timed {
 		}
 					
 	            
-	*/				
+					
 	
 	
 	
@@ -428,7 +428,7 @@ public class ClientMachineTest extends Timed {
 			//assertEquals("There are no children", route, clientMachine.getConnectionRoute(serverMachine2, serverMachineId) );
 	}
 	
-	
+	*/
 	
 	@Test(timeout = 1000)
 	public void SendRoutingPacketTest() throws NetworkException {
@@ -437,20 +437,20 @@ public class ClientMachineTest extends Timed {
 		cloud.start();
 		clientMachine.start();
 		 serverMachine.start(); 
-		 router.start();
-		 serverMachine2.start();
+		 router1.start();
+		 router2.start();
 		 serverMachine3.start();
-		 router.handleConnectionStarted(clientMachine);
-		 clientMachine.handleConnectionStarted(router);
-		 serverMachine2.handleConnectionStarted(clientMachine);
+		 router1.handleConnectionStarted(clientMachine);
+		 clientMachine.handleConnectionStarted(router1);
+		 router2.handleConnectionStarted(clientMachine);
 		 ClientMachine clientMachine = new ClientMachine(PhysicalMachine, repository1, Id1);
-		 clientMachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
+		 clientMachine.connectDevice(router1, serverMachine, router2, serverMachine3);
 		//ClientMachine clientmachine = new ClientMachine(PhysicalMachine, repository1, Id1);
 		//clientmachine.connectDevice(router, serverMachine, serverMachine2, serverMachine3);
-		Router router = new Router(PhysicalMachine, repository1, Id1);
-		router.connectDevice(clientMachine, serverMachine, serverMachine2, serverMachine3);
-		ServerMachine2 serverMachine2 = new ServerMachine2(PhysicalMachine, repository1, Id1);
-		serverMachine2.connectDevice(clientMachine, serverMachine3, router, serverMachine);
+		Router1 router = new Router1(PhysicalMachine, repository1, Id1);
+		router.connectDevice(clientMachine, serverMachine, router2, serverMachine3);
+		Router2 router2 = new Router2(PhysicalMachine, repository1, Id1);
+		router2.connectDevice(clientMachine, serverMachine3, router, serverMachine);
 		 	List<ConnectionEvent> connectedDevices = clientMachine.getConnectedDevices();
 		 	///System.out.println(connectedDevices);
 		 	Set<String> visited = clientMachine.getvisited();

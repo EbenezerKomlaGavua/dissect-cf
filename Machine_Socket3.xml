@@ -44,13 +44,13 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="193.6.5.176" value="0" />
+            <latency towards="193.168.1.2" value="0" />
         </repository>
     </machine>
 
     <!-- pluto - AMD Opteron(tm) Processor 6262HE (3200.07 bogomips) x64, 256GB,
         disk ??? -->
-    <machine id="193.6.5.176" cores="64" processing="1" memory="2000000000">
+    <machine id="193.168.1.2" cores="64" processing="1" memory="2000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -63,7 +63,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="193.6.5.176" capacity="4000000000" inBW="250000000"
+        <repository id="193.168.1.2" capacity="4000000000" inBW="250000000"
                     outBW="250000000" diskBW="50000000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -87,12 +87,10 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="193.6.5.222" value="0" />
+            <latency towards="193.168.1.1" value="0" />
         </repository>
     </machine>
-
-
-    <machine id="193.6.5.222" cores="64" processing="1" memory="2000000000">
+	<machine id="193.168.1.1" cores="64" processing="1" memory="2000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -105,7 +103,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="193.6.5.222" capacity="40000000000" inBW="250000000"
+        <repository id="193.168.1.1" capacity="40000000000" inBW="250000000"
                     outBW="250000000" diskBW="50000000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -129,11 +127,11 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="193.6.5.176" value="0" />
+            <latency towards="193.168.1.2" value="0" />
+			<latency towards="10.10.10.1" value="0" />
         </repository>
     </machine>
-	
-	 <machine id="193.6.5.223" cores="64" processing="1" memory="2000000000">
+	<machine id="10.10.10.1" cores="64" processing="1" memory="2000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -146,7 +144,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="193.6.5.223" capacity="40000000000" inBW="250000000"
+        <repository id="10.10.10.1" capacity="40000000000" inBW="250000000"
                     outBW="250000000" diskBW="50000000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -170,10 +168,11 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="193.6.5.176" value="0" />
+            <latency towards="193.168.1.1" value="0" />
+			<latency towards="10.10.10.2" value="0" />
         </repository>
     </machine>
-	 <machine id="193.6.5.224" cores="64" processing="1" memory="2000000000">
+    <machine id="10.10.10.2" cores="64" processing="1" memory="2000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -186,7 +185,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="193.6.5.224" capacity="40000000000" inBW="250000000"
+        <repository id="10.10.10.2" capacity="40000000000" inBW="250000000"
                     outBW="250000000" diskBW="50000000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -210,10 +209,10 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="193.6.5.176" value="0" />
+            <latency towards="10.10.10.1" value="0" />
         </repository>
     </machine>
-	 <machine id="193.6.5.225" cores="64" processing="1" memory="2000000000">
+	<machine id="10.10.10.3" cores="64" processing="1" memory="2000000000">
         <powerstates kind="host">
             <power
                 model="hu.mta.sztaki.lpds.cloud.simulator.energy.powermodelling.LinearConsumptionModel"
@@ -226,7 +225,7 @@
         <!-- statedelays are unknown -->
         <statedelays startup="0" shutdown="0" />
         <!-- disk capacities, bandwidthes are unknown -->
-        <repository id="193.6.5.225" capacity="40000000000" inBW="250000000"
+        <repository id="10.10.10.3" capacity="40000000000" inBW="250000000"
                     outBW="250000000" diskBW="50000000">
             <powerstates kind="storage">
                 <!-- Not measured! http://www.buildcomputers.net/power-consumption-of-pc-components.html -->
@@ -250,7 +249,7 @@
                     idle="0" max="0" inState="OFF" />
             </powerstates>
             <!-- latencies are unknown -->
-            <latency towards="193.6.5.176" value="0" />
+            <latency towards="10.10.10.1" value="0" />
         </repository>
     </machine>
  </cloud>
